@@ -11,8 +11,13 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                'g-dark': '#296E5B', 
+                'g-light': '#B3FAD8',
+                'g-bg': '#DCFCE7',
+            },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['inter', ...defaultTheme.fontFamily.sans],
             },
         },
     },
