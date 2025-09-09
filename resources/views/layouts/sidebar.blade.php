@@ -10,27 +10,27 @@
     <div class="menu flex flex-col mt-4 space-y-1">
         <a href="{{ route('superadmin.home') }}"
            class="flex items-center px-4 py-3 text-left w-full rounded-r-full transition 
-                @if(Request::routeIs('dashboard')) bg-[#B3FAD8] text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
+                @if(Request::routeIs('dashboard')) bg-g-dark text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
             <img src="{{ asset('images/dashboard.png') }}" alt="Dashboard" class="w-5 h-5 mr-3">
             Dashboard
         </a>
 
         <a href="{{ route('superadmin.verify_admins') }}"
            class="flex items-center px-4 py-3 text-left w-full rounded-r-full transition
-                @if(Request::routeIs('verify_admins')) bg-[#B3FAD8] text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
+                @if(Request::routeIs('verify_admins')) bg-g-dark text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
             <img src="{{ asset('images/admins.png') }}" alt="Admins" class="w-5 h-5 mr-3">
             Manage Admins
         </a>
 
         <a href="{{ route('superadmin.datarequest') }}"
              class="flex items-center px-4 py-3 text-left w-full
-                       hover:bg-[#B3FAD8] hover:text-black rounded-r-full transition">
+                       hover:bg-g-light hover:text-black rounded-r-full transition">
             <img src="{{ asset('images/data.png') }}" alt="Data Requests" class="w-5 h-5 mr-3">
             Data Requests
         </a>
         <a href="{{ route('superadmin.diseaserecords') }}"
              class="flex items-center px-4 py-3 text-left w-full
-                       hover:bg-[#B3FAD8] hover:text-black rounded-r-full transition">
+                       hover:bg-g-light hover:text-black rounded-r-full transition">
             <img src="{{ asset('images/records.png') }}" alt="Disease Records" class="w-5 h-5 mr-3">
             Disease Records
         </a>
