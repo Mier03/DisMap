@@ -1,0 +1,18 @@
+<x-app-layout>
+
+    <div class="flex">
+        {{-- Sidebar --}}
+        @include('layouts.sidebaradmin')
+
+        {{-- Main Content --}}
+        <div class="ml-64 flex-1 py-12 px-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        {{ __("MANAGE PATIENTS") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

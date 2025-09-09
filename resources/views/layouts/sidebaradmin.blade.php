@@ -4,35 +4,36 @@
              alt="Profile"
              class="w-16 h-16 rounded-full mb-2">
         <h2 class="text-lg font-semibold">DisMap</h2>
-        <p class="text-sm text-gray-200">Superadmin</p>
+        <p class="text-sm text-gray-200">Admin</p>
     </div>
 
     <div class="menu flex flex-col mt-4 space-y-1">
-        <a href="{{ route('superadmin.home') }}"
+        <a href="{{ route('admin.home') }}"
            class="flex items-center px-4 py-3 text-left w-full rounded-r-full transition 
                 @if(Request::routeIs('dashboard')) bg-[#B3FAD8] text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
             <img src="{{ asset('images/dashboard.png') }}" alt="Dashboard" class="w-5 h-5 mr-3">
             Dashboard
         </a>
 
-        <a href="{{ route('superadmin.verify_admins') }}"
+        <a href="{{ route('admin.managepatients') }}"
            class="flex items-center px-4 py-3 text-left w-full rounded-r-full transition
                 @if(Request::routeIs('verify_admins')) bg-[#B3FAD8] text-black font-medium @else hover:bg-[#B3FAD8] hover:text-black @endif">
             <img src="{{ asset('images/admins.png') }}" alt="Admins" class="w-5 h-5 mr-3">
-            Manage Admins
+            Manage Patients
         </a>
 
-        <a href="{{ route('superadmin.datarequest') }}"
-             class="flex items-center px-4 py-3 text-left w-full
+        <a href="{{ route('admin.diseaserecords') }}"
+         class="flex items-center px-4 py-3 text-left w-full
                        hover:bg-[#B3FAD8] hover:text-black rounded-r-full transition">
             <img src="{{ asset('images/data.png') }}" alt="Data Requests" class="w-5 h-5 mr-3">
-            Data Requests
+            Disease Records
         </a>
-        <a href="{{ route('superadmin.diseaserecords') }}"
-             class="flex items-center px-4 py-3 text-left w-full
+
+         <a href="{{ route('admin.accountsettings') }}"
+            class="flex items-center px-4 py-3 text-left w-full
                        hover:bg-[#B3FAD8] hover:text-black rounded-r-full transition">
             <img src="{{ asset('images/records.png') }}" alt="Disease Records" class="w-5 h-5 mr-3">
-            Disease Records
+            Account Settings
         </a>
 
         <form action="{{ route('logout') }}" method="POST">
