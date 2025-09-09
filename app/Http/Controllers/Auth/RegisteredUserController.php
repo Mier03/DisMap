@@ -19,7 +19,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        return view('auth.register'); // naa ni siya sa views then auth folder the makita ni siya sa register.blade.php
     }
 
     /**
@@ -27,24 +27,40 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+   public function store(Request $request): RedirectResponse
+        {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'hospital_name' => ['required', 'string', 'max:255'],
+                'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'certification' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            // Store certification file
+            $certificationPath = $request->file('certification')->store(
+                'certifications/'.$request->username, // makita ni siya sa storage-app-puclic-certifications-username
+                'public'
+            );
 
-        event(new Registered($user));
+            // Create user with pending approval
+            $user = User::create([
+                'name' => $request->name,
+                'hospital_name' => $request->hospital_name,
+                'username' => $request->username,
+                'user_type' => 'Doctor',
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'certification' => $certificationPath,
+                'is_approved' => false, 
+            ]);
 
-        Auth::login($user);
+            event(new Registered($user));
 
-        return redirect(route('dashboard', absolute: false));
-    }
+            // Don’t log them in yet
+            return redirect()->route('welcome')
+                ->with('success', 'Your account has been created. Please wait for admin approval.');
+        }
+
 }
