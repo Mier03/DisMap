@@ -48,11 +48,9 @@
             </div>
 
             <!-- Login Button -->
-            <button type="submit" 
-                class="w-full py-2 px-4 bg-teal-700 hover:bg-teal-800 text-white font-medium rounded-md transition duration-200">
+            <x-primary-button type="submit" class=" justify-center w-full bg-teal-800   hover:bg-teal-800/70">
                 Sign In
-            </button>
-
+            </x-primary-button>
             <!-- Forgot Password & Sign Up Links -->
             <div class="mt-4 text-center space-y-2">
                 @if (Route::has('password.request'))
