@@ -1,61 +1,77 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+@section('content')
+<div class="bg-[#FDFDFC] dark:bg-[#DCFCE7] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
 
-       
+    <!-- Disease Monitoring Section -->
+    <div class="relative min-h-screen bg-blue-100 flex items-center justify-center p-5">
+        <div class="text-center px-5">
+            <!-- Title and Subtitle -->
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-800 mb-8 text-center p-4" 
+                style="font-size: 4rem; text-align: center;">
+                Disease Monitoring in Cebu City
+            </h1>
+            <p class="text-md md:text-lg text-teal-700 mb-10 max-w-2xl mx-auto text-center p-4" 
+                style="font-size: 2rem; text-align: center;">
+                Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
+            </p>
+            
+            <!-- Statistics Cards -->
+            <div class="flex flex-row md:flex-row justify-center gap-6 mt-10 p-4">
+                <!-- Total Cases -->
+                <div class="bg-white rounded-lg shadow-md p-4 w-48">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-teal-600">👤</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-teal-800">999</h2>
+                            <p class="text-teal-700 text-sm">Total Cases</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Total Active Cases -->
+                <div class="bg-white rounded-lg shadow-md p-4 w-48">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-teal-600">➕</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-teal-800">99</h2>
+                            <p class="text-teal-700 text-sm">Total Active Cases</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Total Critical Cases -->
+                <div class="bg-white rounded-lg shadow-md p-4 w-48">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-teal-600">⭐</span>
+                        <div>
+                            <h2 class="text-2xl font-bold text-teal-800">9</h2>
+                            <p class="text-teal-700 text-sm">Total Critical Cases</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!-- Styles / Scripts -->
-       
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-    </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-        <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
-            @if (Route::has('login'))
-                <nav class="flex items-center justify-end gap-4">
-                    @auth
-                        @if(Auth::user()->user_type === 'Doctor')
-                            <a href="{{ route('admin.home') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Dashboard
-                            </a>
-                        @elseif(Auth::user()->user_type === 'Admin')
-                            <a href="{{ route('superadmin.home') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Dashboard
-                            </a>
-                        @else
-                            <a href="{{ route('welcome') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                You are not authorized
-                            </a>
-                        @endif
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
-                        >
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a
-                                href="{{ route('register') }}"
-                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
-            @endif
-        </header>
-        
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
-    </body>
-</html>
+<style>
+    .bg-blue-100 {
+        background-color: #e6f0fa;
+    }
+    .text-teal-800 {
+        color: #1f5f5b;
+    }
+    .text-teal-700 {
+        color: #2d7d79;
+    }
+    @media (max-width: 768px) {
+        .flex-col {
+            flex-direction: row;
+        }
+        .w-48 {
+            width: 100%;
+        }
+    }
+</style>
+@endsection
