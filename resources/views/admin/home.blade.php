@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
-        @include('layouts.sidebaradmin')
+        @include('layouts.sidebar')
 
         {{-- Main Content --}}
         <div class="ml-64 flex-1 py-12 px-6">
