@@ -85,6 +85,16 @@
                 </x-primary-button>
             </div>
 
+            <!-- Sign In Link -->
+            <div class="mt-4 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{{ route('login') }}" class="font-medium text-teal-700 hover:text-teal-800">
+                        Sign In
+                    </a>
+                </p>
+            </div>
+
             <!-- Note -->
             <p class="text-xs text-red-600 mt-4 text-center">
                 Note: Your registration will be reviewed by a system administrator. 
