@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="bg-g-bg flex">
+    <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
-        @include('layouts.sidebar')
+        @include('layouts.sidebaradmin')
 
         {{-- Main Content --}}
         <div class="ml-64 flex-1 py-12 px-6">
@@ -66,8 +66,8 @@
                                             <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-sm">Active</span>
                                         </td>
                                         <td class="p-2 space-x-2">
-                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#296E5B]/90">✎</button>
-                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#9E3745]">✕</button>
+                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-g-dark/90">✎</button>
+                                            <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
                                         </td>
                                     </tr>
                                     <tr class="border-b">
@@ -82,7 +82,7 @@
                                         </td>
                                         <td class="p-2 space-x-2">
                                             <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#296E5B]/90">✎</button>
-                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#9E3745]">✕</button>
+                                            <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
                                         </td>
                                     </tr>
                                 </tbody>
