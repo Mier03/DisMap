@@ -56,7 +56,7 @@
             <!-- Forgot Password & Sign Up Links -->
             <div class="mt-4 text-center space-y-2">
                 @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-sm text-teal-700 hover:text-teal-800 block">
+                    <a href="{{ route('password.request') }}" class="text-sm text-teal-700 hover:text-teal-800 block hover:underline">
                         Forgot Password?
                     </a>
                 @endif
@@ -68,7 +68,7 @@
                 @if (Route::has('register'))
                     <div class="text-sm text-gray-600">
                         Don't have an account? 
-                        <a href="{{ route('register') }}" class="font-medium text-teal-700 hover:text-teal-800">
+                        <a href="{{ route('register') }}" class="font-medium text-teal-700 hover:text-teal-800 hover:underline">
                             Sign Up
                         </a>
                     </div>
