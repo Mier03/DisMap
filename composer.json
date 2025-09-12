@@ -62,7 +62,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                 "codeat3/blade-google-material-design-icons"
+            ]
         }
     },
     "config": {

@@ -12,10 +12,10 @@
                         <x-search-bar placeholder="Search diseases..." />
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <x-stat-card number="2" label="Total Disease Types" />
-                            <x-stat-card number="2" label="Active Cases" />
-                            <x-stat-card number="1" label="Recovered" />
-                            <x-stat-card number="2" label="Barangay Coverage" />
+                            <x-stat-card value="2" label="Total Disease Types" />
+                            <x-stat-card value="2" label="Active Cases" />
+                            <x-stat-card value="1" label="Recovered" />
+                            <x-stat-card value="2" label="Barangay Coverage" />
                         </div>
 
                         @php
