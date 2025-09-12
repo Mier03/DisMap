@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'certification',
         'user_type',
+        'is_approved', 
     ];
 
     /**
@@ -47,6 +48,39 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
         ];
+    }
+
+    /**
+     * Scope a query to only include admin users (Doctors).
+     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('user_type', 'doctor');
+    }
+
+    /**
+     * Scope a query to only include pending admin users.
+     */
+    public function scopePendingAdmins($query)
+    {
+        return $query->where('user_type', 'doctor')->where('is_approved', false);
+    }
+
+    /**
+     * Scope a query to only include approved admin users.
+     */
+    public function scopeApprovedAdmins($query)
+    {
+        return $query->where('user_type', 'doctor')->where('is_approved', true);
+    }
+
+    /**
+     * Scope a query to only include superadmin users.
+     */
+    public function scopeSuperAdmins($query)
+    {
+        return $query->where('user_type', 'admin');
     }
 }
