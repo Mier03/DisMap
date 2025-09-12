@@ -57,7 +57,7 @@ class User extends Authenticatable
      */
     public function scopeAdmins($query)
     {
-        return $query->where('user_type', 'doctor');
+        return $query->where('user_type', 'Doctor');
     }
 
     /**
@@ -65,7 +65,7 @@ class User extends Authenticatable
      */
     public function scopePendingAdmins($query)
     {
-        return $query->where('user_type', 'doctor')->where('is_approved', false);
+        return $query->where('user_type', 'Doctor')->where('is_approved', false);
     }
 
     /**
@@ -73,7 +73,7 @@ class User extends Authenticatable
      */
     public function scopeApprovedAdmins($query)
     {
-        return $query->where('user_type', 'doctor')->where('is_approved', true);
+        return $query->where('user_type', 'Doctor')->where('is_approved', true);
     }
 
     /**
@@ -81,6 +81,6 @@ class User extends Authenticatable
      */
     public function scopeSuperAdmins($query)
     {
-        return $query->where('user_type', 'admin');
+        return $query->where('user_type', 'Admin');
     }
 }
