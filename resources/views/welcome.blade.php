@@ -1,117 +1,103 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ config('app.name', 'DisMap') }}</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
-            .navbar {
-                background-color: #296E5B;
-                color: white;
-            }
-            .stats-card {
-                border: 2px solid #296E5B;
-                background-color: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(5px);
-            }
-            .stats-card h2 {
-                color: #296E5B;
-            }
-            .stats-card p {
-                color: #296E5B;
-            }
-            /* Remove border from body if present */
-            body {
-                margin: 0;
-                padding: 0;
-                border: none;
-            }
-            .text-custom-green {
-             color: #296E5B;
-            }
-        </style>
-    </head>
-    <body class="bg-g-bg text-[#1b1b18] flex flex-col items-center min-h-screen">
-        <header class="w-full max-w-5xl text-sm mb-4">
-            <nav class="navbar p-2 flex items-center justify-end gap-4">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'DisMap') }}</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+   
+</head>
+<body class="bg-white text-gray-900 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <header class="w-full shadow-md fixed top-0 left-0 z-50">
+        <nav class="bg-g-dark text-white px-6 py-3 flex items-center justify-between">
+            <div class="text-lg font-semibold tracking-wide">DisMap</div>
+            <div class="flex items-center gap-4 text-sm font-medium">
                 @if (Route::has('login'))
                     @auth
                         @if(Auth::user()->user_type === 'Doctor')
-                            <a href="{{ route('admin.home') }}"
-                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
-                                Dashboard
-                            </a>
+                            <a href="{{ route('admin.home') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Dashboard</a>
                         @elseif(Auth::user()->user_type === 'Admin')
-                            <a href="{{ route('superadmin.home') }}"
-                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
-                                Dashboard
-                            </a>
+                            <a href="{{ route('superadmin.home') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Dashboard</a>
                         @else
-                            <a href="{{ route('welcome') }}"
-                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
-                                You are not authorized
-                            </a>
+                            <a href="{{ route('welcome') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">You are not authorized</a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}"
-                           class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
-                            Log in
-                        </a>
+                        <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Log in</a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}"
-                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
-                                Sign up
-                            </a>
+                            <a href="{{ route('register') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Sign up</a>
                         @endif
                     @endauth
                 @endif
-            </nav>
-        </header>
-
-         <!-- Disease Monitoring Section -->
-    <div class="relative min-h-screen bg-blue-100 flex items-center justify-center p-5">
-        <div class="text-center px-5">
-            <!-- Title and Subtitle -->
-            <h1 class="text-2xl md:text-4xl font-bold text-custom-green mb-8 text-center p-4" 
-                style="font-size: 3.6rem; text-align: center;">
-                Disease Monitoring in Cebu City
-            </h1>
-            <p class="text-md md:text-lg text-custom-green mb-10 max-w-2xl mx-auto text-center p-4" 
-                style="font-size: 1.6rem; text-align: center;">
-                Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
-            </p>
-                
-                <!-- Statistics Cards -->
-                <div class="flex flex-row justify-center gap-4">
-                    <!-- Total Cases -->
-                    <div class="stats-card p-4 w-48 flex items-center justify-between">
-                        <span class="text-2xl">👤</span>
-                        <div class="text-center">
-                            <h2 class="text-3xl font-bold">999</h2>
-                            <p class="text-base">Total Cases</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Total Active Cases -->
-                    <div class="stats-card p-4 w-48 flex items-center justify-between">
-                        <span class="text-2xl">➕</span>
-                        <div class="text-center">
-                            <h2 class="text-3xl font-bold">99</h2>
-                            <p class="text-base">Total Active Cases</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Total Critical Cases -->
-                    <div class="stats-card p-4 w-48 flex items-center justify-between">
-                        <span class="text-2xl">⭐</span>
-                        <div class="text-center">
-                            <h2 class="text-3xl font-bold">9</h2>
-                            <p class="text-base">Total Critical Cases</p>
-                        </div>
-                    </div>
-                </div>
             </div>
+        </nav>
+    </header>
+
+    <!-- Hero + Stats Section -->
+    <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-white">
+        <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-6">
+            Disease Monitoring in Cebu City
+        </h1>
+        <p class="text-lg md:text-xl text-g-dark mb-10 max-w-2xl">
+            Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
+        </p>
+
+        <!-- Stats Cards -->
+        <div class="flex flex-col md:flex-row justify-center gap-6">
+            <x-stat-card icon="👤" value="999" label="Total Cases" />
+            <x-stat-card icon="➕" value="99" label="Total Active Cases" />
+            <x-stat-card icon="⭐" value="9" label="Total Critical Cases" />
         </div>
-    </body>
+
+       
+    </section>
+
+   
+    <!-- Heatmap Section -->
+
+        <section id="heatmap" class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16">
+
+            <!-- Section Heading -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-g-dark mb-2">
+                    Disease Heatmap
+                </h2>
+                <p class="text-md md:text-lg text-g-dark">
+                    Interactive map showing disease distribution across Cebu City barangays.
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <div class="w-full max-w-4xl">
+
+                <!-- Use search-bar component -->
+                <x-search-bar placeholder="Search diseases, locations..." />
+            </div>
+
+            <!-- Active Filters -->
+            <div class="mb-6 text-sm text-g-dark">
+                <span class="font-semibold">Active Filters:</span>
+                <span class="inline-block bg-g-light text-g-dark px-3 py-1 rounded-full text-xs">Lahug</span>
+            </div>
+
+            <!-- Map Display -->
+            <div class="w-full max-w-7xl h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62827.591820344635!2d123.84120593429692!3d10.315699291245336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995fb471b24d%3A0x8742b0c395c7a377!2sCebu%20City%2C%20Cebu!5e0!3m2!1sen!2sph!4v1630671470321!5m2!1sen!2sph"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+            </div>
+
+        </section>
+
+
+
+</body>
 </html>
