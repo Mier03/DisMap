@@ -1,5 +1,5 @@
 <x-app-layout>
-
+<x-certificate-modal />
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
@@ -37,8 +37,11 @@
                             
                             foreach($pendingAdmins as $admin) {
                                 $certificateButton = $admin->certification 
-                                    ? '<span class="text-gray-500">Certificate available</span>'
-                                    : '<span class="text-gray-500">No certificate</span>';
+                                      ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')" 
+                                            class="bg-g-dark text-white px-3 py-1 rounded hover: bg-g-dark/79 transition">
+                                            View
+                                        </button>'
+                                        : '<span class="text-gray-500">No certificate</span>';
                                     
                                 $actionButtons = '
                                     <form method="POST" action="' . route('superadmin.approve_admin', $admin->id) . '" class="inline-block">
@@ -76,8 +79,11 @@
                             
                             foreach($allAdmins as $admin) {
                                 $certificateButton = $admin->certification 
-                                    ? '<span class="text-gray-500">Certificate available</span>'
-                                    : '<span class="text-gray-500">No certificate</span>';
+                                    ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')" 
+                                                class="bg-g-dark text-white px-3 py-1 rounded hover: bg-g-dark/79 transition">
+                                            View
+                                        </button>'
+                                        : '<span class="text-gray-500">No certificate</span>';
                                     
                                 $actionButton = '
                                     <form method="POST" action="' . route('superadmin.delete_admin', $admin->id) . '" class="inline-block">
