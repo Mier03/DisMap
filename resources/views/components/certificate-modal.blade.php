@@ -1,20 +1,23 @@
 @props(['certification' => ''])
 
 <!-- Certificate Modal -->
-<div id="certificateModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Certificate</h3>
-                <button onclick="closeCertificateModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <div id="certificateContent" class="my-2 max-h-96 overflow-y-auto">
-                <!-- Certificate content will be displayed here -->
-            </div>
+<div id="certificateModal" class="fixed inset-0 flex items-center justify-center bg-g-dark bg-opacity-50 hidden z-50">
+    <div class="bg-white rounded-md shadow-lg w-80 md:w-96 max-h-[80vh] flex flex-col overflow-hidden">
+        <!-- Green Header -->
+        <div class="bg-g-dark p-4 flex justify-between items-center">
+            <h2 class="text-white text-xl font-bold">Certificate</h2>
+            <button onclick="closeCertificateModal()" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Certificate Image -->
+        <div id="certificateContent" class="flex-1 flex justify-center items-center bg-gray-100 p-4 overflow-auto">
+            <img src="/mnt/data/2e07a899-d7f6-4422-89cc-74fb018c0815.png" 
+                 alt="Certificate" 
+                 class="m-w-600 m-h-700">
         </div>
     </div>
 </div>
