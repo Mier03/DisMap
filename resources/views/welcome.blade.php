@@ -1,77 +1,117 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ config('app.name', 'DisMap') }}</title>
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <style>
+            .navbar {
+                background-color: #296E5B;
+                color: white;
+            }
+            .stats-card {
+                border: 2px solid #296E5B;
+                background-color: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(5px);
+            }
+            .stats-card h2 {
+                color: #296E5B;
+            }
+            .stats-card p {
+                color: #296E5B;
+            }
+            /* Remove border from body if present */
+            body {
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+            .text-custom-green {
+             color: #296E5B;
+            }
+        </style>
+    </head>
+    <body class="bg-g-bg text-[#1b1b18] flex flex-col items-center min-h-screen">
+        <header class="w-full max-w-5xl text-sm mb-4">
+            <nav class="navbar p-2 flex items-center justify-end gap-4">
+                @if (Route::has('login'))
+                    @auth
+                        @if(Auth::user()->user_type === 'Doctor')
+                            <a href="{{ route('admin.home') }}"
+                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
+                                Dashboard
+                            </a>
+                        @elseif(Auth::user()->user_type === 'Admin')
+                            <a href="{{ route('superadmin.home') }}"
+                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
+                                Dashboard
+                            </a>
+                        @else
+                            <a href="{{ route('welcome') }}"
+                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
+                                You are not authorized
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
+                            Log in
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                               class="inline-block px-4 py-1 hover:bg-g-light hover:text-g-dark rounded-md text-sm font-medium transition duration-200 text-white">
+                                Sign up
+                            </a>
+                        @endif
+                    @endauth
+                @endif
+            </nav>
+        </header>
 
-@section('content')
-<div class="bg-[#FDFDFC] dark:bg-[#DCFCE7] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
-
-    <!-- Disease Monitoring Section -->
+         <!-- Disease Monitoring Section -->
     <div class="relative min-h-screen bg-blue-100 flex items-center justify-center p-5">
         <div class="text-center px-5">
             <!-- Title and Subtitle -->
-            <h1 class="text-3xl md:text-4xl font-bold text-teal-800 mb-8 text-center p-4" 
-                style="font-size: 4rem; text-align: center;">
+            <h1 class="text-2xl md:text-4xl font-bold text-custom-green mb-8 text-center p-4" 
+                style="font-size: 3.6rem; text-align: center;">
                 Disease Monitoring in Cebu City
             </h1>
-            <p class="text-md md:text-lg text-teal-700 mb-10 max-w-2xl mx-auto text-center p-4" 
-                style="font-size: 2rem; text-align: center;">
+            <p class="text-md md:text-lg text-custom-green mb-10 max-w-2xl mx-auto text-center p-4" 
+                style="font-size: 1.6rem; text-align: center;">
                 Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
             </p>
-            
-            <!-- Statistics Cards -->
-            <div class="flex flex-row md:flex-row justify-center gap-6 mt-10 p-4">
-                <!-- Total Cases -->
-                <div class="bg-white rounded-lg shadow-md p-4 w-48">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-teal-600">👤</span>
-                        <div>
-                            <h2 class="text-2xl font-bold text-teal-800">999</h2>
-                            <p class="text-teal-700 text-sm">Total Cases</p>
+                
+                <!-- Statistics Cards -->
+                <div class="flex flex-row justify-center gap-4">
+                    <!-- Total Cases -->
+                    <div class="stats-card p-4 w-48 flex items-center justify-between">
+                        <span class="text-2xl">👤</span>
+                        <div class="text-center">
+                            <h2 class="text-3xl font-bold">999</h2>
+                            <p class="text-base">Total Cases</p>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Total Active Cases -->
-                <div class="bg-white rounded-lg shadow-md p-4 w-48">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-teal-600">➕</span>
-                        <div>
-                            <h2 class="text-2xl font-bold text-teal-800">99</h2>
-                            <p class="text-teal-700 text-sm">Total Active Cases</p>
+                    
+                    <!-- Total Active Cases -->
+                    <div class="stats-card p-4 w-48 flex items-center justify-between">
+                        <span class="text-2xl">➕</span>
+                        <div class="text-center">
+                            <h2 class="text-3xl font-bold">99</h2>
+                            <p class="text-base">Total Active Cases</p>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Total Critical Cases -->
-                <div class="bg-white rounded-lg shadow-md p-4 w-48">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-teal-600">⭐</span>
-                        <div>
-                            <h2 class="text-2xl font-bold text-teal-800">9</h2>
-                            <p class="text-teal-700 text-sm">Total Critical Cases</p>
+                    
+                    <!-- Total Critical Cases -->
+                    <div class="stats-card p-4 w-48 flex items-center justify-between">
+                        <span class="text-2xl">⭐</span>
+                        <div class="text-center">
+                            <h2 class="text-3xl font-bold">9</h2>
+                            <p class="text-base">Total Critical Cases</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<style>
-    .bg-blue-100 {
-        background-color: #e6f0fa;
-    }
-    .text-teal-800 {
-        color: #1f5f5b;
-    }
-    .text-teal-700 {
-        color: #2d7d79;
-    }
-    @media (max-width: 768px) {
-        .flex-col {
-            flex-direction: row;
-        }
-        .w-48 {
-            width: 100%;
-        }
-    }
-</style>
-@endsection
+    </body>
+</html>
