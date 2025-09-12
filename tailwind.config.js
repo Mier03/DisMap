@@ -15,6 +15,8 @@ export default {
                 'g-dark': '#296E5B', 
                 'g-light': '#B3FAD8',
                 'g-bg': '#DCFCE7',
+                'r-dark': '#B91C1C',
+                'r-light': '#FCA5A5',
             },
             fontFamily: {
                 sans: ['inter', ...defaultTheme.fontFamily.sans],
