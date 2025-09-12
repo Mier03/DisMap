@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -17,6 +16,7 @@ class SuperAdminController extends Controller
         
         // Fetch pending admin users (Doctors with is_approved = false)
         $pendingAdmins = User::pendingAdmins()
+            ->select('id', 'name', 'hospital_name', 'email', 'username', 'certification')
             ->when($searchTerm, function($query) use ($searchTerm) {
                 return $query->where(function($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
@@ -29,6 +29,7 @@ class SuperAdminController extends Controller
         
         // Fetch all approved admin users (Doctors with is_approved = true)
         $allAdmins = User::approvedAdmins()
+            ->select('id', 'name', 'hospital_name', 'email', 'username', 'certification')
             ->when($searchTerm, function($query) use ($searchTerm) {
                 return $query->where(function($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")

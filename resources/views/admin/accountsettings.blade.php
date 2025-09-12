@@ -2,7 +2,6 @@
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
-
         {{-- Main Content --}}
         <div class="ml-64 flex-1 py-12 px-6">
             <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
@@ -29,29 +28,42 @@
                                 {{-- Name & Email --}}
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="text-2xl font-semibold text-g-dark">Jessica Kim</h3>
-                                        <p class="text-gray-600">jessica.kim@gmail.com</p>
+                                        <h3 class="text-2xl font-semibold text-g-dark">  
+                                            {{ Auth::user()->name }}
+                                        </h3>
+                                        <p class="text-gray-600">
+                                            {{ Auth::user()->email }}
+                                        </p>
                                     </div>
-                                    <button class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition">
+                                   <button onclick="document.getElementById('passwordModal').classList.remove('hidden')"
+                                            class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition">
                                         Change Password
                                     </button>
+                                    <!-- Modal -->
+                                    <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+                                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                                            @include('profile.partials.update-password-form')
+                                            <button onclick="document.getElementById('passwordModal').classList.add('hidden')"
+                                                    class="mt-4 px-3 py-1 bg-red-500 text-white rounded-lg">Close</button>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {{-- Form Fields --}}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                                     <div>
                                         <label class="block text-sm font-medium text-g-dark">Full Name</label>
-                                        <input type="text" value="Jessica Kim"
+                                        <input type="text" value= "{{ Auth::user()->email }}"
                                             class="w-full border border-g-dark rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-g-dark">Email</label>
-                                        <input type="email" value="jessica.kim@gmail.com"
+                                        <input type="email" value="{{ Auth::user()->email }}"
                                             class="w-full border border-g-dark rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-g-dark">Username</label>
-                                        <input type="text" value="jessica.kim"
+                                        <input type="text" value="{{ Auth::user()->username }}"
                                             class="w-full border border-g-dark rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
                                     </div>
                                     <div>
