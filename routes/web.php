@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,9 +26,18 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        foreach (['home', 'managepatients', 'diseaserecords', 'accountsettings'] as $page) {
+        // Static views
+        foreach (['home', 'diseaserecords', 'accountsettings'] as $page) {
             Route::view($page, "admin.$page")->name($page);
         }
+
+        // Patient management routes
+        Route::controller(PatientController::class)->group(function() {
+            Route::get('/managepatients', 'index')->name('managepatients');
+            Route::post('/patients', 'store')->name('patients.store');
+            Route::patch('/patients/{patient}', 'update')->name('patients.update');
+            Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
+        });
     });
     
 // Superadmin routes
