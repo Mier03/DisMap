@@ -1,4 +1,6 @@
 <x-app-layout>
+    <x-certificate-modal />
+
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
@@ -28,68 +30,38 @@
                         </div>
 
                         {{-- Search --}}
-                        <div class="mb-4 relative w-full">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <x-gmdi-search class="w-5 h-5 text-gray-400" />
-                            </div>
-                            <input type="text" placeholder="Search patients..."
-                                class="w-full pl-10 pr-4 py-2 border border-g-dark rounded-lg focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
-                        </div>
+                        <form method="GET" action="{{ route('admin.managepatients') }}">
+                            <x-search-bar placeholder="Search patients..." value="{{ request('q') }}" />
+                        </form>
 
-                        {{-- Table --}}
-                        <div class="p-4 bg-white border border-g-dark rounded-lg">
-                            <p class="flex items-center space-x-2 text-m text-g-dark mb-4 underline">
-                                <x-gmdi-people-alt-o class="w-7 h-7 text-g-dark" />
-                                <span>All Patient Records</span>  
-                            </p>
-
-                            <table class="w-full text-left">
-                                <thead>
-                                    <tr class="text-g-dark border-b">
-                                        <th class="p-2">Name</th>
-                                        <th class="p-2">Age</th>
-                                        <th class="p-2">Barangay</th>
-                                        <th class="p-2">Diagnosis</th>
-                                        <th class="p-2">Hospital</th>
-                                        <th class="p-2">Date Reported</th>
-                                        <th class="p-2">Status</th>
-                                        <th class="p-2">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b">
-                                        <td class="p-2">Juan De La Cruz</td>
-                                        <td class="p-2">52</td>
-                                        <td class="p-2">Labangon</td>
-                                        <td class="p-2">Dengue</td>
-                                        <td class="p-2">Chong Hua</td>
-                                        <td class="p-2">08/22/2025</td>
-                                        <td class="p-2">
-                                            <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-sm">Active</span>
-                                        </td>
-                                        <td class="p-2 space-x-2">
-                                            <button onclick="openModal('updatePatientModal_1')" class="bg-g-dark text-white px-2 py-1 rounded hover:bg-g-dark/90">✎</button>
-                                            <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-2">Maria Louis</td>
-                                        <td class="p-2">40</td>
-                                        <td class="p-2">Lahug</td>
-                                        <td class="p-2">Malaria</td>
-                                        <td class="p-2">VSMMC</td>
-                                        <td class="p-2">08/22/2025</td>
-                                        <td class="p-2">
-                                            <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-sm">Recovered</span>
-                                        </td>
-                                        <td class="p-2 space-x-2">
-                                            <button onclick="openModal('updatePatientModal_2')" class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#296E5B]/90">✎</button>
-                                            <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        {{-- All Patient Records Table --}}
+                        @php
+                            $patients = $patients ?? [];
+                            $patientColumns = ['Name', 'Age', 'Barangay', 'Diagnosis', 'Hospital', 'Date Reported', 'Status', 'Actions'];
+                            $patientRows = collect($patients)->map(function ($patient) {
+                                $statusClass = $patient->status === 'Active' ? 'bg-yellow-200 text-yellow-800' : ($patient->status === 'Recovered' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800');
+                                return [
+                                    $patient->name,
+                                    $patient->age,
+                                    $patient->barangay->name ?? 'N/A',
+                                    $patient->diagnosis,
+                                    $patient->hospital->name ?? 'N/A',
+                                    $patient->date_reported,
+                                    "<span class='px-2 py-1 rounded text-sm {$statusClass}'>{$patient->status}</span>",
+                                    "<div class='space-x-2'>
+                                        <button onclick=\"openModal('updatePatientModal_{$patient->id}')\" class=\"bg-g-dark text-white px-2 py-1 rounded hover:bg-g-dark/90 transition\">✎</button>
+                                        <button onclick=\"openModal('deletePatientModal_{{ $patient->id }}')\" class=\"bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C] transition\">✕</button>
+                                    </div>"
+                                ];
+                            })->toArray();
+                        @endphp
+                        
+                        <x-table
+                            :columns="$patientColumns"
+                            :rows="$patientRows"
+                            table_title="All Patient Records"
+                            icon="gmdi-people-alt-o"
+                        />
 
                     </div>
                 </div>
@@ -97,66 +69,54 @@
         </div>
     </div>
 
-    <!-- Add Patient Modal -->
     <x-modal
         id="addPatientModal"
         title="Add Patient"
         message="Record a new patient case"
-        fullNameLabel="Full Name"
-        fullNamePlaceholder="Enter patient full name..."
-        ageLabel="Age"
-        agePlaceholder="Enter patient age..."
-        barangayLabel="Barangay"
-        barangayPlaceholder="Select patient's barangay"
-        diseaseLabel="Disease"
-        diseasePlaceholder="Select patient's disease..."
-        usernameLabel="Username"
-        usernamePlaceholder="Automatic based on name, if username exists, Dr. will have the right to change it"
-        emailLabel="Email"
-        emailPlaceholder="Enter valid email address..."
         confirmButtonText="+ Add Patient"
         cancelButtonText="Cancel"
         buttonId="addPatientButton"
-        action=null
+        action="{{ route('admin.patients.store') }}"
         method="POST"
+        :fields="[
+            ['name' => 'fullName', 'label' => 'Full Name', 'type' => 'text', 'placeholder' => 'Enter patient full name...', 'required' => true],
+            ['name' => 'age', 'label' => 'Age', 'type' => 'number', 'placeholder' => 'Enter patient age...', 'required' => true],
+            ['name' => 'barangay_id', 'label' => 'Barangay', 'type' => 'select', 'placeholder' => 'Select barangay...', 'required' => true, 'options' => $barangays->map(function($b) { return ['value' => $b->id, 'label' => $b->name]; })->toArray()],
+            ['name' => 'diagnosis', 'label' => 'Diagnosis', 'type' => 'text', 'placeholder' => 'Select patient\'s disease...', 'required' => true],
+            ['name' => 'hospital_id', 'label' => 'Hospital', 'type' => 'select', 'placeholder' => 'Select hospital...', 'required' => true, 'options' => $hospitals->map(function($h) { return ['value' => $h->id, 'label' => $h->name]; })->toArray()],
+            ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'placeholder' => 'Enter valid email address...', 'required' => true]
+        ]"
     />
 
-    <!-- Update Patient Modal -->
-    <x-modal
-        id="updatePatientModal_1"
-        title="Update Patient"
-        message="Update patient information"
-        fullNameLabel="Full Name"
-        fullNamePlaceholder="Juan De La Cruz"
-        ageLabel="Age"
-        agePlaceholder="52"
-        barangayLabel="Barangay"
-        barangayPlaceholder="Labangon"
-        diseaseLabel="Disease"
-        diseasePlaceholder="Dengue"
-        confirmButtonText="Save Changes"
-        cancelButtonText="Cancel"
-        buttonId="updatePatientButton_1"
-        action=null
-        method="POST"
-    />
+    {{-- Dynamically created update and delete modals for each patient --}}
+    @foreach($patients ?? [] as $patient)
+        <x-modal-popup
+            id="deletePatientModal_{{ $patient->id }}"
+            title="Confirm Deletion"
+            message="Are you sure you want to delete {{ $patient->name }}? This action cannot be undone."
+            confirmText="Delete"
+            cancelText="Cancel"
+            action="{{ route('admin.patients.destroy', $patient->id) }}"
+            method="DELETE"
+        />
 
-    <x-modal
-        id="updatePatientModal_2"
-        title="Update Patient"
-        message="Update patient information"
-        fullNameLabel="Full Name"
-        fullNamePlaceholder="Maria Louis"
-        ageLabel="Age"
-        agePlaceholder="40"
-        barangayLabel="Barangay"
-        barangayPlaceholder="Lahug"
-        diseaseLabel="Disease"
-        diseasePlaceholder="Malaria"
-        confirmButtonText="Save Changes"
-        cancelButtonText="Cancel"
-        buttonId="updatePatientButton_2"
-        action=null
-        method="POST"
-    />
+        <x-modal
+            id="updatePatientModal_{{ $patient->id }}"
+            title="Update Patient"
+            message="Update patient information"
+            confirmButtonText="Save Changes"
+            cancelButtonText="Cancel"
+            buttonId="updatePatientButton_{{ $patient->id }}"
+            action="{{ route('admin.patients.update', $patient->id) }}"
+            method="PATCH"
+            :fields="[
+                ['name' => 'fullName', 'label' => 'Full Name', 'type' => 'text', 'placeholder' => 'Enter full name...', 'value' => $patient->name],
+                ['name' => 'username', 'label' => 'Username', 'type' => 'text', 'placeholder' => 'Automatic based on name...', 'value' => $patient->username, 'readonly' => true],
+                ['name' => 'age', 'label' => 'Age', 'type' => 'number', 'placeholder' => 'Enter age...', 'value' => $patient->age],
+                ['name' => 'barangay_id', 'label' => 'Barangay', 'type' => 'select', 'placeholder' => 'Select barangay...', 'options' => $barangays->map(function($b) { return ['value' => $b->id, 'label' => $b->name]; })->toArray(), 'value' => $patient->barangay_id],
+                ['name' => 'diagnosis', 'label' => 'Diagnosis', 'type' => 'text', 'placeholder' => 'Select disease...', 'value' => $patient->diagnosis],
+                ['name' => 'status', 'label' => 'Status', 'type' => 'select', 'placeholder' => 'Select status...', 'options' => [['value' => 'Active', 'label' => 'Active'], ['value' => 'Recovered', 'label' => 'Recovered'], ['value' => 'Deceased', 'label' => 'Deceased']], 'value' => $patient->status]
+            ]"
+        />
+    @endforeach
 </x-app-layout>

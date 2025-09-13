@@ -1,82 +1,70 @@
 @props([
     'id' => 'modalId',
-    'title' => 'Add Patient',
-    'message' => 'Record a new patient case',
-    'fullNameLabel' => 'Full Name',
-    'fullNamePlaceholder' => 'Enter patient full name...',
-    'ageLabel' => 'Age',
-    'agePlaceholder' => 'Enter patient age...',
-    'barangayLabel' => 'Barangay',
-    'barangayPlaceholder' => 'Select patient\'s barangay',
-    'diseaseLabel' => 'Disease',
-    'diseasePlaceholder' => 'Select patient\'s disease...',
-    'usernameLabel' => 'Username',
-    'usernamePlaceholder' => 'Automatic based on name, if username exists, Dr. will have the right to change it',
-    'emailLabel' => 'Email',
-    'emailPlaceholder' => 'Enter valid email address...',
-    'confirmButtonText' => '+ Add Patient',
+    'title' => 'Modal Title',
+    'message' => 'This is a generic modal.',
+    'fields' => [], // New prop to define form fields
+    'confirmButtonText' => 'Confirm',
     'cancelButtonText' => 'Cancel',
     'buttonId' => 'submitButton',
     'action' => null,
     'method' => 'POST',
 ])
 
-<div id="{{ $id }}" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" x-data="{ open: false }">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] h-[661px] text-left relative">
-        <h2 class="text-5xl font-semibold text-g-dark absolute top-[60px] left-[42px]">{{ $title }}</h2>
-        <p class="text-g-dark text-base absolute top-[120px] left-[42px]">{{ $message }}</p>
+<div id="{{ $id }}" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-left relative">
+        <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">{{ $title }}</h2>
+        <p class="text-g-dark text-base mt-2 ml-8">{{ $message }}</p>
 
-        <div class="absolute top-[160px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $fullNameLabel }}</label>
-            <input type="text" placeholder="{{ $fullNamePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
-            style="font-size: 10pt;">
+        <div class="px-8 py-4">
+            <form action="{{ $action }}" method="POST">
+                @csrf
+                @if($method !== 'POST')
+                    @method($method)
+                @endif
+                
+                @foreach($fields as $field)
+                    <div class="mb-4">
+                        <label for="{{ $field['name'] }}" class="block text-sm font-medium text-g-dark">{{ $field['label'] }}</label>
+                        @if($field['type'] === 'select')
+                            <select 
+                                name="{{ $field['name'] }}" 
+                                id="{{ $field['name'] }}" 
+                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm"
+                                @if(isset($field['required']) && $field['required']) required @endif
+                            >
+                                <option value="" disabled selected>{{ $field['placeholder'] }}</option>
+                                @foreach($field['options'] as $option)
+                                    <option value="{{ $option['value'] }}" {{ (isset($field['value']) && $field['value'] == $option['value']) ? 'selected' : '' }}>{{ $option['label'] }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input 
+                                type="{{ $field['type'] }}" 
+                                name="{{ $field['name'] }}" 
+                                id="{{ $field['name'] }}" 
+                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm" 
+                                placeholder="{{ $field['placeholder'] }}"
+                                @if(isset($field['readonly']) && $field['readonly']) readonly @endif
+                                @if(isset($field['value'])) value="{{ $field['value'] }}" @endif
+                                @if(isset($field['required']) && $field['required']) required @endif
+                            >
+                        @endif
+                        @error($field['name'])
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
+                    </div>
+                @endforeach
+                
+                <div class="flex justify-between space-x-2 mt-6">
+                    <button type="submit" id="{{ $buttonId }}" class="w-1/2 px-4 py-2 text-sm font-medium text-white bg-g-dark rounded-md hover:bg-[#296E5B]/90">
+                        {{ $confirmButtonText }}
+                    </button>
+                    <button type="button" onclick="closeModal('{{ $id }}')" class="w-1/2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                        {{ $cancelButtonText }}
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="absolute top-[225px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $ageLabel }}</label>
-            <input type="number" placeholder="{{ $agePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
-            style="font-size: 10pt;">
-        </div>
-        <div class="absolute top-[290px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $barangayLabel }}</label>
-            <select class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
-            style="font-size: 10pt;">>
-                <option value="" disabled selected>{{ $barangayPlaceholder }}</option>
-                <option value="Labangon">Labangon</option>
-                <option value="Lahug">Lahug</option>
-            </select>
-        </div>
-        <div class="absolute top-[355px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $diseaseLabel }}</label>
-            <select class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
-            style="font-size: 10pt;">>
-                <option value="" disabled selected>{{ $diseasePlaceholder }}</option>
-                <option value="Dengue">Dengue</option>
-                <option value="Malaria">Malaria</option>
-            </select>
-        </div>
-        <div class="absolute top-[420px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $usernameLabel }}</label>
-            <input type="text" placeholder="{{ $usernamePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2" readonly
-            style="font-size: 10pt;">
-        </div>
-        <div class="absolute top-[485px] left-[42px]">
-            <label class="text-g-dark font-medium text-base block">{{ $emailLabel }}</label>
-            <input type="email" placeholder="{{ $emailPlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
-            style="font-size: 10pt;">
-        </div>
-        <button 
-            type="button" 
-            id="{{ $buttonId }}"
-            onclick="closeModal('{{ $id }}')"
-            class="bg-g-dark text-white font-semibold text-base w-[415px] h-[31px] rounded-lg absolute top-[550px] left-[42px]">
-            {{ $confirmButtonText }}
-        </button>
-        <button 
-            type="button" 
-            onclick="closeModal('{{ $id }}')"
-            class="border border-g-dark text-g-dark font-semibold text-base w-[415px] h-[31px] rounded-lg absolute top-[590px] left-[42px]">
-            {{ $cancelButtonText }}
-        </button>
     </div>
 </div>
 
@@ -85,6 +73,7 @@
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.remove('hidden');
+            modal.classList.add('flex'); 
         }
     }
 
@@ -92,13 +81,13 @@
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.add('hidden');
+            modal.classList.remove('flex'); 
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
         const modals = document.querySelectorAll('.fixed.bg-black.bg-opacity-50');
         modals.forEach(modal => {
-            const modalContent = modal.querySelector('.bg-white');
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     closeModal(modal.id);
