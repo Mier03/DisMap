@@ -1,78 +1,109 @@
 @props([
-    'name',
-    'show' => false,
-    'maxWidth' => '2xl'
+    'id' => 'modalId',
+    'title' => 'Add Patient',
+    'message' => 'Record a new patient case',
+    'fullNameLabel' => 'Full Name',
+    'fullNamePlaceholder' => 'Enter patient full name...',
+    'ageLabel' => 'Age',
+    'agePlaceholder' => 'Enter patient age...',
+    'barangayLabel' => 'Barangay',
+    'barangayPlaceholder' => 'Select patient\'s barangay',
+    'diseaseLabel' => 'Disease',
+    'diseasePlaceholder' => 'Select patient\'s disease...',
+    'usernameLabel' => 'Username',
+    'usernamePlaceholder' => 'Automatic based on name, if username exists, Dr. will have the right to change it',
+    'emailLabel' => 'Email',
+    'emailPlaceholder' => 'Enter valid email address...',
+    'confirmButtonText' => '+ Add Patient',
+    'cancelButtonText' => 'Cancel',
+    'buttonId' => 'submitButton',
+    'action' => null,
+    'method' => 'POST',
 ])
 
-@php
-$maxWidth = [
-    'sm' => 'sm:max-w-sm',
-    'md' => 'sm:max-w-md',
-    'lg' => 'sm:max-w-lg',
-    'xl' => 'sm:max-w-xl',
-    '2xl' => 'sm:max-w-2xl',
-][$maxWidth];
-@endphp
+<div id="{{ $id }}" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" x-data="{ open: false }">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] h-[661px] text-left relative">
+        <h2 class="text-5xl font-semibold text-g-dark absolute top-[60px] left-[42px]">{{ $title }}</h2>
+        <p class="text-g-dark text-base absolute top-[120px] left-[42px]">{{ $message }}</p>
 
-<div
-    x-data="{
-        show: @js($show),
-        focusables() {
-            // All focusable element types...
-            let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
-            return [...$el.querySelectorAll(selector)]
-                // All non-disabled elements...
-                .filter(el => ! el.hasAttribute('disabled'))
-        },
-        firstFocusable() { return this.focusables()[0] },
-        lastFocusable() { return this.focusables().slice(-1)[0] },
-        nextFocusable() { return this.focusables()[this.nextFocusableIndex()] || this.firstFocusable() },
-        prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
-        nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % (this.focusables().length + 1) },
-        prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) -1 },
-    }"
-    x-init="$watch('show', value => {
-        if (value) {
-            document.body.classList.add('overflow-y-hidden');
-            {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
-        } else {
-            document.body.classList.remove('overflow-y-hidden');
-        }
-    })"
-    x-on:open-modal.window="$event.detail == '{{ $name }}' ? show = true : null"
-    x-on:close-modal.window="$event.detail == '{{ $name }}' ? show = false : null"
-    x-on:close.stop="show = false"
-    x-on:keydown.escape.window="show = false"
-    x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
-    x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
-    x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
-    style="display: {{ $show ? 'block' : 'none' }};"
->
-    <div
-        x-show="show"
-        class="fixed inset-0 transform transition-all"
-        x-on:click="show = false"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-    >
-        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-    </div>
-
-    <div
-        x-show="show"
-        class="mb-6 bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-    >
-        {{ $slot }}
+        <div class="absolute top-[160px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $fullNameLabel }}</label>
+            <input type="text" placeholder="{{ $fullNamePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
+            style="font-size: 10pt;">
+        </div>
+        <div class="absolute top-[225px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $ageLabel }}</label>
+            <input type="number" placeholder="{{ $agePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
+            style="font-size: 10pt;">
+        </div>
+        <div class="absolute top-[290px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $barangayLabel }}</label>
+            <select class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
+            style="font-size: 10pt;">>
+                <option value="" disabled selected>{{ $barangayPlaceholder }}</option>
+                <option value="Labangon">Labangon</option>
+                <option value="Lahug">Lahug</option>
+            </select>
+        </div>
+        <div class="absolute top-[355px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $diseaseLabel }}</label>
+            <select class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
+            style="font-size: 10pt;">>
+                <option value="" disabled selected>{{ $diseasePlaceholder }}</option>
+                <option value="Dengue">Dengue</option>
+                <option value="Malaria">Malaria</option>
+            </select>
+        </div>
+        <div class="absolute top-[420px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $usernameLabel }}</label>
+            <input type="text" placeholder="{{ $usernamePlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2" readonly
+            style="font-size: 10pt;">
+        </div>
+        <div class="absolute top-[485px] left-[42px]">
+            <label class="text-g-dark font-medium text-base block">{{ $emailLabel }}</label>
+            <input type="email" placeholder="{{ $emailPlaceholder }}" class="w-[415px] h-[31px] border border-g-dark rounded-lg p-2"
+            style="font-size: 10pt;">
+        </div>
+        <button 
+            type="button" 
+            id="{{ $buttonId }}"
+            onclick="closeModal('{{ $id }}')"
+            class="bg-g-dark text-white font-semibold text-base w-[415px] h-[31px] rounded-lg absolute top-[550px] left-[42px]">
+            {{ $confirmButtonText }}
+        </button>
+        <button 
+            type="button" 
+            onclick="closeModal('{{ $id }}')"
+            class="border border-g-dark text-g-dark font-semibold text-base w-[415px] h-[31px] rounded-lg absolute top-[590px] left-[42px]">
+            {{ $cancelButtonText }}
+        </button>
     </div>
 </div>
+
+<script>
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modals = document.querySelectorAll('.fixed.bg-black.bg-opacity-50');
+        modals.forEach(modal => {
+            const modalContent = modal.querySelector('.bg-white');
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+    });
+</script>
