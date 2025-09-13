@@ -20,7 +20,7 @@
 
             <!-- Hospital Name -->
             <div class="mb-3">
-                <x-input-label for="hospital_name" :value="__('Hospital Name')" />
+                <x-input-label for="hospital_id" :value="__('Hospital Name')" />
                     <x-dropdown-select id="hospital_id" name="hospital_id" required>
                         <option value="">-- Select Hospital --</option>
                         @foreach($hospitals as $hospital)

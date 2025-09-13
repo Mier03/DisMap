@@ -56,7 +56,7 @@
 
                                 $pendingRows[] = [
                                     '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                                    $admin->hospital_name,
+                                    $admin->hospital->name,
                                     $admin->email,
                                     $admin->username,
                                     $certificateButton,
@@ -122,7 +122,7 @@
 
                                 $allRows[] = [
                                     '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                                    $admin->hospital_name,
+                                    $admin->hospital->name,
                                     $admin->email,
                                     $admin->username,
                                     $certificateButton,

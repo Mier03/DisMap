@@ -28,7 +28,14 @@ class User extends Authenticatable
         'profile_image', 
         'is_approved', 
     ];
-
+    // ----------------------------
+        // RELATIONSHIPS
+        // ----------------------------
+        public function hospital()
+        {
+            return $this->belongsTo(Hospital::class, 'hospital_id'); 
+            // 'hospital_id' is the foreign key in users table
+        }
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -17,7 +17,7 @@
                                 <p><strong>Name:</strong> {{ $admin->name }}</p>
                                 <p><strong>Email:</strong> {{ $admin->email }}</p>
                                 <p><strong>Username:</strong> {{ $admin->username }}</p>
-                                <p><strong>Hospital:</strong> {{ $admin->hospital_name }}</p>
+                                <p><strong>Hospital:</strong> {{ $admin->hospital_id }}</p>
                             </div>
                         </div>
 

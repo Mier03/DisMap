@@ -16,24 +16,23 @@ class SuperAdminController extends Controller
         
         // Fetch pending admin users (Doctors with is_approved = false)
         $pendingAdmins = User::pendingAdmins()
-            ->select('id', 'name', 'hospital_name', 'email', 'username', 'certification')
+            ->select('id', 'name', 'hospital_id', 'email', 'username', 'certification')
             ->when($searchTerm, function($query) use ($searchTerm) {
                 return $query->where(function($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
-                      ->orWhere('hospital_name', 'LIKE', "%{$searchTerm}%")
                       ->orWhere('email', 'LIKE', "%{$searchTerm}%")
                       ->orWhere('username', 'LIKE', "%{$searchTerm}%");
                 });
             })
+             ->with('hospital') 
             ->get();
         
         // Fetch all approved admin users (Doctors with is_approved = true)
         $allAdmins = User::approvedAdmins()
-            ->select('id', 'name', 'hospital_name', 'email', 'username', 'certification')
+            ->select('id', 'name', 'hospital_id', 'email', 'username', 'certification')
             ->when($searchTerm, function($query) use ($searchTerm) {
                 return $query->where(function($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
-                      ->orWhere('hospital_name', 'LIKE', "%{$searchTerm}%")
                       ->orWhere('email', 'LIKE', "%{$searchTerm}%")
                       ->orWhere('username', 'LIKE', "%{$searchTerm}%");
                 });
