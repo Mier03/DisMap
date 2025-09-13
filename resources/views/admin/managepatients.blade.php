@@ -19,7 +19,9 @@
                                 <button class="border border-g-dark text-g-dark px-4 py-2 rounded-lg hover:bg-gray-100 transition">
                                     Export
                                 </button>
-                                <button class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition">
+                                <button 
+                                    onclick="openModal('addPatientModal')"
+                                    class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition">
                                     + Add Patient
                                 </button>
                             </div>
@@ -66,7 +68,7 @@
                                             <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-sm">Active</span>
                                         </td>
                                         <td class="p-2 space-x-2">
-                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-g-dark/90">✎</button>
+                                            <button onclick="openModal('updatePatientModal_1')" class="bg-g-dark text-white px-2 py-1 rounded hover:bg-g-dark/90">✎</button>
                                             <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
                                         </td>
                                     </tr>
@@ -81,7 +83,7 @@
                                             <span class="bg-green-200 text-green-800 px-2 py-1 rounded text-sm">Recovered</span>
                                         </td>
                                         <td class="p-2 space-x-2">
-                                            <button class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#296E5B]/90">✎</button>
+                                            <button onclick="openModal('updatePatientModal_2')" class="bg-g-dark text-white px-2 py-1 rounded hover:bg-[#296E5B]/90">✎</button>
                                             <button class="bg-[#B64657] text-white px-2 py-1 rounded hover:bg-[#ED556C]">✕</button>
                                         </td>
                                     </tr>
@@ -94,4 +96,67 @@
             </div>
         </div>
     </div>
+
+    <!-- Add Patient Modal -->
+    <x-modal
+        id="addPatientModal"
+        title="Add Patient"
+        message="Record a new patient case"
+        fullNameLabel="Full Name"
+        fullNamePlaceholder="Enter patient full name..."
+        ageLabel="Age"
+        agePlaceholder="Enter patient age..."
+        barangayLabel="Barangay"
+        barangayPlaceholder="Select patient's barangay"
+        diseaseLabel="Disease"
+        diseasePlaceholder="Select patient's disease..."
+        usernameLabel="Username"
+        usernamePlaceholder="Automatic based on name, if username exists, Dr. will have the right to change it"
+        emailLabel="Email"
+        emailPlaceholder="Enter valid email address..."
+        confirmButtonText="+ Add Patient"
+        cancelButtonText="Cancel"
+        buttonId="addPatientButton"
+        action=null
+        method="POST"
+    />
+
+    <!-- Update Patient Modal -->
+    <x-modal
+        id="updatePatientModal_1"
+        title="Update Patient"
+        message="Update patient information"
+        fullNameLabel="Full Name"
+        fullNamePlaceholder="Juan De La Cruz"
+        ageLabel="Age"
+        agePlaceholder="52"
+        barangayLabel="Barangay"
+        barangayPlaceholder="Labangon"
+        diseaseLabel="Disease"
+        diseasePlaceholder="Dengue"
+        confirmButtonText="Save Changes"
+        cancelButtonText="Cancel"
+        buttonId="updatePatientButton_1"
+        action=null
+        method="POST"
+    />
+
+    <x-modal
+        id="updatePatientModal_2"
+        title="Update Patient"
+        message="Update patient information"
+        fullNameLabel="Full Name"
+        fullNamePlaceholder="Maria Louis"
+        ageLabel="Age"
+        agePlaceholder="40"
+        barangayLabel="Barangay"
+        barangayPlaceholder="Lahug"
+        diseaseLabel="Disease"
+        diseasePlaceholder="Malaria"
+        confirmButtonText="Save Changes"
+        cancelButtonText="Cancel"
+        buttonId="updatePatientButton_2"
+        action=null
+        method="POST"
+    />
 </x-app-layout>
