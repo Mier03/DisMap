@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Hospital;
 
 class RegisteredUserController extends Controller
 {
@@ -19,9 +20,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register'); // naa ni siya sa views then auth folder the makita ni siya sa register.blade.php
+            $hospitals = Hospital::all(); // fetch all hospitals
+           return view('auth.register', compact('hospitals')); // naa ni siya sa views then auth folder the makita ni siya sa register.blade.php
     }
-
+ 
     /**
      * Handle an incoming registration request.
      *
@@ -31,7 +33,7 @@ class RegisteredUserController extends Controller
         {
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],
-                'hospital_name' => ['required', 'string', 'max:255'],
+                'hospital_id' => ['required', 'exists:hospitals_table,id'],
                 'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -40,21 +42,34 @@ class RegisteredUserController extends Controller
 
             // Store certification file
             $certificationPath = $request->file('certification')->store(
-                'certifications/'.$request->username, // makita ni siya sa storage-app-puclic-certifications-username
+                'certifications/'.$request->username,
                 'public'
             );
+            // Set default profile image path
+                $profileImagePath = 'images/profiles/default.png'; // default image in public/images/profiles
 
-            // Create user with pending approval
+                // If user uploaded a custom profile image, store it in their folder
+                if ($request->hasFile('profile_image')) {
+                    $profileImagePath = $request->file('profile_image')->store(
+                        'profiles/' . $request->username, // stored in storage/app/public/profiles/username
+                        'public'
+                    );
+                }
+
+            // Create user with hospital_id instead of hospital_name
             $user = User::create([
                 'name' => $request->name,
-                'hospital_name' => $request->hospital_name,
+                'hospital_id' => $request->hospital_id,
                 'username' => $request->username,
                 'user_type' => 'Doctor',
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'certification' => $certificationPath,
+                'profile_image' => $profileImagePath,
                 'is_approved' => false, 
             ]);
+
+
 
             event(new Registered($user));
 
