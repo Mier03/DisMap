@@ -21,14 +21,11 @@
             <!-- Hospital Name -->
             <div class="mb-3">
                 <x-input-label for="hospital_name" :value="__('Hospital Name')" />
-                    <x-dropdown-select id="hospital_name" name="hospital_name"  
-                         required>
+                    <x-dropdown-select id="hospital_id" name="hospital_id" required>
                         <option value="">-- Select Hospital --</option>
-                        <option value="St. Luke’s Medical Center">St. Luke’s Medical Center</option>
-                        <option value="Chong Hua Hospital">Chong Hua Hospital</option>
-                        <option value="Cebu Doctors University Hospital">Cebu Doctors University Hospital</option>
-                        <option value="Perpetual Succour Hospital">Perpetual Succour Hospital</option>
-                        <option value="Vicente Sotto Memorial Medical Center">Vicente Sotto Memorial Medical Center</option>
+                        @foreach($hospitals as $hospital)
+                            <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                        @endforeach
                     </x-dropdown-select>
                 <x-input-error :messages="$errors->get('hospital_name')" class="mt-2" />
             </div>

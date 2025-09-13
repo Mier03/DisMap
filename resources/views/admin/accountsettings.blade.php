@@ -19,7 +19,7 @@
                             
                             {{-- Profile Image --}}
                             <div class="flex-shrink-0 mb-6 md:mb-0 md:mr-6">
-                                <img src="{{ asset('images/profile-placeholder.png') }}" alt="Profile"
+                                <img src="/images/defaultprofile.jpg" alt="Profile"
                                     class="w-40 h-40 rounded-full object-cover">
                             </div>
 
