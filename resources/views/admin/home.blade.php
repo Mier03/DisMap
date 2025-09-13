@@ -18,6 +18,7 @@
                         <div class="flex flex-col space-y-3 mb-4">
                             <div class="flex items-center space-x-2">
                                 <button
+                                    id="openFilterModal"
                                     class="flex items-center space-x-2 bg-white border border-g-dark text-g-dark px-3 py-2 rounded-lg shadow hover:bg-g-dark hover:text-white transition">
                                     <x-gmdi-filter-alt-o class="w-5 h-5" />
                                     <span class="font-medium">Filters</span>
@@ -30,12 +31,20 @@
                                     class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
                             </div>
 
-                            {{-- Active Filters --}}
-                            <div class="flex items-center space-x-2">
+                            {{-- Dynamic Active Filters (only this one now) --}}
+                            <div id="activeFiltersContainer" class="flex items-center space-x-2">
                                 <span class="text-g-dark font-medium">Active Filters:</span>
-                                <span class="bg-white text-g-dark border border-g-dark px-3 py-1 rounded-full text-sm">Lahug</span>
+                                <span class="inline-flex items-center bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded-full text-sm mr-2">
+                                    Lahug
+                                    <button class="ml-1 text-green-500 hover:text-green-700 focus:outline-none">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </span>
                             </div>
                         </div>
+
                         {{-- Map Section --}}
                         <div class="mt-4">
                             <div class="border border-gray-300 rounded-lg overflow-hidden">
@@ -52,6 +61,8 @@
                                 <span class="text-[#F44336]">Critical (500+)</span>
                             </div>
                         </div>
+
+                        @include('components.filter-modal')
 
                     </div>
                 </div>
