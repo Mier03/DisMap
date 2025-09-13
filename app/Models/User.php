@@ -18,8 +18,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-         'name',
-         'hospital_id', 
+        'name',
+        'hospital_id', 
         'username',
         'email',
         'password',
@@ -36,6 +36,15 @@ class User extends Authenticatable
             return $this->belongsTo(Hospital::class, 'hospital_id'); 
             // 'hospital_id' is the foreign key in users table
         }
+
+    /**
+     * The hospitals that belong to the user (doctor).
+     */
+    public function hospitals()
+    {
+        return $this->belongsToMany(Hospital::class, 'doctor_hospital_table', 'user_id', 'hospital_id');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
