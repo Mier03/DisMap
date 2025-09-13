@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Models\DoctorHospital;
 
 class SuperAdminController extends Controller
 {
@@ -66,6 +67,16 @@ class SuperAdminController extends Controller
             $admin->is_approved = true;
             $admin->save();
             
+           // Save to doctor_hospital_table
+            if (!DoctorHospital::where('user_id', $admin->id)->exists()) {
+                DoctorHospital::create([
+                    'user_id' => $admin->id,
+                    'hospital_id' => $admin->hospital_id,
+                    'status' => 'active',
+                ]);
+            }
+
+
             return back()->with('success', 'Doctor approved successfully');
         } catch (\Exception $e) {
             Log::error('Error approving doctor: ' . $e->getMessage());

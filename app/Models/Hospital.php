@@ -17,4 +17,10 @@ class Hospital extends Model
         'name',
         'type',
     ];
+
+    // Relationship: A hospital can have many doctors (users)
+    public function doctors()
+    {
+        return $this->hasMany(DoctorHospital::class, 'hospital_id');
+    }
 }
