@@ -16,20 +16,10 @@
             <div class="text-lg font-semibold tracking-wide">DisMap</div>
             <div class="flex items-center gap-4 text-sm font-medium">
                 @if (Route::has('login'))
-                    @auth
-                        @if(Auth::user()->user_type === 'Doctor')
-                            <a href="{{ route('admin.home') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Dashboard</a>
-                        @elseif(Auth::user()->user_type === 'Admin')
-                            <a href="{{ route('superadmin.home') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Dashboard</a>
-                        @else
-                            <a href="{{ route('welcome') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">You are not authorized</a>
-                        @endif
-                    @else
                         <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Log in</a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="px-4 py-2 rounded-md hover:bg-g-light hover:text-g-dark transition">Sign up</a>
                         @endif
-                    @endauth
                 @endif
             </div>
         </nav>
