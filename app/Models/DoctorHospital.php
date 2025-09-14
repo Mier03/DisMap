@@ -9,7 +9,7 @@ class DoctorHospital extends Model
 {
     use HasFactory;
 
-    protected $table = 'doctor_hospital_table'; // match your table name
+    protected $table = 'doctor_hospital'; // match your table name
 
     protected $fillable = [
         'user_id',

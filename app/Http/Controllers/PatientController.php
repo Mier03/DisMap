@@ -53,7 +53,7 @@ class PatientController extends Controller
             'barangay_id' => 'required|exists:barangays,id',
             'diagnosis' => 'required|string|max:255',
             'email' => 'required|email|unique:patients,email',
-            'hospital_id' => 'required|exists:hospitals_table,id',
+            'hospital_id' => 'required|exists:hospitals,id',
         ]);
 
         // Create a new patient record

@@ -29,7 +29,7 @@ class HospitalTableSeeder extends Seeder
         ];
 
         foreach ($hospitals as $hospital) {
-            DB::table('hospitals_table')->insert([
+            DB::table('hospitals')->insert([
                 'id' => $hospital['id'],
                 'name' => $hospital['name'],
                 'type' => $hospital['type'],

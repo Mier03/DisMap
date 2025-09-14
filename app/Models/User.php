@@ -42,7 +42,7 @@ class User extends Authenticatable
      */
     public function hospitals()
     {
-        return $this->belongsToMany(Hospital::class, 'doctor_hospital_table', 'user_id', 'hospital_id');
+        return $this->belongsToMany(Hospital::class, 'doctor_hospital', 'user_id', 'hospital_id');
     }
 
     /**
