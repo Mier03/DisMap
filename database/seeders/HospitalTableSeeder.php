@@ -33,6 +33,8 @@ class HospitalTableSeeder extends Seeder
                 'id' => $hospital['id'],
                 'name' => $hospital['name'],
                 'type' => $hospital['type'],
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
         }
     }

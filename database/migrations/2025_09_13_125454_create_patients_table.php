@@ -13,18 +13,10 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('age');
-            $table->foreignId('barangay_id')->constrained()->onDelete('cascade');
-            $table->string('diagnosis');
-            $table->string('username')->unique();
-            $table->string('email')->unique();
-            $table->date('date_reported')->nullable();
-            $table->string('status')->default('Active');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedInteger('age')->nullable();
+            $table->foreignId('barangay_id')->nullable()->constrained('barangays')->onDelete('set null');
             $table->timestamps();
-
-            $table->unsignedBigInteger('hospital_id')->nullable();
-            $table->foreign('hospital_id')->references('id')->on('hospitals')->onDelete('set null');
         });
     }
 
