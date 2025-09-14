@@ -12,27 +12,23 @@
                     <div class="p-6 bg-inherit text-gray-900">
                         
                         {{-- Header --}}
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <h2 class="text-5xl font-bold text-g-dark">Manage Patients</h2>
-                                <p class="text-g-dark mt-1">Patient Records</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="border border-g-dark text-g-dark px-4 py-2 rounded-lg hover:bg-gray-100 transition">
-                                    Export
-                                </button>
-                                <button 
-                                    onclick="openModal('addPatientModal')"
-                                    class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition">
-                                    + Add Patient
-                                </button>
-                            </div>
-                        </div>
+
+                        <x-page-header title="Manage Patients" subtitle="Patient Records" buttonText="Export"/>
 
                         {{-- Search --}}
-                        <form method="GET" action="{{ route('admin.managepatients') }}">
-                            <x-search-bar placeholder="Search patients..." value="{{ request('q') }}" />
-                        </form>
+                        <div class="flex items-start justify-between">
+                        <div class="w-full mr-4">
+                            <form method="GET" action="{{ route('admin.managepatients') }}">
+                                <x-search-bar placeholder="Search patients..." value="{{ request('q') }}" />
+                            </form>
+                        </div>
+                        <button
+                            onclick="openModal('addPatientModal')"
+                            class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition shrink-0">
+                            + Add Patient
+                        </button>
+                    </div>
+                        
 
                         {{-- All Patient Records Table --}}
                         @php
@@ -90,7 +86,7 @@
 
     {{-- Dynamically created update and delete modals for each patient --}}
     @foreach($patients ?? [] as $patient)
-        <x-modal-popup
+        {{-- <x-modal-popup
             id="deletePatientModal_{{ $patient->id }}"
             title="Confirm Deletion"
             message="Are you sure you want to delete {{ $patient->name }}? This action cannot be undone."
@@ -98,11 +94,11 @@
             cancelText="Cancel"
             action="{{ route('admin.patients.destroy', $patient->id) }}"
             method="DELETE"
-        />
+        /> --}}
 
         <x-modal
             id="updatePatientModal_{{ $patient->id }}"
-            title="Update Patient"
+            title="View Patient"
             message="Update patient information"
             confirmButtonText="Save Changes"
             cancelButtonText="Cancel"
