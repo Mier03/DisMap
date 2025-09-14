@@ -67,7 +67,7 @@ class SuperAdminController extends Controller
             $admin->is_approved = true;
             $admin->save();
             
-           // Save to doctor_hospital_table
+           // Save to doctor_hospital
             if (!DoctorHospital::where('user_id', $admin->id)->exists()) {
                 DoctorHospital::create([
                     'user_id' => $admin->id,

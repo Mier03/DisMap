@@ -10,7 +10,7 @@ class Hospital extends Model
     use HasFactory;
 
     // Specify the table name since it’s not the default 'hospitals'
-    protected $table = 'hospitals_table';
+    protected $table = 'hospitals';
 
     // Specify which fields can be mass-assigned
     protected $fillable = [
@@ -21,6 +21,6 @@ class Hospital extends Model
     // Relationship: A hospital can have many doctors (users)
     public function users()
     {
-        return $this->belongsToMany(User::class, 'doctor_hospital_table', 'hospital_id', 'user_id');
+        return $this->belongsToMany(User::class, 'doctor_hospital', 'hospital_id', 'user_id');
     }
 }
