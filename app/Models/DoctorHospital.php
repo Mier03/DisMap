@@ -9,11 +9,34 @@ class DoctorHospital extends Model
 {
     use HasFactory;
 
-    protected $table = 'doctor_hospital'; // match your table name
+    protected $table = 'doctor_hospitals';
 
     protected $fillable = [
-        'user_id',
+        'doctor_id',
         'hospital_id',
-        'status',
     ];
+
+    /**
+     * Get the doctor associated with the record.
+     */
+    public function doctor()
+    {
+        return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    /**
+     * Get the hospital associated with the record.
+     */
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class, 'hospital_id');
+    }
+
+    /**
+     * Get the patient records associated with this doctor-hospital link.
+     */
+    public function patientRecords()
+    {
+        return $this->hasMany(PatientRecord::class, 'doctor_hospital_id');
+    }
 }

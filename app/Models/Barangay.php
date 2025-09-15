@@ -15,8 +15,8 @@ class Barangay extends Model
         'name',
     ];
 
-    public function patients()
+    public function users()
     {
-        return $this->hasMany(Patient::class);
+        return $this->hasMany(User::class);
     }
 }
