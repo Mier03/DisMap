@@ -11,18 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('doctor_hospital', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id');       // link to users table
-            $table->unsignedBigInteger('hospital_id');   // link to hospitals table
-            $table->string('status')->default('active'); // default status
+        Schema::create('doctor_hospitals', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('hospital_id')->constrained('hospitals')->onDelete('cascade');
             $table->timestamps();
-
-            // Foreign keys
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('hospital_id')->references('id')->on('hospitals')->onDelete('cascade');
             
-            // Optional: prevent duplicate assignment of the same doctor to the same hospital
-            $table->unique(['user_id', 'hospital_id']);
+            // Ensures a doctor can't be assigned to the same hospital more than once
+            $table->unique(['doctor_id', 'hospital_id']);
         });
     }
 
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('doctor_hospital');
+        Schema::dropIfExists('doctor_hospitals');
     }
 };
