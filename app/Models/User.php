@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,31 +18,17 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'hospital_id', 
+        'birthdate',
+        'barangay_id',
         'username',
         'email',
         'password',
         'certification',
         'user_type',
-        'profile_image', 
-        'is_approved', 
+        'profile_image',
+        'is_approved',
+        'status',
     ];
-    // ----------------------------
-        // RELATIONSHIPS
-        // ----------------------------
-        public function hospital()
-        {
-            return $this->belongsTo(Hospital::class, 'hospital_id'); 
-            // 'hospital_id' is the foreign key in users table
-        }
-
-    /**
-     * The hospitals that belong to the user (doctor).
-     */
-    public function hospitals()
-    {
-        return $this->belongsToMany(Hospital::class, 'doctor_hospital', 'user_id', 'hospital_id');
-    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,37 +51,78 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
+            'birthdate' => 'date', // Cast birthdate to a Carbon instance
         ];
+    }
+    
+    // ----------------------------
+    // RELATIONSHIPS
+    // ----------------------------
+    
+    /**
+     * Get the barangay that the user belongs to.
+     */
+    public function barangay()
+    {
+        return $this->belongsTo(Barangay::class);
+    }
+    
+    /**
+     * The hospitals that belong to the user (doctor).
+     */
+    public function hospitals()
+    {
+        return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id');
     }
 
     /**
-     * Scope a query to only include admin users (Doctors).
+     * Get the doctor_hospital records for the doctor.
      */
-    public function scopeAdmins($query)
+    public function doctorHospitals()
+    {
+        return $this->hasMany(DoctorHospital::class, 'doctor_id');
+    }
+
+    /**
+     * Get the patient records for the patient.
+     */
+    public function patientRecords()
+    {
+        return $this->hasMany(PatientRecord::class, 'patient_id');
+    }
+
+    // ----------------------------
+    // SCOPES
+    // ----------------------------
+
+    /**
+     * Scope a query to only include doctor users.
+     */
+    public function scopeDoctors($query)
     {
         return $query->where('user_type', 'Doctor');
     }
 
     /**
-     * Scope a query to only include pending admin users.
+     * Scope a query to only include pending doctor users.
      */
-    public function scopePendingAdmins($query)
+    public function scopePendingDoctors($query)
     {
         return $query->where('user_type', 'Doctor')->where('is_approved', false);
     }
 
     /**
-     * Scope a query to only include approved admin users.
+     * Scope a query to only include approved doctor users.
      */
-    public function scopeApprovedAdmins($query)
+    public function scopeApprovedDoctors($query)
     {
         return $query->where('user_type', 'Doctor')->where('is_approved', true);
     }
 
     /**
-     * Scope a query to only include superadmin users.
+     * Scope a query to only include admin users.
      */
-    public function scopeSuperAdmins($query)
+    public function scopeAdmins($query)
     {
         return $query->where('user_type', 'Admin');
     }
