@@ -37,6 +37,7 @@ Route::prefix('admin')
             Route::post('/patients', 'store')->name('patients.store');
             Route::patch('/patients/{patient}', 'update')->name('patients.update');
             Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
+            Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients'); 
         });
     });
     

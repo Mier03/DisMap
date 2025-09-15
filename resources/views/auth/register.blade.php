@@ -18,6 +18,15 @@
                 <x-input-error :messages="$errors->get('name')" class="mt-2" />
             </div>
 
+            <!-- Birthdate -->
+            <div class="mb-3">
+                <x-input-label for="birthdate" :value="__('Birthdate')" />
+                <x-text-input id="birthdate" class="block mt-1 w-full" 
+                    type="date" name="birthdate" :value="old('birthdate')" 
+                    required autocomplete="birthdate" />
+                <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
+            </div>
+
             <!-- Hospital Name -->
             <div class="mb-3">
                 <x-input-label for="hospital_id" :value="__('Hospital Name')" />

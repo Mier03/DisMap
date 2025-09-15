@@ -38,11 +38,11 @@
 
                             foreach($pendingAdmins as $admin) {
                                 $certificateButton = $admin->certification
-                                      ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')"
-                                            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                            View
-                                        </button>'
-                                        : '<span class="text-gray-500">No certificate</span>';
+                                    ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')"
+                                              class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                              View
+                                          </button>'
+                                          : '<span class="text-gray-500">No certificate</span>';
 
                                 $actionButtons = '
                                     <button type="button"
@@ -51,12 +51,13 @@
 
                                     <button type="button"
                                         onclick="openModal(\'rejectModal-' . $admin->id . '\')"
-                                        class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">X</button>
+                                        class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
                                 ';
 
                                 $pendingRows[] = [
                                     '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                                    $admin->hospital->name,
+                                    // CORRECTED LINE: Access the hospital name via the relationship
+                                    $admin->hospitals->first()->name ?? 'N/A', 
                                     $admin->email,
                                     $admin->username,
                                     $certificateButton,
@@ -105,24 +106,25 @@
                             foreach($allAdmins as $admin) {
                                 $certificateButton = $admin->certification
                                     ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')"
-                                                class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                            View
-                                        </button>'
-                                        : '<span class="text-gray-500">No certificate</span>';
+                                                   class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                               View
+                                           </button>'
+                                           : '<span class="text-gray-500">No certificate</span>';
 
                                 $actionButton = '
                                     <button type="button"
                                         onclick="openModal(\'editModal-' . $admin->id . '\')"
-                                        class="inline-block bg-g-dark text-white px-3 py-1 rounded mr-2">E</button>
+                                        class="inline-block bg-g-dark text-white px-3 py-1 rounded mr-2">✎</button>
 
                                     <button type="button"
                                         onclick="openModal(\'deleteModal-' . $admin->id . '\')"
-                                        class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">X</button>
+                                        class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
                                 ';
 
                                 $allRows[] = [
                                     '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                                    $admin->hospital->name,
+                                    // CORRECTED LINE: Access the hospital name via the relationship
+                                    $admin->hospitals->first()->name ?? 'N/A',
                                     $admin->email,
                                     $admin->username,
                                     $certificateButton,

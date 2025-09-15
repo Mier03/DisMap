@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->date('birthdate');
-            $table->foreignId('barangay_id')->constrained('barangays');
+            $table->foreignId('barangay_id')->nullable()->constrained('barangays');
             $table->enum('user_type', ['Patient', 'Doctor', 'Admin'])->default('Doctor');
             $table->boolean('is_approved')->default(false);
             $table->string('status')->nullable();
-            $table->timestamp('email_verified_at');
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('certification')->nullable();
             $table->string('password');
             $table->string('profile_image');
