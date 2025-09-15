@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -51,7 +52,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_approved' => 'boolean',
-            'birthdate' => 'date', // Cast birthdate to a Carbon instance
+            'birthdate' => 'date', 
         ];
     }
     
@@ -72,7 +73,7 @@ class User extends Authenticatable
      */
     public function hospitals()
     {
-        return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id');
+        return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id')->withTimestamps();
     }
 
     /**
@@ -98,7 +99,7 @@ class User extends Authenticatable
     /**
      * Scope a query to only include doctor users.
      */
-    public function scopeDoctors($query)
+    public function scopeAdmins($query)
     {
         return $query->where('user_type', 'Doctor');
     }
@@ -106,7 +107,7 @@ class User extends Authenticatable
     /**
      * Scope a query to only include pending doctor users.
      */
-    public function scopePendingDoctors($query)
+    public function scopePendingAdmins($query)
     {
         return $query->where('user_type', 'Doctor')->where('is_approved', false);
     }
@@ -114,7 +115,7 @@ class User extends Authenticatable
     /**
      * Scope a query to only include approved doctor users.
      */
-    public function scopeApprovedDoctors($query)
+    public function scopeApprovedAdmins($query)
     {
         return $query->where('user_type', 'Doctor')->where('is_approved', true);
     }
@@ -122,7 +123,7 @@ class User extends Authenticatable
     /**
      * Scope a query to only include admin users.
      */
-    public function scopeAdmins($query)
+    public function scopeSuperAdmins($query)
     {
         return $query->where('user_type', 'Admin');
     }
