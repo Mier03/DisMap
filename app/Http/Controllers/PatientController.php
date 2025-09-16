@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\DoctorHospital;
 use App\Models\Hospital;
 use App\Models\Barangay;
 use App\Models\Disease;
@@ -90,11 +91,16 @@ class PatientController extends Controller
                 'is_approved' => true,
                 'profile_image' => 'images/profiles/default.png',
             ]);
+            // Ensure doctor-hospital relationship exists
+                    $doctorHospital = DoctorHospital::firstOrCreate([
+                        'doctor_id'   => Auth::id(),
+                        'hospital_id' => $request->input('hospital_id'),
+                    ]);
 
             PatientRecord::create([
                 'patient_id' => $user->id,
                 'doctor_id' => Auth::id(), 
-                'doctor_hospital_id' => $request->input('hospital_id'), 
+                'doctor_hospital_id' => $doctorHospital->id, 
                 'disease_id' => $request->input('disease_id'),
                 'date_reported' => now(),
                 'remarks' => $request->input('remarks'),
