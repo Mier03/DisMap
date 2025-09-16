@@ -63,53 +63,59 @@ class PatientController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'fullName' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'barangay_id' => 'required|exists:barangays,id',
-            'disease_id' => 'required|exists:diseases,id',
-            'email' => 'required|email|unique:users,email',
-            'hospital_id' => 'required|exists:hospitals,id',
-            'remarks' => 'nullable|string',
+{
+    $request->validate([
+        'fullName' => 'required|string|max:255',
+        'birthdate' => 'required|date',
+        'barangay_id' => 'required|exists:barangays,id',
+        'disease_id' => 'required|array', // Validate as an array
+        'disease_id.*' => 'required|exists:diseases,id', // Validate each disease_id
+        'email' => 'required|email|unique:users,email',
+        'hospital_id' => 'required|exists:hospitals,id',
+        'remarks' => 'nullable|string',
+    ]);
+
+    DB::transaction(function () use ($request) {
+        $nameParts = explode(' ', $request->input('fullName'));
+        $firstName = strtolower($nameParts[0]);
+        $lastName = strtolower(end($nameParts));
+        $username = $firstName . '.' . $lastName . rand(1000, 9999);
+
+        // Create the user
+        $user = User::create([
+            'name' => $request->input('fullName'),
+            'username' => $username,
+            'email' => $request->input('email'),
+            'password' => Hash::make($username),
+            'birthdate' => $request->input('birthdate'),
+            'barangay_id' => $request->input('barangay_id'),
+            'user_type' => 'patient',
+            'is_approved' => true,
+            'profile_image' => 'images/profiles/default.png',
+            'status' => 'Active'
         ]);
 
-        DB::transaction(function () use ($request) {
-            $nameParts = explode(' ', $request->input('fullName'));
-            $firstName = strtolower($nameParts[0]);
-            $lastName = strtolower(end($nameParts));
-            $username = $firstName . '.' . $lastName . rand(1000, 9999);
-            
-            $user = User::create([
-                'name' => $request->input('fullName'),
-                'username' => $username,
-                'email' => $request->input('email'),
-                'password' => Hash::make($username),
-                'birthdate' => $request->input('birthdate'),
-                'barangay_id' => $request->input('barangay_id'),
-                'user_type' => 'patient',
-                'is_approved' => true,
-                'profile_image' => 'images/profiles/default.png',
-                'status' => 'Active'
-            ]);
-            // doctor-hospital relationship
-            $doctorHospital = DoctorHospital::firstOrCreate([
-                'doctor_id'   => Auth::id(),
-                'hospital_id' => $request->input('hospital_id'),
-            ]);
+        // Create doctor-hospital relationship
+        $doctorHospital = DoctorHospital::firstOrCreate([
+            'doctor_id' => Auth::id(),
+            'hospital_id' => $request->input('hospital_id'),
+        ]);
 
+        // Create a patient record for each selected disease
+        foreach ($request->input('disease_id') as $diseaseId) {
             PatientRecord::create([
                 'patient_id' => $user->id,
-                'doctor_id' => Auth::id(), 
-                'doctor_hospital_id' => $doctorHospital->id, 
-                'disease_id' => $request->input('disease_id'),
+                'doctor_id' => Auth::id(),
+                'doctor_hospital_id' => $doctorHospital->id,
+                'disease_id' => $diseaseId,
                 'date_reported' => now(),
                 'remarks' => $request->input('remarks'),
             ]);
-        });
+        }
+    });
 
-        return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
-    }
+    return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
+}
 
     /**
      * Display the specified patient's details and medical history.
@@ -118,14 +124,14 @@ class PatientController extends Controller
      * @return \Illuminate\View\View
      */
 
-    public function viewPatient(User $patient)
+    public function viewPatient($id)
     {
-        $patient->load([
+        $patient = User::with([
             'barangay',
             'patientRecords.disease',
             'patientRecords.doctorHospital.hospital'
-        ]);
-        
+        ])->findOrFail($id);
+
         return view('admin.patient_details', compact('patient'));
     }
     

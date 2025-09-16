@@ -28,18 +28,17 @@
                             </button>
                         </div>
                         
-                        {{-- All Patient Records Table --}}                      
+                        {{-- All Patient Records Table --}}
+                    
                         @php
                             $patients = $patients ?? [];
-                            $patientColumns = ['Name', 'Birthdate', 'Barangay', 'Disease', 'Hospital', 'Date Reported', 'Status'];
+                            $patientColumns = ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'];
                             $patientRows = collect($patients)->map(function ($patient) {
                                 $latestRecord = $patient->patientRecords->first();
 
                                 if ($latestRecord) {
-                                    $disease = $latestRecord->disease->specification ?? 'N/A';
-                                    $hospital = $latestRecord->doctorHospital->hospital->name ?? 'N/A';
                                     $dateReported = \Carbon\Carbon::parse($latestRecord->created_at)->format('F j, Y') ?? 'N/A';
-                                    $statusType = $latestRecord->patient->status ?? 'No Records';                                    
+                                    $statusType = $latestRecord->patient->status ?? 'No Records';                                         
                                     $statusClass = '';
                                     if ($statusType === 'Active') {
                                         $statusClass = 'bg-yellow-200 text-yellow-800';
@@ -52,8 +51,6 @@
                                     }
                                 } else {
                                     // Default values when no record exists
-                                    $disease = 'N/A';
-                                    $hospital = 'N/A';
                                     $dateReported = 'N/A';
                                     $statusType = 'No Records';
                                     $statusClass = 'bg-gray-200 text-gray-800';
@@ -63,8 +60,6 @@
                                     "<a href='".route('admin.view_patients', $patient->id)."' class='text-blue-600 hover:underline'>{$patient->name}</a>",
                                     \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y'),
                                     $patient->barangay->name ?? 'N/A',
-                                    $disease,
-                                    $hospital,
                                     $dateReported,
                                     "<span class='px-2 py-1 rounded text-sm {$statusClass}'>{$statusType}</span>",
                                 ];
@@ -84,23 +79,13 @@
         </div>
     </div>
 
-    <x-modal
+    <x-modals.form-modals
         id="addPatientModal"
-        title="Add Patient"
-        message="Record a new patient case"
-        confirmButtonText="+ Add Patient"
-        cancelButtonText="Cancel"
-        buttonId="addPatientButton"
+        formType="addPatient"
         action="{{ route('admin.patients.store') }}"
-        method="POST"
-        :fields="[
-            ['name' => 'fullName', 'label' => 'Full Name', 'type' => 'text', 'placeholder' => 'Enter patient full name...', 'required' => true],
-            ['name' => 'birthdate', 'label' => 'Birthdate', 'type' => 'date', 'placeholder' => '', 'required' => true],
-            ['name' => 'barangay_id', 'label' => 'Barangay', 'type' => 'select', 'placeholder' => 'Select barangay...', 'required' => true, 'options' => $barangays->map(function($b) { return ['value' => $b->id, 'label' => $b->name]; })->toArray()],
-            ['name' => 'disease_id', 'label' => 'Disease', 'type' => 'select', 'placeholder' => 'Select patient\'s disease...', 'required' => true, 'options' => $diseases->map(function($d) { return ['value' => $d->id, 'label' => $d->specification]; })->toArray()],
-            ['name' => 'remarks', 'label' => 'Remarks', 'type' => 'text', 'placeholder' => 'Enter any relevant remarks...', 'required' => false],
-            ['name' => 'hospital_id', 'label' => 'Hospital', 'type' => 'select', 'placeholder' => 'Select hospital...', 'required' => true, 'options' => $hospitals->map(function($h) { return ['value' => $h->id, 'label' => $h->name]; })->toArray()],
-            ['name' => 'email', 'label' => 'Email', 'type' => 'email', 'placeholder' => 'Enter valid email address...', 'required' => true]
-        ]"
+        :barangays="$barangays"
+        :diseases="$diseases"
+        :hospitals="$hospitals"
     />
+    
 </x-app-layout>
