@@ -28,21 +28,36 @@
                             </button>
                         </div>
                         
-                        {{-- All Patient Records Table --}}
+                        {{-- All Patient Records Table --}}                      
                         @php
                             $patients = $patients ?? [];
                             $patientColumns = ['Name', 'Birthdate', 'Barangay', 'Disease', 'Hospital', 'Date Reported', 'Status'];
                             $patientRows = collect($patients)->map(function ($patient) {
                                 $latestRecord = $patient->patientRecords->first();
 
-                                // Default values if no record exists
-                                $disease = $latestRecord->disease->specification ?? 'N/A';
-                                $hospital = $latestRecord->hospital->name ?? 'N/A';
-                                $dateReported = $latestRecord->date_reported ? \Carbon\Carbon::parse($latestRecord->date_reported)->format('F j, Y') : 'N/A';
-                                $statusType = $latestRecord->status_type ?? 'No Records';
-                                $statusClass = $latestRecord
-                                    ? ($latestRecord->status_type === 'Active' ? 'bg-yellow-200 text-yellow-800' : ($latestRecord->status_type === 'Recovered' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'))
-                                    : 'bg-gray-200 text-gray-800';
+                                if ($latestRecord) {
+                                    $disease = $latestRecord->disease->specification ?? 'N/A';
+                                    $hospital = $latestRecord->doctorHospital->hospital->name ?? 'N/A';
+                                    $dateReported = \Carbon\Carbon::parse($latestRecord->created_at)->format('F j, Y') ?? 'N/A';
+                                    $statusType = $latestRecord->patient->status ?? 'No Records';                                    
+                                    $statusClass = '';
+                                    if ($statusType === 'Active') {
+                                        $statusClass = 'bg-yellow-200 text-yellow-800';
+                                    } elseif ($statusType === 'Recovered') {
+                                        $statusClass = 'bg-green-200 text-green-800';
+                                    } elseif ($statusType === 'Deceased') {
+                                        $statusClass = 'bg-red-200 text-red-800';
+                                    } else {
+                                        $statusClass = 'bg-gray-200 text-gray-800';
+                                    }
+                                } else {
+                                    // Default values when no record exists
+                                    $disease = 'N/A';
+                                    $hospital = 'N/A';
+                                    $dateReported = 'N/A';
+                                    $statusType = 'No Records';
+                                    $statusClass = 'bg-gray-200 text-gray-800';
+                                }
                                     
                                 return [
                                     "<a href='".route('admin.view_patients', $patient->id)."' class='text-blue-600 hover:underline'>{$patient->name}</a>",
@@ -55,7 +70,7 @@
                                 ];
                             })->toArray();
                         @endphp
-                        
+
                         <x-table
                             :columns="$patientColumns"
                             :rows="$patientRows"

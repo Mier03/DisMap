@@ -90,12 +90,13 @@ class PatientController extends Controller
                 'user_type' => 'patient',
                 'is_approved' => true,
                 'profile_image' => 'images/profiles/default.png',
+                'status' => 'Active'
             ]);
-            // Ensure doctor-hospital relationship exists
-                    $doctorHospital = DoctorHospital::firstOrCreate([
-                        'doctor_id'   => Auth::id(),
-                        'hospital_id' => $request->input('hospital_id'),
-                    ]);
+            // doctor-hospital relationship
+            $doctorHospital = DoctorHospital::firstOrCreate([
+                'doctor_id'   => Auth::id(),
+                'hospital_id' => $request->input('hospital_id'),
+            ]);
 
             PatientRecord::create([
                 'patient_id' => $user->id,
@@ -104,7 +105,6 @@ class PatientController extends Controller
                 'disease_id' => $request->input('disease_id'),
                 'date_reported' => now(),
                 'remarks' => $request->input('remarks'),
-                'status_type' => 'Active',
             ]);
         });
 
@@ -120,12 +120,10 @@ class PatientController extends Controller
 
     public function viewPatient(User $patient)
     {
-        // Eager load all necessary relationships, including 'barangay'
         $patient->load([
-            'barangay', 
-            'patientRecords.disease', 
-            'patientRecords.hospital', 
-            'patientRecords.doctor.user'
+            'barangay',
+            'patientRecords.disease',
+            'patientRecords.doctorHospital.hospital'
         ]);
         
         return view('admin.patient_details', compact('patient'));
