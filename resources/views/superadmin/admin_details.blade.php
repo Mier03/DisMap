@@ -157,13 +157,12 @@
                         @endif
                     </div>
 
-                    <!-- Edit Form (Shown when in edit mode) -->
-                    <!-- Edit Form (Shown when in edit mode) -->
+                    
+                    <!-- Edit Form-->
                     @if($isEditMode)
                     <div id="edit-form" class="mt-6 pt-4 border-t border-g-light">
                         <h3 class="text-lg font-semibold text-g-dark mb-4">Edit Admin Information</h3>
 
-                        <!-- Display success/error messages -->
                         @if(session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                             {{ session('success') }}
@@ -202,7 +201,7 @@
                                 </div>
                             </div>
 
-                            <!-- Hospital Field (Changed to dropdown) -->
+                            <!-- Hospital Field-->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Hospital *</label>
                                 <select name="hospital_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-g-dark/50">

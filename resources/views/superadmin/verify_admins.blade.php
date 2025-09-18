@@ -152,7 +152,7 @@
                             icon="gmdi-admin-panel-settings" /> -->
 
                         {{-- Modals for All Admins --}}
-                        @foreach($allAdmins as $admin)
+                        <!-- @foreach($allAdmins as $admin)
                         <x-modal-popup
                             id="deleteModal-{{ $admin->id }}"
                             title="Confirm Deletion"
@@ -170,7 +170,7 @@
                             cancelText="Cancel"
                             {{-- :action="route('superadmin.edit_admin', $admin->id)" --}}
                             method="GET" />
-                        @endforeach
+                        @endforeach -->
 
                     </div>
                 </div>
