@@ -16,10 +16,10 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')
     ->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
 // Admin routes
 Route::prefix('admin')
@@ -32,15 +32,15 @@ Route::prefix('admin')
         }
 
         // Patient management routes
-        Route::controller(PatientController::class)->group(function() {
+        Route::controller(PatientController::class)->group(function () {
             Route::get('/managepatients', 'index')->name('managepatients');
             Route::post('/patients', 'store')->name('patients.store');
             Route::patch('/patients/{patient}', 'update')->name('patients.update');
             Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
-            Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients'); 
+            Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
         });
     });
-    
+
 // Superadmin routes
 Route::prefix('superadmin')
     ->name('superadmin.')
@@ -58,7 +58,8 @@ Route::prefix('superadmin')
             Route::post('reject-admin/{id}', 'rejectAdmin')->name('reject_admin');
             Route::delete('delete-admin/{id}', 'deleteAdmin')->name('delete_admin');
             Route::get('view-admin/{id}', 'viewAdmin')->name('view_admin');
+            Route::put('update-admin/{id}', 'updateAdmin')->name('update_admin');
         });
     });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
