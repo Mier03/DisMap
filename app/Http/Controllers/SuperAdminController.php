@@ -129,7 +129,8 @@ class SuperAdminController extends Controller
     public function viewAdmin($id)
     {
         try {
-            $admin = User::findOrFail($id);
+            // $admin = User::findOrFail($id);
+            $admin = User::with('hospitals')->findOrFail($id);
             
             if ($admin->user_type !== 'Doctor') {
                 return back()->with('error', 'User is not a doctor');
