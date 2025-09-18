@@ -71,7 +71,7 @@
                             :rows="$pendingRows"
                             table_title="Pending Approvals"
                             icon="gmdi-person-search-o" /> -->
-                            
+
                         <x-tables
                             tableType="pendingAdmins"
                             :data="$pendingAdmins"
@@ -89,7 +89,7 @@
                         />
 
                         {{-- Modals for Pending Approvals --}}
-                        <!-- @foreach($pendingAdmins as $admin)
+                        @foreach($pendingAdmins as $admin)
                         <x-modal-popup
                             id="approveModal-{{ $admin->id }}"
                             title="Approve User"
@@ -109,8 +109,7 @@
                             method="POST" />
                         @endforeach
 
-                        <div class="mb-4"></div>
-
+<!--
                         {{-- All Administrators Table --}}
                         @php
                         $allColumns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'];
