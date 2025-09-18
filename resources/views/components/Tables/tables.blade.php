@@ -5,8 +5,10 @@
     
     switch($tableType) {
         case 'pendingAdmins':
-        case 'allAdmins':
             $columns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'];
+            break;
+        case 'allAdmins':
+            $columns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates']; // Removed Actions
             break;
         case 'patients':
             break;
@@ -36,40 +38,32 @@
             @if(isset($data) && count($data) > 0)
                 @foreach($data as $item)
                     <tr class="border-b">
+                        @php
+                            // Certificate button (used in both pending and all admins)
+                            $certificateButton = $item->certification
+                                ? '<button onclick="viewCertificate(\'' . asset('storage/'.$item->certification) . '\')"
+                                          class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                          View
+                                      </button>'
+                                : '<span class="text-gray-500">No certificate</span>';
+
+                            // Action buttons (only for pending admins)
+                            if ($tableType === 'pendingAdmins') {
+                                $actionButtons = '
+                                    <button type="button"
+                                        onclick="openModal(\'approveModal-' . $item->id . '\')"
+                                        class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
+
+                                    <button type="button"
+                                        onclick="openModal(\'rejectModal-' . $item->id . '\')"
+                                        class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                                ';
+                            }
+                        @endphp
+                        
                         @switch($tableType)
                             @case('pendingAdmins')
                             @case('allAdmins')
-                                @php
-                                    $certificateButton = $item->certification
-                                        ? '<button onclick="viewCertificate(\'' . asset('storage/'.$item->certification) . '\')"
-                                                  class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                                  View
-                                              </button>'
-                                        : '<span class="text-gray-500">No certificate</span>';
-
-                                    if ($tableType === 'pendingAdmins') {
-                                        $actionButtons = '
-                                            <button type="button"
-                                                onclick="openModal(\'approveModal-' . $item->id . '\')"
-                                                class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
-
-                                            <button type="button"
-                                                onclick="openModal(\'rejectModal-' . $item->id . '\')"
-                                                class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-                                        ';
-                                    } else {
-                                        $actionButtons = '
-                                            <button type="button"
-                                                onclick="openModal(\'editModal-' . $item->id . '\')"
-                                                class="inline-block bg-g-dark text-white px-3 py-1 rounded mr-2">✎</button>
-
-                                            <button type="button"
-                                                onclick="openModal(\'deleteModal-' . $item->id . '\')"
-                                                class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-                                        ';
-                                    }
-                                @endphp
-                                
                                 <td class="p-2">
                                     <a href="{{ route('superadmin.view_admin', $item->id) }}" class="text-blue-600 hover:underline">
                                         {{ $item->name }}
@@ -79,7 +73,11 @@
                                 <td class="p-2">{{ $item->email }}</td>
                                 <td class="p-2">{{ $item->username }}</td>
                                 <td class="p-2">{!! $certificateButton !!}</td>
-                                <td class="p-2">{!! $actionButtons !!}</td>
+                                
+                                {{-- Only show action buttons for pending admins --}}
+                                @if($tableType === 'pendingAdmins')
+                                    <td class="p-2">{!! $actionButtons !!}</td>
+                                @endif
                                 @break
                                 
                             @case('patients')
