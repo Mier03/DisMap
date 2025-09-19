@@ -72,20 +72,12 @@
                             table_title="All Patient Records"
                             icon="gmdi-people-alt-o"
                         />
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <x-modals.form-modals
-        id="addPatientModal"
-        formType="addPatient"
-        action="{{ route('admin.patients.store') }}"
-        :barangays="$barangays"
-        :diseases="$diseases"
-        :hospitals="$hospitals"
-    />
-    
+    {{-- Modals are centralized --}}
+    <x-modals.form-modals id="addPatientModal" />
 </x-app-layout>
