@@ -31,24 +31,17 @@
                                     class="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#296E5B]">
                             </div>
 
-                            {{-- Dynamic Active Filters (only this one now) --}}
+                            {{-- Dynamic Active Filters --}}
                             <div id="activeFiltersContainer" class="flex items-center space-x-2">
                                 <span class="text-g-dark font-medium">Active Filters:</span>
-                                <span class="inline-flex items-center bg-green-50 text-green-700 border border-green-200 px-3 py-1 rounded-full text-sm mr-2">
-                                    Lahug
-                                    <button class="ml-1 text-green-500 hover:text-green-700 focus:outline-none">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    </button>
-                                </span>
+                                {{-- This area is managed by JavaScript to display filter chips dynamically. --}}
                             </div>
                         </div>
 
                         {{-- Map Section --}}
                         <div class="mt-4">
                             <div class="border border-gray-300 rounded-lg overflow-hidden">
-                                {{-- Replace with actual Map Embed --}}
+                                {{-- Placeholder for the map. A live application would use a library like Leaflet or Google Maps. --}}
                                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3931.0165935698957!2d123.88543621535366!3d10.315699992630037!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995be0b9b20f%3A0x6f59709d20b9e7b3!2sCebu%20City!5e0!3m2!1sen!2sph!4v1631181589709!5m2!1sen!2sph"
                                     width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                             </div>
@@ -62,11 +55,13 @@
                             </div>
                         </div>
 
-                        @include('components.filter-modal')
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {{-- Merged Filter Modal into the pop-up-modals component. Pass data here. --}}
+    <x-modals.pop-up-modals :barangays="$barangays" :diseases="$diseases" />
+
 </x-app-layout>
