@@ -16,10 +16,10 @@
 
     <!-- Menu Panels -->
     <div class="flex flex-col space-y-3">
-        <!-- Dashboard -->
-        <a href="{{ Auth::user()->role === 'Admin' ? route('superadmin.home') : route('admin.home') }}"
-           class="flex items-center w-full h-12 rounded-md px-3 transition
-           {{ Request::routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.home' : 'admin.home') 
+    <!-- Dashboard -->
+    <a href="{{ Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.home') }}"
+       class="flex items-center w-full h-12 rounded-md px-3 transition
+       {{ Request::routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.home') 
       ? 'bg-[#B3FAD8] text-[#296E5B]' 
       : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
             <x-gmdi-dashboard-o class="w-5 h-5 mr-2"/>
