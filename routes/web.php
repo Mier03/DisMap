@@ -27,7 +27,11 @@ Route::prefix('admin')
     ->middleware(['auth', 'verified'])
     ->group(function () {
         // Static views
-        foreach (['home', 'diseaserecords', 'accountsettings'] as $page) {
+        // Map 'home' to the AdminDashboardController so it can provide required data for the view
+        Route::get('home', [AdminDashboardController::class, 'homepage'])->name('home');
+
+        // Other static admin pages that don't require controller data
+        foreach (['diseaserecords', 'accountsettings'] as $page) {
             Route::view($page, "admin.$page")->name($page);
         }
 
