@@ -30,6 +30,9 @@ Route::prefix('admin')
         // Map 'home' to the AdminDashboardController so it can provide required data for the view
         Route::get('home', [AdminDashboardController::class, 'homepage'])->name('home');
 
+    // Dashboard route (full UI) -> uses controller index to provide filter data
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
         // Other static admin pages that don't require controller data
         foreach (['diseaserecords', 'accountsettings'] as $page) {
             Route::view($page, "admin.$page")->name($page);
