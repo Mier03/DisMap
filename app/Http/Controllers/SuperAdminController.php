@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Hospital;
+use App\Models\Barangay;
+use App\Models\Disease;
 use Illuminate\Support\Facades\DB;
 
 class SuperAdminController extends Controller
@@ -171,5 +173,27 @@ class SuperAdminController extends Controller
             Log::error('Error updating admin: ' . $e->getMessage());
             return back()->with('error', 'Error updating admin: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Show superadmin dashboard with required filter data.
+     */
+    public function home()
+    {
+        $barangays = Barangay::all();
+        $diseases = Disease::all();
+
+        return view('superadmin.home', compact('barangays', 'diseases'));
+    }
+
+    /**
+     * Full dashboard for superadmin that includes filters/map.
+     */
+    public function dashboard()
+    {
+        $barangays = Barangay::all();
+        $diseases = Disease::all();
+
+        return view('superadmin.dashboard', compact('barangays', 'diseases'));
     }
 }

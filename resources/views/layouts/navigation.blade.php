@@ -10,7 +10,7 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @auth
-                        <x-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.home') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.home' : 'admin.home')">
+                        <x-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.home')">
                             {{ __('Dashboard') }}
                         </x-nav-link>
                     @else
@@ -81,7 +81,7 @@
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
                 <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.home') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.home' : 'admin.home')">
+                    <x-responsive-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.home')">
                         {{ __('Dashboard') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('profile.edit')">

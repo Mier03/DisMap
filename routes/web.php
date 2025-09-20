@@ -50,8 +50,14 @@ Route::prefix('superadmin')
     ->name('superadmin.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        // Static views
-        foreach (['home', 'datarequest', 'diseaserecords'] as $page) {
+        // Dashboard (full UI) -> uses controller to provide filter data
+        Route::get('dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+
+        // Use controller for home so the view remains a simple landing page
+        Route::get('home', [SuperAdminController::class, 'home'])->name('home');
+
+        // Static views that don't need controller data
+        foreach (['datarequest', 'diseaserecords'] as $page) {
             Route::view($page, "superadmin.$page")->name($page);
         }
 

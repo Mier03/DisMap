@@ -1,5 +1,16 @@
 * text=auto eol=lf
 
+# Ensure LF endings for common text files
+*.php text eol=lf
+*.blade.php text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.html text eol=lf
+
+# Diff hints
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html
