@@ -37,9 +37,9 @@ class AuthenticatedSessionController extends Controller
                 ]);
             }
             if ($user->user_type === 'Doctor') {
-                return redirect()->route('admin.home');
+                return redirect()->route('dashboard');
             } elseif ($user->user_type === 'Admin') {
-                return redirect()->route('superadmin.home');
+                return redirect()->route('dashboard');
             }
 
         return redirect()->intended(route('welcome', absolute: false));

@@ -4,15 +4,25 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\DashboardController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::get('/diseaserecords', [DashboardController::class, 'diseaseRecords'])
+    ->middleware(['auth', 'verified'])
+    ->name('diseaserecords');
 
 Route::middleware('auth')
     ->group(function () {
@@ -21,20 +31,16 @@ Route::middleware('auth')
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+
+
 // Admin routes
 Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        // Static views
-        // Map 'home' to the AdminDashboardController so it can provide required data for the view
-        Route::get('home', [AdminDashboardController::class, 'homepage'])->name('home');
-
-    // Dashboard route (full UI) -> uses controller index to provide filter data
-    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Other static admin pages that don't require controller data
-        foreach (['diseaserecords', 'accountsettings'] as $page) {
+        foreach (['accountsettings'] as $page) {
             Route::view($page, "admin.$page")->name($page);
         }
 
@@ -53,14 +59,9 @@ Route::prefix('superadmin')
     ->name('superadmin.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-        // Dashboard (full UI) -> uses controller to provide filter data
-        Route::get('dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-
-        // Use controller for home so the view remains a simple landing page
-        Route::get('home', [SuperAdminController::class, 'home'])->name('home');
 
         // Static views that don't need controller data
-        foreach (['datarequest', 'diseaserecords'] as $page) {
+        foreach (['datarequest'] as $page) {
             Route::view($page, "superadmin.$page")->name($page);
         }
 

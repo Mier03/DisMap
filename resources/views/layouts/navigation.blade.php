@@ -10,8 +10,10 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @auth
-                        <x-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.home')">
-                            {{ __('Dashboard') }}
+                        <x-nav-link 
+                        :href="route('dashboard')" 
+                        :active="request()->routeIs('dashboard')">
+                        {{ Auth::user()->user_type === 'Admin' ? 'SuperAdmin Dashboard' : 'Doctor Dashboard' }}
                         </x-nav-link>
                     @else
                         <x-nav-link :href="route('welcome')" :active="request()->routeIs('welcome')">
@@ -81,8 +83,10 @@
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                 </div>
                 <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.home')" :active="request()->routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.home')">
-                        {{ __('Dashboard') }}
+                    <x-responsive-nav-link 
+                    :href="route('dashboard')" 
+                    :active="request()->routeIs('dashboard')">
+                    {{ Auth::user()->user_type === 'Admin' ? 'Admin Dashboard' : 'Superadmin Dashboard' }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('profile.edit')">
                         {{ __('Profile') }}

@@ -183,7 +183,7 @@ class SuperAdminController extends Controller
         $barangays = Barangay::all();
         $diseases = Disease::all();
 
-        return view('superadmin.home', compact('barangays', 'diseases'));
+        return view('dashboard', compact('barangays', 'diseases'));
     }
 
     /**
@@ -194,6 +194,6 @@ class SuperAdminController extends Controller
         $barangays = Barangay::all();
         $diseases = Disease::all();
 
-        return view('superadmin.dashboard', compact('barangays', 'diseases'));
+        return view('dashboard', compact('barangays', 'diseases'));
     }
 }
