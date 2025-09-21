@@ -226,6 +226,70 @@
             </div>
         </div>
     </div>
+
+    {{-- =========================
+    Request Data Modal
+    ========================== --}}
+    <div id="requestDataModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
+
+            {{-- Header --}}
+            <div class="flex items-center mb-2">
+                {{-- Logo --}}
+                <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                </svg>
+                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Data Request Form</h2>
+            </div>
+            <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
+
+            {{-- Form --}}
+            {{-- remove javascript:void(0) when adding database connection, also add @csrf after form--}}
+            <form action="javascript:void(0)" method="POST" class="space-y-5">
+                {{-- Full Name --}}
+                <div>
+                    <label for="full_name" class="block text-[14px] font-semibold text-g-dark">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Enter your full name..."
+                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                </div>
+
+                {{-- Email --}}
+                <div>
+                    <label for="email" class="block text-[14px] font-semibold text-g-dark">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address..."
+                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                </div>
+
+                {{-- Reason for Request --}}
+                <div>
+                    <label for="reason" class="block text-[14px] font-semibold text-g-dark">Reason for Request</label>
+                    <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
+                        class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="flex justify-center gap-4 mt-8">
+                    <button type="button"
+                        class="w-[168px] h-[40px] bg-g-dark text-white text-[14px] font-semibold rounded hover:opacity-90 transition">
+                        Submit
+                    </button>
+                    <button type="button" onclick="closeModal('requestDataModal')"
+                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+
+            {{-- Close Button (X in corner) --}}
+            <button type="button" onclick="closeModal('requestDataModal')"
+                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                ✕
+            </button>
+        </div>
+    </div>
+
 </div>
 
 {{-- ========== SCRIPTS ========== --}}
