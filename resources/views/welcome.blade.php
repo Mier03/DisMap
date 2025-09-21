@@ -57,6 +57,11 @@
                 <p class="text-md md:text-lg text-g-dark">
                     Interactive map showing disease distribution across Cebu City barangays.
                 </p>
+                            <button
+                                onclick="openModal('requestDataModal')"
+                                class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
+                                Request Data
+                            </button>
             </div>
 
             <!-- Filters -->
@@ -88,6 +93,6 @@
         </section>
 
 
-
+    <x-modals.form-modals id="requestDataModal" />
 </body>
 </html>
