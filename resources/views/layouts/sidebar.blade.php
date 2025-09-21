@@ -16,24 +16,23 @@
 
     <!-- Menu Panels -->
     <div class="flex flex-col space-y-3">
-    <!-- Dashboard -->
-    <a href="{{ Auth::user()->user_type === 'Admin' ? route('superadmin.dashboard') : route('admin.dashboard') }}"
-       class="flex items-center w-full h-12 rounded-md px-3 transition
-       {{ Request::routeIs(Auth::user()->user_type === 'Admin' ? 'superadmin.dashboard' : 'admin.dashboard') 
-      ? 'bg-[#B3FAD8] text-[#296E5B]' 
-      : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
+     <!-- Shared Dashboard -->
+        <a href="{{ route('dashboard') }}"
+           class="flex items-center w-full h-12 rounded-md px-3 transition
+           {{ Request::routeIs('dashboard') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
             <x-gmdi-dashboard-o class="w-5 h-5 mr-2"/>
             <span class="text-sm font-medium">Dashboard</span>
+        </a>
+         <!-- Shared Disease Records -->
+        <a href="{{ route('diseaserecords') }}"
+           class="flex items-center w-full h-12 rounded-md px-3 transition
+           {{ Request::routeIs('diseaserecords') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
+            <x-gmdi-description-o class="w-5 h-5 mr-2"/>
+            <span class="text-sm font-medium">Disease Records</span>
         </a>
 
         @if(Auth::user()->user_type === 'Admin')
             <!-- Superadmin Links -->
-            <a href="{{ route('superadmin.verify_admins') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-               {{ Request::routeIs('superadmin.verify_admins') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-admin-panel-settings-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Manage Admins</span>
-            </a>
 
             <a href="{{ route('superadmin.datarequest') }}"
                class="flex items-center w-full h-12 rounded-md px-3 transition
@@ -41,13 +40,14 @@
                 <x-gmdi-folder-o class="w-5 h-5 mr-2"/>
                 <span class="text-sm font-medium">Data Requests</span>
             </a>
-
-            <a href="{{ route('superadmin.diseaserecords') }}"
+            
+            <a href="{{ route('superadmin.verify_admins') }}"
                class="flex items-center w-full h-12 rounded-md px-3 transition
-               {{ Request::routeIs('superadmin.diseaserecords') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-description-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Disease Records</span>
+               {{ Request::routeIs('superadmin.verify_admins') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
+                <x-gmdi-admin-panel-settings-o class="w-5 h-5 mr-2"/>
+                <span class="text-sm font-medium">Manage Admins</span>
             </a>
+
         @else
             <!-- Admin (Doctor) Links -->
             <a href="{{ route('admin.managepatients') }}"
@@ -55,13 +55,6 @@
                {{ Request::routeIs('admin.managepatients') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
                 <x-gmdi-people-alt-o class="w-5 h-5 mr-2"/>
                 <span class="text-sm font-medium">Manage Patients</span>
-            </a>
-
-            <a href="{{ route('admin.diseaserecords') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-                {{ Request::routeIs('admin.diseaserecords') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-description-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Disease Records</span>
             </a>
 
             <a href="{{ route('admin.accountsettings') }}"

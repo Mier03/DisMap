@@ -15,7 +15,7 @@ class AdminDashboardController extends Controller
         $barangays = Barangay::all();
         $diseases = Disease::all();
 
-        return view('admin.home', compact('barangays', 'diseases'));
+        return view('dashboard', compact('barangays', 'diseases'));
     }
 
     public function index()
@@ -24,6 +24,6 @@ class AdminDashboardController extends Controller
         $diseases = Disease::all();
 
     // Return the admin dashboard view (full UI)
-    return view('admin.dashboard', compact('barangays', 'diseases'));
+    return view('dashboard', compact('barangays', 'diseases'));
     }
 }
