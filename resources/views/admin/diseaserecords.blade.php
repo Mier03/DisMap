@@ -16,9 +16,12 @@
                                 <p class="text-g-dark mt-1">Records of Diseases</p>
                             </div>
                             <div>
-                                <button class="border border-g-dark text-g-dark px-4 py-2 rounded-lg hover:bg-gray-100 transition">
-                                    Export
-                                </button>
+                            {{-- Export Button --}}
+                            <button
+                                onclick="openModal('exportModal')"
+                                class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
+                                Export
+                            </button>
                             </div>
                         </div>
 
@@ -99,4 +102,6 @@
             </div>
         </div>
     </div>
+    {{-- Modals are centralized --}}
+    <x-modals.form-modals id="exportModal" />
 </x-app-layout>

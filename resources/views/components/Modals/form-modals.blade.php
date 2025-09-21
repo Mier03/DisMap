@@ -131,6 +131,101 @@
             <button onclick="closeModal('editPatientModal')" class="mt-4 bg-gray-300 px-3 py-1 rounded">Close</button>
         </div>
     </div>
+    {{-- =========================
+        Export Modal
+    ========================== --}}
+    <div id="exportModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
+
+            {{-- Header --}}
+            <div class="flex items-center mb-2">
+                {{-- Logo --}}
+                <svg class="w-[32px] h-[32px] text-g-dark fill-current"
+                    xmlns="resources/svg/filter.svg" viewBox="0 0 24 24">
+                    <path d="M3 4h18l-7 9v7l-4-2v-5z"/>
+                </svg>
+                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Export</h2>
+            </div>
+            <p class="text-g-dark text-[16px] mb-6 ml-1">Filter and export data</p>
+
+            {{-- Date Range --}}
+            <div class="px-[10px]">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-[14px] font-semibold text-g-dark">Date Range</label>
+                    <button type="button" onclick="resetDateRange()" class="text-g-dark font-semibold text-sm">
+                        Reset
+                    </button>
+                </div>
+                <div class="flex gap-3 mb-3">
+                    <input type="date" id="fromDate" name="fromDate"
+                        class="border border-g-dark rounded w-full h-[40px] text-sm px-3 text-g-dark">
+                    <input type="date" id="toDate" name="toDate"
+                        class="border border-g-dark rounded w-full h-[40px] text-sm px-3 text-g-dark">
+                </div>
+
+                {{-- Date Quick Filters --}}
+                <div class="flex gap-3">
+                    <button type="button"
+                            onclick="setDateFilter('today')"
+                            class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
+                        Today
+                    </button>
+                    <button type="button"
+                            onclick="setDateFilter('week')"
+                            class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
+                        This Week
+                    </button>
+                    <button type="button"
+                            onclick="setDateFilter('month')"
+                            class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
+                        This Month
+                    </button>
+                </div>
+            </div>
+
+            {{-- Hospital --}}
+            <div class="mt-6 px-[10px]">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-[14px] font-semibold text-g-dark">Hospital</label>
+                    <button type="button" onclick="resetHospital()" class="text-g-dark font-semibold text-sm">Reset</button>
+                </div>
+            <select id="export_hospital_id" name="hospital_id"
+                    class="w-full h-[40px] border border-g-dark rounded px-3 text-sm text-g-dark">
+                <option value="" selected>Select hospital...</option>
+                @foreach($hospitals as $hospital)
+                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                @endforeach
+            </select>
+            </div>
+
+            {{-- Disease --}}
+            <div class="mt-6 px-[10px]">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-[14px] font-semibold text-g-dark">Disease Type</label>
+                    <button type="button" onclick="resetDisease()" class="text-g-dark font-semibold text-sm">Reset</button>
+                </div>
+                <select id="export_disease_id" name="disease_id"
+                        class="w-full h-[40px] border border-g-dark rounded px-3 text-sm text-g-dark">
+                    <option value="" selected>Select disease...</option>
+                    @foreach($diseases as $disease)
+                        <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Buttons --}}
+            <div class="flex justify-center gap-4 mt-10">
+                <button type="button"
+                        class="w-[168px] h-[40px] bg-g-dark text-white text-[14px] font-semibold rounded hover:opacity-90 transition">
+                    Export PDF
+                </button>
+                <button type="button" onclick="closeModal('exportModal')"
+                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- ========== SCRIPTS ========== --}}
@@ -226,4 +321,52 @@
 
         updateHiddenInput();
     });
+
+    function setDateFilter(type) {
+        const fromInput = document.getElementById('fromDate');
+        const toInput = document.getElementById('toDate');
+        const today = new Date();
+        let fromDate, toDate = new Date();
+
+        if (type === 'today') {
+            fromDate = new Date();
+        } else if (type === 'week') {
+            fromDate = new Date();
+            fromDate.setDate(today.getDate() - 7);
+        } else if (type === 'month') {
+            fromDate = new Date();
+            fromDate.setDate(today.getDate() - 30);
+        }
+
+        fromInput.value = fromDate.toISOString().split('T')[0];
+        toInput.value = today.toISOString().split('T')[0];
+
+        highlightActive(type);
+    }
+
+    function highlightActive(type) {
+        const buttons = document.querySelectorAll('#exportModal button');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('onclick')?.includes(`setDateFilter('${type}')`)) {
+                btn.classList.add('bg-g-dark', 'text-white');
+            } else if (btn.getAttribute('onclick')?.includes("setDateFilter")) {
+                btn.classList.remove('bg-g-dark', 'text-white');
+                btn.classList.add('text-g-dark');
+            }
+        });
+    }
+
+    function resetDateRange() {
+        document.getElementById('fromDate').value = '';
+        document.getElementById('toDate').value = '';
+    }
+
+    function resetHospital() { 
+        document.getElementById('export_hospital_id').value = ""; 
+    } 
+
+    function resetDisease() { 
+        document.getElementById('export_disease_id').value = ""; 
+    }
+
 </script>
