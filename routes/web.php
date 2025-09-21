@@ -54,6 +54,8 @@ Route::prefix('admin')
             Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
             Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
         });
+
+        Route::post('patient-records/{id}/recovery', [PatientController::class, 'updateRecovery'])->name('patient_records.update_recovery');
     });
 
 // Superadmin routes
