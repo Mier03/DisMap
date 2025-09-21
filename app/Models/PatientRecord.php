@@ -11,12 +11,21 @@ class PatientRecord extends Model
 
     protected $table = 'patient_records';
 
+    public $timestamps = false; 
+    const CREATED_AT = 'date_reported';
+    const UPDATED_AT = 'date_recovered';
     protected $fillable = [
         'patient_id',
         'disease_id',
-        'doctor_hospital_id',
-        'remarks',
+        'reported_dh_id',
+        'reported_remarks',
+        'recovered_dh_id',
+        'recovered_remarks',
+        'status',
+        'date_reported', 
+        'date_recovered',
     ];
+
 
     /**
      * Get the patient that owns the record.
@@ -40,5 +49,15 @@ class PatientRecord extends Model
     public function doctorHospital()
     {
         return $this->belongsTo(DoctorHospital::class, 'doctor_hospital_id');
+    }
+
+    public function reportedByDoctorHospital()
+    {
+        return $this->belongsTo(DoctorHospital::class, 'reported_dh_id');
+    }
+
+    public function recoveredByDoctorHospital()
+    {
+        return $this->belongsTo(DoctorHospital::class, 'recovered_dh_id');
     }
 }

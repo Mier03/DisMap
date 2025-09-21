@@ -13,7 +13,7 @@
 ])
 
 <div id="{{ $id }}"
-     class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md text-center">
         <h2 class="text-xl font-bold text-g-dark mb-2">{{ $title }}</h2>
 
@@ -35,8 +35,8 @@
                     </form>
                 @else
                     <button type="button"
-                            class="bg-g-dark text-white px-4 py-2 rounded-md font-semibold hover:bg-g-dark/90">
-                        {{ $confirmText }}
+                                class="bg-g-dark text-white px-4 py-2 rounded-md font-semibold hover:bg-g-dark/90">
+                            {{ $confirmText }}
                     </button>
                 @endif
                 <button type="button" onclick="closeModal('{{ $id }}')"
@@ -47,7 +47,7 @@
         @else
             {{-- View Content Modal Layout --}}
             <div class="text-g-dark mb-6 overflow-y-auto max-h-96 text-left">
-                <p>{{ $message }}</p>
+                <p id="modalMessageContent">{{ $message }}</p>
             </div>
             <div class="flex justify-end">
                 <button type="button" onclick="closeModal('{{ $id }}')"
@@ -65,6 +65,35 @@
     }
     function closeModal(id) {
         document.getElementById(id).classList.add('hidden');
+    }
+
+    /**
+     * @param {string} remarksText - The text content to display in the modal.
+     * @param {string} [modalId='modalId'] - The ID of the modal to open.
+     */
+    function showRemarks(remarksText, modalId = 'modalId') {
+        const modal = document.getElementById(modalId);
+        if (!modal) {
+            console.error(`Modal with ID "${modalId}" not found.`);
+            return;
+        }
+
+        const titleElement = modal.querySelector('h2');
+        const messageElement = modal.querySelector('#modalMessageContent');
+
+        if (titleElement) {
+            titleElement.textContent = 'Remarks';
+        }
+        if (messageElement) {
+            messageElement.textContent = remarksText;
+        }
+
+        // Set isConfirmation to false to show the content modal layout
+        // A simpler way is to toggle classes on the modal's children
+        // but given the current structure, we'll assume the component is rendered with isConfirmation=false for this purpose
+        // For dynamic content, the `message` prop should be replaced with the `remarksText`
+        
+        openModal(modalId);
     }
 </script>
 

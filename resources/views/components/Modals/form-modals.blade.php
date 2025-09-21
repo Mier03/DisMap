@@ -71,10 +71,10 @@
 
                     {{-- Remarks --}}
                     <div class="mb-4">
-                        <label for="remarks" class="block text-sm font-medium text-g-dark">Remarks</label>
-                        <input type="text" name="remarks" id="remarks" placeholder="Enter any relevant remarks..."
+                        <label for="reported_remarks" class="block text-sm font-medium text-g-dark">Remarks</label>
+                        <input type="text" name="reported_remarks" id="reported_remarks" placeholder="Enter any relevant remarks..."
                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
-                        @error('remarks')
+                        @error('reported_remarks')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
                         @enderror
                     </div>

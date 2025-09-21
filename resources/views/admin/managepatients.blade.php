@@ -47,15 +47,13 @@
                                 $latestRecord = $patient->patientRecords->first();
 
                                 if ($latestRecord) {
-                                    $dateReported = \Carbon\Carbon::parse($latestRecord->created_at)->format('F j, Y') ?? 'N/A';
+                                    $dateReported = \Carbon\Carbon::parse($latestRecord->date_reported)->format('F j, Y') ?? 'N/A';
                                     $statusType = $latestRecord->patient->status ?? 'No Records';                                         
                                     $statusClass = '';
                                     if ($statusType === 'Active') {
                                         $statusClass = 'bg-yellow-200 text-yellow-800';
                                     } elseif ($statusType === 'Recovered') {
                                         $statusClass = 'bg-green-200 text-green-800';
-                                    } elseif ($statusType === 'Deceased') {
-                                        $statusClass = 'bg-red-200 text-red-800';
                                     } else {
                                         $statusClass = 'bg-gray-200 text-gray-800';
                                     }
