@@ -120,6 +120,102 @@
     </div>
 
     {{-- =========================
+        New Record Modal
+    ========================== --}}
+    <div id="newRecordModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-left relative mx-auto my-8">
+            <h2 class="text-3xl font-bold text-g-dark mt-4">New Medical Record</h2>
+            <p class="text-g-dark text-base mt-2">Add a new medical record for patient</p>
+
+            <div class="py-4">
+                <form id="newRecordForm">
+                    @csrf
+                    <input type="hidden" name="patient_id" value="{{ $patient->id ?? '' }}">
+
+                    {{-- Full Name (Display only) --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-g-dark">Full Name</label>
+                        <div class="mt-1 block w-full p-2 rounded-md bg-gray-100 text-gray-700 border border-gray-300">
+                            {{ $patient->name ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Birthdate (Display only) --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-g-dark">Birthdate</label>
+                        <div class="mt-1 block w-full p-2 rounded-md bg-gray-100 text-gray-700 border border-gray-300">
+                            @if($patient && $patient->birthdate)
+                                {{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }}
+                            @else
+                                N/A
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Barangay (Display only) --}}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-g-dark">Barangay</label>
+                        <div class="mt-1 block w-full p-2 rounded-md bg-gray-100 text-gray-700 border border-gray-300">
+                            {{ $patient->barangay->name ?? 'N/A' }}
+                        </div>
+                    </div>
+
+                    {{-- Disease --}}
+                    <div class="mb-4">
+                        <label for="new_disease_id" class="block text-sm font-medium text-g-dark">Disease *</label>
+                        <select name="disease_id" id="new_disease_id" required
+                                class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-g-dark focus:ring focus:ring-g-dark focus:ring-opacity-50 p-2">
+                            <option value="" disabled selected>Select disease...</option>
+                            @foreach($diseases as $disease)
+                                <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Hospital (Filtered by doctor's assigned hospitals) --}}
+                    <div class="mb-4">
+                        <label for="new_hospital_id" class="block text-sm font-medium text-g-dark">Hospital *</label>
+                        <select name="hospital_id" id="new_hospital_id" required
+                                class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-g-dark focus:ring focus:ring-g-dark focus:ring-opacity-50 p-2">
+                            <option value="" disabled selected>Select hospital...</option>
+                            @foreach($hospitals as $hospital)
+                                <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Date Reported --}}
+                    <div class="mb-4">
+                        <label for="new_date_reported" class="block text-sm font-medium text-g-dark">Date Reported *</label>
+                        <input type="date" name="date_reported" id="new_date_reported" required
+                            value="{{ date('Y-m-d') }}"
+                            class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-g-dark focus:ring focus:ring-g-dark focus:ring-opacity-50 p-2">
+                    </div>
+
+                    {{-- Remarks --}}
+                    <div class="mb-4">
+                        <label for="new_reported_remarks" class="block text-sm font-medium text-g-dark">Remarks</label>
+                        <textarea name="reported_remarks" id="new_reported_remarks" placeholder="Enter any relevant remarks..."
+                                class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-g-dark focus:ring focus:ring-g-dark focus:ring-opacity-50 p-2" 
+                                rows="3"></textarea>
+                    </div>
+
+                    <div class="flex justify-between space-x-2 mt-6">
+                        <button type="button" onclick="handleNewRecordSubmit()"
+                                class="w-1/2 px-4 py-2 text-sm font-medium text-white bg-g-dark rounded-md hover:bg-[#296E5B]/90 transition">
+                            + Add Record
+                        </button>
+                        <button type="button" onclick="closeModal('newRecordModal')"
+                                class="w-1/2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================
         Example of Another Modal
         Just copy structure & change the id
     ========================== --}}

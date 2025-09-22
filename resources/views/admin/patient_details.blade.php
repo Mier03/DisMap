@@ -36,7 +36,7 @@
                                     </form>
                                 </div>
                                 <button
-                                    onclick="openModal('addPatientModal')"
+                                    onclick="openModal('newRecordModal')"
                                     class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition shrink-0">
                                     + New
                                 </button>
@@ -121,11 +121,42 @@
         :isConfirmation="false"
     />
 
+    {{-- Include the form modals with patient data --}}
+    <x-modals.form-modals id="newRecordModal" />
+
 </x-app-layout>
 
 <script>
     // Pass hospitals data from the controller
     const hospitals = @json($hospitals);
+
+    function openNewRecordModal() {
+        // Set today's date as default
+        document.getElementById('new_date_reported').value = new Date().toISOString().split('T')[0];
+        
+        // Reset form fields
+        document.getElementById('new_disease_id').value = '';
+        document.getElementById('new_hospital_id').value = '';
+        document.getElementById('new_reported_remarks').value = '';
+        
+        openModal('newRecordModal');
+    }
+
+    function handleNewRecordSubmit() {
+        // Basic form validation
+        const diseaseId = document.getElementById('new_disease_id').value;
+        const hospitalId = document.getElementById('new_hospital_id').value;
+        const dateReported = document.getElementById('new_date_reported').value;
+        
+        if (!diseaseId || !hospitalId || !dateReported) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        
+        // Since you don't want functionality, just show a message and close the modal
+        alert('This is a UI demonstration. The record would be saved in a real implementation.');
+        closeModal('newRecordModal');
+    }
 
     function showRemarks(reportedRemarks, reportedDoctor, reportedHospital, recoveredRemarks, recoveredDoctor, recoveredHospital, recordId) {
         const modal = document.getElementById('remarksModal');
@@ -230,9 +261,11 @@
 
     function openModal(id) {
         document.getElementById(id).classList.remove('hidden');
+        document.getElementById(id).classList.add('flex');
     }
     
     function closeModal(id) {
         document.getElementById(id).classList.add('hidden');
+        document.getElementById(id).classList.remove('flex');
     }
 </script>
