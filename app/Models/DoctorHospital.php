@@ -14,6 +14,8 @@ class DoctorHospital extends Model
     protected $fillable = [
         'doctor_id',
         'hospital_id',
+        'status',
+        'certification',
     ];
 
     /**

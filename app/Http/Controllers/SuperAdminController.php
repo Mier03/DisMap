@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Models\Hospital;
+use App\Models\DoctorHospital;
 use App\Models\Barangay;
 use App\Models\Disease;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +60,10 @@ class SuperAdminController extends Controller
                 // Update the is_approved status on the users table
                 $user->is_approved = true;
                 $user->save();
+
+                 // Update doctor_hospitals status → approved
+                DoctorHospital::where('doctor_id', $user->id)
+                    ->update(['status' => 'approved']);
             });
 
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor approved successfully');
