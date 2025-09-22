@@ -74,7 +74,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id')
             ->withTimestamps()
-            ->withPivot('certification');
+            ->withPivot('certification', 'status');
+    }
+
+    /**
+     * To fetch the hospitals names of doctor where the status is approved. (doctor_hospitals pivot table )
+     */
+    public function approvedHospitals()
+    {
+        return $this->hospitals()->wherePivot('status', 'approved');
     }
 
     /**

@@ -15,8 +15,7 @@
                             <p class="text-g-dark mt-1">Manage your account information and security</p>
                         </div>
 
-                        <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start relative min-h-[550px]">
-
+                        <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start relative">
                             {{-- Profile Image --}}
                             <div class="flex-shrink-0 mr-6 mb-6 md:mb-0">
                                 <img src="/images/defaultprofile.jpg" alt="Profile"
@@ -68,24 +67,37 @@
                                     </button>
                                 </div>
                             </form>
+                        </div>
 
-                            {{-- Assigned Hospitals --}}
-                            <div class="flex-1 ml-12">
-                                <h3 class="text-xl font-semibold text-g-dark mb-2">{{ Auth::user()->name }}</h3>
-                                <p class="text-gray-600 mb-4">{{ Auth::user()->email }}</p>
-
-                                <div class="flex justify-between items-center mb-2">
+                        <!-- Assigned Hospitals - Horizontal Layout at Bottom -->
+                        <div class="mt-8 bg-white border border-g-dark rounded-lg p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
                                     <h4 class="text-2xl font-bold text-g-dark">Assigned Hospitals</h4>
-                                    <button class="bg-g-dark text-white px-3 py-1 rounded hover:bg-[#296E5B]/90 transition">
-                                        + Add Hospital
-                                    </button>
+                                    <p class="text-gray-600">Manage your hospital assignments</p>
                                 </div>
+                                <button id="addHospitalBtn" class="bg-gradient-to-r from-[#296E5B] to-[#1e5a48] text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:from-[#1e5a48] hover:to-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
+                                    <i class="fas fa-plus"></i> Add Hospital
+                                </button>
+                            </div>
 
-                                <ul class="space-y-1 text-g-dark text-base">
-                                    <li class="border-b border-gray-300 pb-1">Cebu Doctors Hospital</li>
-                                    <li class="border-b border-gray-300 pb-1">VSMMC</li>
-                                    <li>Velez</li>
-                                </ul>
+                            <!-- Horizontal Hospital List -->
+                            <div class="overflow-hidden">
+                                <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                    <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                        @foreach(Auth::user()->approvedHospitals as $hospital)
+                                            <x-cards :hospital="$hospital" />
+                                        @endforeach
+                                    
+                                    <!-- Empty card for adding new hospitals -->
+                                    <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 flex-shrink-0 w-64 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition"
+                                         onclick="document.getElementById('addHospitalModal').classList.remove('hidden')">
+                                        <div class="text-center text-gray-500">
+                                            <i class="fas fa-plus-circle text-2xl mb-2"></i>
+                                            <p>Add New Hospital</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,7 +106,9 @@
         </div>
     </div>
 
-    {{-- Change Password Modal (hidden by default) --}}
+    <x-modals.form-modals id="addHospitalModal" :hospitals="$hospitals" />
+
+    {{-- Change Password Modal --}}
     <div id="passwordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg w-[400px]">
             <h2 class="text-xl font-bold mb-4">Change Password</h2>
@@ -130,4 +144,53 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Hospital Modal Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const addHospitalBtn = document.getElementById('addHospitalBtn');
+            const addHospitalModal = document.getElementById('addHospitalModal');
+            const closeHospitalModal = document.getElementById('closeHospitalModal');
+            const cancelHospital = document.getElementById('cancelHospital');
+            const hospitalForm = document.getElementById('hospitalForm');
+            
+            // Show modal
+            addHospitalBtn.addEventListener('click', function() {
+                addHospitalModal.classList.remove('hidden');
+            });
+            
+            // Hide modal
+            function hideHospitalModal() {
+                addHospitalModal.classList.add('hidden');
+            }
+            
+            closeHospitalModal.addEventListener('click', hideHospitalModal);
+            cancelHospital.addEventListener('click', hideHospitalModal);
+            
+            // Form submission
+            hospitalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const hospitalName = document.getElementById('hospitalName').value;
+                const hospitalAddress = document.getElementById('hospitalAddress').value;
+                const hospitalCity = document.getElementById('hospitalCity').value;
+                
+                // In a real application, you would send this data to the server
+                console.log('Adding hospital:', { hospitalName, hospitalAddress, hospitalCity });
+                
+                // For demo purposes, just close the modal
+                hideHospitalModal();
+                
+                // Reset form
+                hospitalForm.reset();
+            });
+            
+            // Close modal when clicking outside
+            addHospitalModal.addEventListener('click', function(e) {
+                if (e.target === addHospitalModal) {
+                    hideHospitalModal();
+                }
+            });
+        });
+    </script>
 </x-app-layout>
