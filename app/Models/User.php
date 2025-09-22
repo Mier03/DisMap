@@ -24,7 +24,6 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'certification',
         'user_type',
         'profile_image',
         'is_approved',
@@ -73,7 +72,9 @@ class User extends Authenticatable
      */
     public function hospitals()
     {
-        return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id')->withTimestamps();
+        return $this->belongsToMany(Hospital::class, 'doctor_hospitals', 'doctor_id', 'hospital_id')
+            ->withTimestamps()
+            ->withPivot('certification');
     }
 
     /**

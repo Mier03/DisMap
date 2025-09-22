@@ -40,8 +40,11 @@
                     <tr class="border-b">
                         @php
                             // Certificate button (used in both pending and all admins)
-                            $certificateButton = $item->certification
-                                ? '<button onclick="viewCertificate(\'' . asset('storage/'.$item->certification) . '\')"
+                            $hospital = $item->hospitals->first();
+                            $pivotCertification = $hospital?->pivot?->certification;
+
+                            $certificateButton = $pivotCertification
+                                ? '<button onclick="viewCertificate(\'' . asset('storage/'.$pivotCertification) . '\')"
                                           class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
                                           View
                                       </button>'

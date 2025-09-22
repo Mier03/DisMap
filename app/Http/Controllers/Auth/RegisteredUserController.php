@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use App\Models\Hospital;
+use App\Models\DoctorHospital;
 
 class RegisteredUserController extends Controller
 {
@@ -65,15 +66,22 @@ class RegisteredUserController extends Controller
             'user_type' => 'Doctor',
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'certification' => $certificationPath,
             'profile_image' => $profileImagePath,
             'is_approved' => false,
             'birthdate' => $request->birthdate, // Make sure birthdate is correctly passed
         ]);
         
-        // Create a new entry in the doctor_hospitals pivot table
-        // This is the correct way to associate a Doctor with a Hospital
-        $user->hospitals()->attach($request->hospital_id);
+         // Create DoctorHospital record (instead of pivot attach)
+        $doctorHospital = DoctorHospital::create([
+            'doctor_id' => $user->id,
+            'hospital_id' => $request->hospital_id,
+            'status' => 'pending', // default ENUM value (you can change)
+            'certification' => $certificationPath,
+        ]);
+        if (!$doctorHospital) {
+            dd("DoctorHospital insert failed!");
+        }
+
 
         event(new Registered($user));
 
