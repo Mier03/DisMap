@@ -1,4 +1,4 @@
-@props(['id'])
+@props(['id', 'hospitals'])
 
 {{-- Wrapper that holds ALL modals --}}
 <div>
@@ -85,9 +85,11 @@
                         <select name="hospital_id" id="hospital_id" required
                                 class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
                             <option value="" disabled selected>Select hospital...</option>
-                            @foreach($hospitals as $hospital)
-                                <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
-                            @endforeach
+                            @if(Auth::check())
+                                @foreach(Auth::user()->approvedHospitals  as $hospital)
+                                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                                @endforeach
+                            @endif
                         </select>
                         @error('hospital_id')
                             <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -116,6 +118,49 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+     {{-- =========================
+        ADD hospital Modal
+    ========================== --}}
+    <!-- Add Hospital Modal -->
+    <div id="addHospitalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+            <x-input-label class="text-xl font-bold mb-4">Add Hospital</x-input-label>
+            
+            <form id="hospitalForm" method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
+                @csrf
+                 @if(Auth::check())
+                    <!-- Select Hospital -->
+                    <div class="mb-4">
+                        <label for="hospitalSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Hospital</label>
+                        <x-dropdown-select id="hospitalSelect" name="hospital_id" required
+                                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-g-dark">
+                            @foreach($hospitals as $hospital)
+                                @if(!Auth::user()->approvedHospitals->contains($hospital->id)) {{-- Exclude already assigned --}}
+                                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                                @endif
+                            @endforeach
+                        </x-dropdown-select>
+                    </div>
+                    
+                @endif
+
+                    <!-- Certification Upload -->
+                    <div class="mb-4">
+                        <label for="certification" class="block text-sm font-medium text-gray-700">Upload Certification</label>
+                        <input type="file" id="certification" name="certification" required
+                            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-g-dark">
+                    </div>
+
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="document.getElementById('addHospitalModal').classList.add('hidden')"
+                                class="px-4 py-2 border rounded">Cancel</button>
+                        <button type="submit"
+                                class="bg-g-dark text-white px-4 py-2 rounded hover:bg-[#296E5B]/90">Submit</button>
+                    </div>
+                
+            </form>
         </div>
     </div>
 
@@ -432,5 +477,13 @@
     function resetDisease() { 
         document.getElementById('export_disease_id').value = ""; 
     }
+
+    const addHospitalModal = document.getElementById('addHospitalModal');
+
+    addHospitalModal.addEventListener('click', function(e) {
+        if (e.target === addHospitalModal) {
+            addHospitalModal.classList.add('hidden');
+        }
+    });
 
 </script>

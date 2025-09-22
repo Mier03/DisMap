@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RequestDataController;
+use App\Http\Controllers\DoctorHospitalController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -42,9 +43,12 @@ Route::prefix('admin')
     ->group(function () {
 
         // Other static admin pages that don't require controller data
-        foreach (['accountsettings'] as $page) {
-            Route::view($page, "admin.$page")->name($page);
-        }
+        // foreach (['accountsettings'] as $page) {
+        //     Route::view($page, "admin.$page")->name($page);
+        // }
+
+        Route::get('/accountsettings', [DoctorHospitalController::class, 'index'])->name('accountsettings');
+        Route::post('/accountsettings', [DoctorHospitalController::class, 'store'])->name('doctor_hospitals.store');
 
         // Patient management routes
         Route::controller(PatientController::class)->group(function () {
@@ -79,5 +83,7 @@ Route::prefix('superadmin')
             Route::put('update-admin/{id}', 'updateAdmin')->name('update_admin');
         });
     });
+
+
 
 require __DIR__ . '/auth.php';

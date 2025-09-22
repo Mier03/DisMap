@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Hospital;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -26,4 +27,5 @@ class AdminDashboardController extends Controller
     // Return the admin dashboard view (full UI)
     return view('dashboard', compact('barangays', 'diseases'));
     }
+
 }
