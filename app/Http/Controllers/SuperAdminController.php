@@ -35,16 +35,36 @@ class SuperAdminController extends Controller
             ->with('hospitals')
             ->get();
 
+
         if ($request->ajax()) {
             return response()->json([
                 'pendingAdmins' => $pendingAdmins,
-                'allAdmins' => $allAdmins
+                'allAdmins' => $allAdmins,
             ]);
         }
 
-        return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins', 'searchTerm'));
+        return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins','searchTerm'));
     }
+    public function datarequest(Request $request)
+    {
+        $searchTerm = $request->input('q');
 
+        $pendingHospitals = DoctorHospital::with(['doctor', 'hospital'])
+            ->where('status', 'pending')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->whereHas('doctor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('username', 'LIKE', "%{$searchTerm}%");
+                })
+                ->orWhereHas('hospital', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%");
+                });
+            })
+            ->get();
+
+        return view('superadmin.datarequest', compact('pendingHospitals', 'searchTerm'));
+    }
 
     public function approveAdmin($id)
     {
