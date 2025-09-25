@@ -71,30 +71,6 @@
      * @param {string} remarksText - The text content to display in the modal.
      * @param {string} [modalId='modalId'] - The ID of the modal to open.
      */
-    function showRemarks(remarksText, modalId = 'modalId') {
-        const modal = document.getElementById(modalId);
-        if (!modal) {
-            console.error(`Modal with ID "${modalId}" not found.`);
-            return;
-        }
-
-        const titleElement = modal.querySelector('h2');
-        const messageElement = modal.querySelector('#modalMessageContent');
-
-        if (titleElement) {
-            titleElement.textContent = 'Remarks';
-        }
-        if (messageElement) {
-            messageElement.textContent = remarksText;
-        }
-
-        // Set isConfirmation to false to show the content modal layout
-        // A simpler way is to toggle classes on the modal's children
-        // but given the current structure, we'll assume the component is rendered with isConfirmation=false for this purpose
-        // For dynamic content, the `message` prop should be replaced with the `remarksText`
-        
-        openModal(modalId);
-    }
 </script>
 
 {{-- Filter Modal merged in from resources/views/components/filter-modal.blade.php --}}

@@ -1,4 +1,4 @@
-@props(['id', 'hospitals'])
+@props(['id', 'hospitals', 'barangays', 'diseases'])
 
 {{-- Wrapper that holds ALL modals --}}
 <div>
@@ -6,7 +6,7 @@
         Add Patient Modal
     ========================== --}}
     <div id="addPatientModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-left relative">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-left relative overflow-y-auto max-h-[80vh]">
             <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">Add Patient</h2>
             <p class="text-g-dark text-base mt-2 ml-8">Record a new patient case</p>
 
@@ -16,103 +16,87 @@
 
                     {{-- Full Name --}}
                     <div class="mb-4">
-                        <label for="fullName" class="block text-sm font-medium text-g-dark">Full Name</label>
-                        <input type="text" name="fullName" id="fullName" placeholder="Enter patient full name..." required
-                               class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
-                        @error('fullName')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <x-input-label for="fullName" :value="__('Full Name')" />
+                        <x-text-input id="fullName" class="block mt-1 w-full" 
+                            type="text" name="fullName" :value="old('fullName')" 
+                            required placeholder="Enter patient full name..." />
+                        <x-input-error :messages="$errors->get('fullName')" class="mt-2" />
                     </div>
 
                     {{-- Birthdate --}}
                     <div class="mb-4">
-                        <label for="birthdate" class="block text-sm font-medium text-g-dark">Birthdate</label>
-                        <input type="date" name="birthdate" id="birthdate" required
-                               class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
-                        @error('birthdate')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <x-input-label for="birthdate" :value="__('Birthdate')" />
+                        <x-text-input id="birthdate" class="block mt-1 w-full" 
+                            type="date" name="birthdate" :value="old('birthdate')" 
+                            required />
+                        <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
                     </div>
 
                     {{-- Barangay --}}
                     <div class="mb-4">
-                        <label for="barangay_id" class="block text-sm font-medium text-g-dark">Barangay</label>
-                        <select name="barangay_id" id="barangay_id" required
-                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
+                        <x-input-label for="barangay_id" :value="__('Barangay')" />
+                        <x-dropdown-select id="barangay_id" name="barangay_id" required>
                             <option value="" disabled selected>Select barangay...</option>
                             @foreach($barangays as $barangay)
                                 <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
                             @endforeach
-                        </select>
-                        @error('barangay_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        </x-dropdown-select>
+                        <x-input-error :messages="$errors->get('barangay_id')" class="mt-2" />
                     </div>
 
                     {{-- Diseases --}}
                     <div class="mb-4">
-                        <label for="disease_id" class="block text-sm font-medium text-g-dark">Disease</label>
-                        <select name="disease_select" id="disease_id"
-                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
+                        <x-input-label for="disease_id" :value="__('Disease')" />
+                        <x-dropdown-select id="disease_id" name="disease_select">
                             <option value="" disabled selected>Select patient’s disease...</option>
                             @foreach($diseases as $disease)
                                 <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
                             @endforeach
-                        </select>
+                        </x-dropdown-select>
                         <input type="hidden" name="disease_id[]" id="disease_id_hidden" value="">
                         <div id="disease-tags" class="mt-2 flex flex-wrap gap-2"></div>
-                        @error('disease_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
-                        @error('disease_id.*')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <x-input-error :messages="$errors->get('disease_id')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('disease_id.*')" class="mt-2" />
                     </div>
 
                     {{-- Remarks --}}
                     <div class="mb-4">
-                        <label for="reported_remarks" class="block text-sm font-medium text-g-dark">Remarks</label>
-                        <input type="text" name="reported_remarks" id="reported_remarks" placeholder="Enter any relevant remarks..."
-                               class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
-                        @error('reported_remarks')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <x-input-label for="reported_remarks" :value="__('Remarks')" />
+                        <x-text-input id="reported_remarks" class="block mt-1 w-full" 
+                            type="text" name="reported_remarks" :value="old('reported_remarks')" 
+                            placeholder="Enter any relevant remarks..." />
+                        <x-input-error :messages="$errors->get('reported_remarks')" class="mt-2" />
                     </div>
 
                     {{-- Hospital --}}
                     <div class="mb-4">
-                        <label for="hospital_id" class="block text-sm font-medium text-g-dark">Hospital</label>
-                        <select name="hospital_id" id="hospital_id" required
-                                class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
+                        <x-input-label for="hospital_id" :value="__('Hospital')" />
+                        <x-dropdown-select id="hospital_id" name="hospital_id" required>
                             <option value="" disabled selected>Select hospital...</option>
                             @if(Auth::check())
-                                @foreach(Auth::user()->approvedHospitals  as $hospital)
+                                @foreach(Auth::user()->approvedHospitals as $hospital)
                                     <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
                                 @endforeach
                             @endif
-                        </select>
-                        @error('hospital_id')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        </x-dropdown-select>
+                        <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
                     </div>
 
                     {{-- Email --}}
                     <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-g-dark">Email</label>
-                        <input type="email" name="email" id="email" placeholder="Enter valid email address..." required
-                               class="mt-1 block w-full rounded-md border-g-dark shadow-sm">
-                        @error('email')
-                            <span class="text-red-500 text-sm">{{ $message }}</span>
-                        @enderror
+                        <x-input-label for="email" :value="__('Email')" />
+                        <x-text-input id="email" class="block mt-1 w-full" 
+                            type="email" name="email" :value="old('email')" 
+                            required placeholder="Enter valid email address..." />
+                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
                     <div class="flex justify-between space-x-2 mt-6">
-                        <button type="submit" id="addPatientButton"
-                                class="w-1/2 px-4 py-2 text-sm font-medium text-white bg-g-dark rounded-md hover:bg-[#296E5B]/90">
-                            + Add Patient
-                        </button>
+                        <x-primary-button id="addPatientButton">
+                            {{ __('+ Add Patient') }}
+                        </x-primary-button>
                         <button type="button" onclick="closeModal('addPatientModal')"
-                                class="w-1/2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                                class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
                             Cancel
                         </button>
                     </div>
@@ -120,150 +104,142 @@
             </div>
         </div>
     </div>
-     {{-- =========================
-        ADD hospital Modal
+
+    {{-- =========================
+        Add Hospital Modal
     ========================== --}}
-    <!-- Add Hospital Modal -->
     <div id="addHospitalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg w-[500px]">
-            <x-input-label class="text-xl font-bold mb-4">Add Hospital</x-input-label>
+            <x-input-label class="text-xl font-bold mb-4" :value="__('Add Hospital')" />
             
             <form id="hospitalForm" method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
                 @csrf
-                 @if(Auth::check())
+                @if(Auth::check())
                     <!-- Select Hospital -->
                     <div class="mb-4">
-                        <label for="hospitalSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Hospital</label>
-                        <x-dropdown-select id="hospitalSelect" name="hospital_id" required
-                                class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-g-dark">
+                        <x-input-label for="hospitalSelect" :value="__('Select Hospital')" />
+                        <x-dropdown-select id="hospitalSelect" name="hospital_id" required>
                             @foreach($hospitals as $hospital)
-                                @if(!Auth::user()->approvedHospitals->contains($hospital->id)) {{-- Exclude already assigned --}}
+                                @if(!Auth::user()->approvedHospitals->contains($hospital->id))
                                     <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
                                 @endif
                             @endforeach
                         </x-dropdown-select>
+                        <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
                     </div>
-                    
                 @endif
 
-                    <!-- Certification Upload -->
-                    <div class="mb-4">
-                        <label for="certification" class="block text-sm font-medium text-gray-700">Upload Certification</label>
-                        <input type="file" id="certification" name="certification" required
-                            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-g-dark">
-                    </div>
+                <!-- Certification Upload -->
+                <div class="mb-4">
+                    <x-input-label for="certification" :value="__('Upload Certification')" />
+                    <input id="certification" 
+                           class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2]" 
+                           type="file" name="certification" accept=".jpg,.jpeg,.png,.pdf" required />
+                    <x-input-error :messages="$errors->get('certification')" class="mt-2" />
+                </div>
 
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="document.getElementById('addHospitalModal').classList.add('hidden')"
-                                class="px-4 py-2 border rounded">Cancel</button>
-                        <button type="submit"
-                                class="bg-g-dark text-white px-4 py-2 rounded hover:bg-[#296E5B]/90">Submit</button>
-                    </div>
-                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="document.getElementById('addHospitalModal').classList.add('hidden')"
+                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">Cancel</button>
+                    <x-primary-button>
+                        {{ __('Submit') }}
+                    </x-primary-button>
+                </div>
             </form>
         </div>
     </div>
 
     {{-- =========================
-        Example of Another Modal
-        Just copy structure & change the id
+        Edit Patient Modal
     ========================== --}}
     <div id="editPatientModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white rounded-lg shadow-lg p-6 w-[500px]">
             <h2 class="text-2xl font-bold text-g-dark">Edit Patient</h2>
             <p class="text-g-dark text-base">Edit patient details here...</p>
-            {{-- Your edit form --}}
-            <button onclick="closeModal('editPatientModal')" class="mt-4 bg-gray-300 px-3 py-1 rounded">Close</button>
+            <button onclick="closeModal('editPatientModal')" class="mt-4 w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                Close
+            </button>
         </div>
     </div>
+
     {{-- =========================
         Export Modal
     ========================== --}}
     <div id="exportModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
-
-            {{-- Header --}}
             <div class="flex items-center mb-2">
-                {{-- Logo --}}
                 <svg class="w-[32px] h-[32px] text-g-dark fill-current"
-                    xmlns="resources/svg/filter.svg" viewBox="0 0 24 24">
+                     xmlns="resources/svg/filter.svg" viewBox="0 0 24 24">
                     <path d="M3 4h18l-7 9v7l-4-2v-5z"/>
                 </svg>
                 <h2 class="ml-3 text-[28px] font-bold text-g-dark">Export</h2>
             </div>
             <p class="text-g-dark text-[16px] mb-6 ml-1">Filter and export data</p>
 
-            {{-- Date Range --}}
             <div class="px-[10px]">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="text-[14px] font-semibold text-g-dark">Date Range</label>
+                    <x-input-label :value="__('Date Range')" />
                     <button type="button" onclick="resetDateRange()" class="text-g-dark font-semibold text-sm">
                         Reset
                     </button>
                 </div>
                 <div class="flex gap-3 mb-3">
-                    <input type="date" id="fromDate" name="fromDate"
-                        class="border border-g-dark rounded w-full h-[40px] text-sm px-3 text-g-dark">
-                    <input type="date" id="toDate" name="toDate"
-                        class="border border-g-dark rounded w-full h-[40px] text-sm px-3 text-g-dark">
+                    <x-text-input id="fromDate" class="w-full h-[40px] text-sm" 
+                        type="date" name="fromDate" :value="old('fromDate')" />
+                    <x-text-input id="toDate" class="w-full h-[40px] text-sm" 
+                        type="date" name="toDate" :value="old('toDate')" />
                 </div>
 
-                {{-- Date Quick Filters --}}
                 <div class="flex gap-3">
-                    <button type="button"
-                            onclick="setDateFilter('today')"
+                    <button type="button" onclick="setDateFilter('today')"
                             class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         Today
                     </button>
-                    <button type="button"
-                            onclick="setDateFilter('week')"
+                    <button type="button" onclick="setDateFilter('week')"
                             class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         This Week
                     </button>
-                    <button type="button"
-                            onclick="setDateFilter('month')"
+                    <button type="button" onclick="setDateFilter('month')"
                             class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         This Month
                     </button>
                 </div>
             </div>
 
-            {{-- Hospital --}}
             <div class="mt-6 px-[10px]">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="text-[14px] font-semibold text-g-dark">Hospital</label>
-                    <button type="button" onclick="resetHospital()" class="text-g-dark font-semibold text-sm">Reset</button>
+                    <x-input-label for="export_hospital_id" :value="__('Hospital')" />
+                    <button type="button" onclick="resetHospital()" class="text-g-dark font-semibold text-sm">
+                        Reset
+                    </button>
                 </div>
-            <select id="export_hospital_id" name="hospital_id"
-                    class="w-full h-[40px] border border-g-dark rounded px-3 text-sm text-g-dark">
-                <option value="" selected>Select hospital...</option>
-                @foreach($hospitals as $hospital)
-                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
-                @endforeach
-            </select>
+                <x-dropdown-select id="export_hospital_id" name="hospital_id">
+                    <option value="" selected>Select hospital...</option>
+                    @foreach($hospitals as $hospital)
+                        <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                    @endforeach
+                </x-dropdown-select>
             </div>
 
-            {{-- Disease --}}
             <div class="mt-6 px-[10px]">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="text-[14px] font-semibold text-g-dark">Disease Type</label>
-                    <button type="button" onclick="resetDisease()" class="text-g-dark font-semibold text-sm">Reset</button>
+                    <x-input-label for="export_disease_id" :value="__('Disease Type')" />
+                    <button type="button" onclick="resetDisease()" class="text-g-dark font-semibold text-sm">
+                        Reset
+                    </button>
                 </div>
-                <select id="export_disease_id" name="disease_id"
-                        class="w-full h-[40px] border border-g-dark rounded px-3 text-sm text-g-dark">
+                <x-dropdown-select id="export_disease_id" name="disease_id">
                     <option value="" selected>Select disease...</option>
                     @foreach($diseases as $disease)
                         <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
                     @endforeach
-                </select>
+                </x-dropdown-select>
             </div>
 
-            {{-- Buttons --}}
             <div class="flex justify-center gap-4 mt-10">
-                <button type="button"
-                        class="w-[168px] h-[40px] bg-g-dark text-white text-[14px] font-semibold rounded hover:opacity-90 transition">
-                    Export PDF
-                </button>
+                <x-primary-button>
+                    {{ __('Export PDF') }}
+                </x-primary-button>
                 <button type="button" onclick="closeModal('exportModal')"
                         class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
                     Cancel
@@ -273,61 +249,56 @@
     </div>
 
     {{-- =========================
-    Request Data Modal
+        Request Data Modal
     ========================== --}}
     <div id="requestDataModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
-
-            {{-- Header --}}
             <div class="flex items-center mb-2">
-                {{-- Logo --}}
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
-                    viewBox="0 0 24 24">
+                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
                 </svg>
                 <h2 class="ml-3 text-[28px] font-bold text-g-dark">Data Request Form</h2>
             </div>
             <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
 
-            {{-- Form --}}
-            {{-- remove javascript:void(0) when adding database connection, also add @csrf after form--}}
             <form action="javascript:void(0)" method="POST" class="space-y-5">
-                {{-- Full Name --}}
+                @csrf
                 <div>
-                    <label for="full_name" class="block text-[14px] font-semibold text-g-dark">Full Name</label>
-                    <input type="text" id="full_name" name="full_name" placeholder="Enter your full name..."
-                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                    <x-input-label for="full_name" :value="__('Full Name')" />
+                    <x-text-input id="full_name" class="block mt-1 w-full" 
+                        type="text" name="full_name" :value="old('full_name')" 
+                        placeholder="Enter your full name..." />
+                    <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
                 </div>
 
-                {{-- Email --}}
                 <div>
-                    <label for="email" class="block text-[14px] font-semibold text-g-dark">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email address..."
-                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                    <x-input-label for="email" :value="__('Email')" />
+                    <x-text-input id="email" class="block mt-1 w-full" 
+                        type="email" name="email" :value="old('email')" 
+                        placeholder="Enter your email address..." />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                {{-- Reason for Request --}}
                 <div>
-                    <label for="reason" class="block text-[14px] font-semibold text-g-dark">Reason for Request</label>
+                    <x-input-label for="reason" :value="__('Reason for Request')" />
                     <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
-                        class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                              class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                    <x-input-error :messages="$errors->get('reason')" class="mt-2" />
                 </div>
 
-                {{-- Buttons --}}
                 <div class="flex justify-center gap-4 mt-8">
-                    <button type="button"
-                        class="w-[168px] h-[40px] bg-g-dark text-white text-[14px] font-semibold rounded hover:opacity-90 transition">
-                        Submit
-                    </button>
+                    <x-primary-button>
+                        {{ __('Submit') }}
+                    </x-primary-button>
                     <button type="button" onclick="closeModal('requestDataModal')"
-                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
                         Cancel
                     </button>
                 </div>
             </form>
 
-            {{-- Close Button (X in corner) --}}
             <button type="button" onclick="closeModal('requestDataModal')"
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                 ✕
@@ -335,64 +306,90 @@
         </div>
     </div>
 
-
     {{-- =========================
-    View Reason of Request Modal - SuperAdmin Side
+        View Reason of Request Modal - SuperAdmin Side
     ========================== --}}
     <div id="reasonRequestModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
-
-            {{-- Header --}}
             <div class="flex items-center mb-2">
-                {{-- Logo --}}
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
-                    viewBox="0 0 24 24">
+                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
                 </svg>
                 <h2 class="ml-3 text-[28px] font-bold text-g-dark">Request Form</h2>
             </div>
             <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
 
-            {{-- Form --}}
-            {{-- remove javascript:void(0) when adding database connection, also add @csrf after form--}}
             <form action="javascript:void(0)" method="POST" class="space-y-5">
-                {{-- Full Name --}}
+                @csrf
                 <div>
-                    <label for="full_name" class="block text-[14px] font-semibold text-g-dark">Full Name</label>
-                    <input type="text" id="full_name" name="full_name" readonly placeholder="Full Name Here"
-                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                    <x-input-label for="full_name" :value="__('Full Name')" />
+                    <x-text-input id="full_name" class="block mt-1 w-full" 
+                        type="text" name="full_name" readonly placeholder="Full Name Here" />
+                    <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
                 </div>
 
-                {{-- Email --}}
                 <div>
-                    <label for="email" class="block text-[14px] font-semibold text-g-dark">Email</label>
-                    <input type="email" id="email" name="email" readonly placeholder="Email Address Here"
-                        class="w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                    <x-input-label for="email" :value="__('Email')" />
+                    <x-text-input id="email" class="block mt-1 w-full" 
+                        type="email" name="email" readonly placeholder="Email Address Here" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
-                {{-- Reason for Request --}}
                 <div>
-                    <label for="reason" class="block text-[14px] font-semibold text-g-dark">Reason for Request</label>
+                    <x-input-label for="reason" :value="__('Reason for Request')" />
                     <textarea id="reason" name="reason" readonly placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                        class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                              class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                    <x-input-error :messages="$errors->get('reason')" class="mt-2" />
                 </div>
 
-                {{-- Buttons --}}
                 <div class="flex justify-center gap-4 mt-8">
-                    <button type="button"
-                        class="w-[168px] h-[40px] bg-g-dark text-white text-[14px] font-semibold rounded hover:opacity-90 transition">
-                        Accept
-                    </button>
+                    <x-primary-button>
+                        {{ __('Accept') }}
+                    </x-primary-button>
                     <button type="button" onclick="closeModal('reasonRequestModal')"
-                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
                         Decline
                     </button>
                 </div>
             </form>
 
-            {{-- Close Button (X in corner) --}}
             <button type="button" onclick="closeModal('reasonRequestModal')"
+                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                ✕
+            </button>
+        </div>
+    </div>
+
+    {{-- =========================
+        Patient Details Modal
+    ========================= --}}
+    <div id="patientDetailsModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" 
+        data-update-route="{{ route('admin.patient_records.update_recovery', ['id' => '__RECORD_ID__']) }}">
+        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[80vh]">
+            <div class="flex items-center mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-[32px] h-[32px] text-g-dark fill-current"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
+                </svg>
+                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Patient Details</h2>
+            </div>
+            <p class="text-g-dark text-[16px] mb-6 ml-1">View or update patient record details</p>
+
+            <div class="text-g-dark mb-6" id="patientDetailsContent">
+                <!-- Dynamic content will be injected here via JavaScript -->
+            </div>
+
+            <div class="flex justify-center gap-4 mt-8">
+                <button type="button" onclick="closeModal('patientDetailsModal')"
+                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    Close
+                </button>
+            </div>
+
+            <button type="button" onclick="closeModal('patientDetailsModal')"
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                 ✕
             </button>
@@ -402,6 +399,10 @@
 
 {{-- ========== SCRIPTS ========== --}}
 <script>
+    // Pass hospitals data from the controller
+    const hospitals = @json($hospitals);
+    console.log('Hospitals:', hospitals);
+
     function openModal(id) {
         const modal = document.getElementById(id);
         if (modal) {
@@ -415,6 +416,170 @@
         if (modal) {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+    }
+
+    async function showDetails(recordId) {
+        const modal = document.getElementById('patientDetailsModal');
+        if (!modal) {
+            console.error('Patient Details modal not found');
+            return;
+        }
+        const contentDiv = document.getElementById('patientDetailsContent');
+        if (!contentDiv) {
+            console.error('Content div not found in patient details modal');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/patient-records/${recordId}`, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const record = await response.json();
+            console.log('API Response:', record);
+
+            let htmlContent = `
+                <div class="mb-6">
+                    <h4 class="font-bold text-lg mb-2 text-g-dark">Reported Details</h4>
+                    <div class="mb-4">
+                        <x-input-label for="reported_remarks" :value="__('Remarks')" />
+                        <x-text-input id="reported_remarks" class="block mt-1 w-full" 
+                            type="text" value="${record.reported_remarks || 'N/A'}" readonly />
+                    </div>
+                    <div class="mb-4">
+                        <x-input-label for="reported_doctor" :value="__('Attending Doctor')" />
+                        <x-text-input id="reported_doctor" class="block mt-1 w-full" 
+                            type="text" value="${record.reported_doctor || 'N/A'}" readonly />
+                    </div>
+                    <div class="mb-4">
+                        <x-input-label for="reported_hospital" :value="__('Hospital')" />
+                        <x-text-input id="reported_hospital" class="block mt-1 w-full" 
+                            type="text" value="${record.reported_hospital || 'N/A'}" readonly />
+                    </div>
+                </div>
+            `;
+
+            // Only show recovery details if at least one recovery field exists
+            if (record.recovered_remarks || record.recovered_doctor || record.recovered_hospital) {
+                htmlContent += `
+                    <hr class="my-4 border-t border-gray-200">
+                    <h4 class="font-bold text-lg mb-2 text-g-dark">Recovery Details</h4>
+                    <div class="mb-4">
+                        <x-input-label for="recovered_remarks" :value="__('Remarks')" />
+                        <x-text-input id="recovered_remarks" class="block mt-1 w-full" 
+                            type="text" value="${record.recovered_remarks || 'N/A'}" readonly />
+                    </div>
+                    <div class="mb-4">
+                        <x-input-label for="recovered_doctor" :value="__('Attending Doctor')" />
+                        <x-text-input id="recovered_doctor" class="block mt-1 w-full" 
+                            type="text" value="${record.recovered_doctor || 'N/A'}" readonly />
+                    </div>
+                    <div class="mb-4">
+                        <x-input-label for="recovered_hospital" :value="__('Hospital')" />
+                        <x-text-input id="recovered_hospital" class="block mt-1 w-full" 
+                            type="text" value="${record.recovered_hospital || 'N/A'}" readonly />
+                    </div>
+                `;
+            } else {
+                // This is the block where the "Add Recovery Details" button is shown when recovery details are null
+                const updateRoute = modal.dataset.updateRoute.replace('__RECORD_ID__', recordId);
+                htmlContent += `
+                    <hr class="my-4 border-t border-gray-200">
+                    <button id="addRecoveryDetailsBtn" class="text-blue-600 hover:underline font-medium mb-4">Add Recovery Details</button>
+                    <form id="recoveryForm" class="hidden mt-4" method="POST" action="${updateRoute}">
+                        @csrf
+                        <div class="mb-4">
+                            <x-input-label for="date_recovered" :value="__('Date Recovered')" />
+                            <x-text-input id="date_recovered" class="block mt-1 w-full" 
+                                type="date" name="date_recovered" required />
+                            <x-input-error :messages="$errors->get('date_recovered')" class="mt-2" />
+                        </div>
+                        <div class="mb-4">
+                            <x-input-label for="hospital_id" :value="__('Hospital')" />
+                            <x-dropdown-select id="hospital_id" name="hospital_id" required>
+                                <option value="" disabled selected>Select hospital...</option>
+                                @if(Auth::check())
+                                    @foreach(Auth::user()->approvedHospitals as $hospital)
+                                        <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                                    @endforeach
+                                @endif
+                            </x-dropdown-select>
+                            <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
+                        </div>
+                        <div class="mb-4">
+                            <x-input-label for="recovered_remarks" :value="__('Remarks')" />
+                            <textarea id="recovered_remarks" name="recovered_remarks" 
+                                class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
+                                placeholder="Enter recovery remarks..." required></textarea>
+                            <x-input-error :messages="$errors->get('recovered_remarks')" class="mt-2" />
+                        </div>
+                        <div class="flex justify-center gap-4">
+                            <button type="button" id="cancelRecoveryForm" 
+                                class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                                Cancel
+                            </button>
+                            <x-primary-button>Save Changes</x-primary-button>
+                        </div>
+                    </form>
+                `;
+            }
+
+            contentDiv.innerHTML = htmlContent;
+            openModal('patientDetailsModal');
+
+            const addRecoveryBtn = document.getElementById('addRecoveryDetailsBtn');
+            const recoveryForm = document.getElementById('recoveryForm');
+            const cancelBtn = document.getElementById('cancelRecoveryForm');
+
+            if (addRecoveryBtn && recoveryForm) {
+                addRecoveryBtn.addEventListener('click', () => {
+                    addRecoveryBtn.classList.add('hidden');
+                    recoveryForm.classList.remove('hidden');
+                });
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    recoveryForm.classList.add('hidden');
+                    addRecoveryBtn.classList.remove('hidden');
+                });
+            }
+
+            if (recoveryForm) {
+                recoveryForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(recoveryForm);
+                    try {
+                        const response = await fetch(recoveryForm.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json'
+                            }
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            alert('Recovery details saved successfully!');
+                            window.location.reload();
+                        } else {
+                            const errorMessages = result.errors ? Object.values(result.errors).flat().join('\n') : result.message || 'Failed to save recovery details.';
+                            alert('Error: ' + errorMessages);
+                        }
+                    } catch (error) {
+                        alert('Error: ' + error.message);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching record:', error);
+            alert('Failed to load record details.');
         }
     }
 
@@ -435,20 +600,22 @@
         let selectedDiseases = [];
 
         function updateHiddenInput() {
-            diseaseHiddenInput.value = selectedDiseases.join(',');
-            const existingInputs = document.querySelectorAll('input[name="disease_id[]"]');
-            existingInputs.forEach(input => input.remove());
-            selectedDiseases.forEach(diseaseId => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'disease_id[]';
-                input.value = diseaseId;
-                diseaseTagsContainer.appendChild(input);
-            });
-            diseaseSelect.required = selectedDiseases.length === 0;
+            if (diseaseHiddenInput) {
+                diseaseHiddenInput.value = selectedDiseases.join(',');
+                const existingInputs = document.querySelectorAll('input[name="disease_id[]"]');
+                existingInputs.forEach(input => input.remove());
+                selectedDiseases.forEach(diseaseId => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'disease_id[]';
+                    input.value = diseaseId;
+                    diseaseTagsContainer.appendChild(input);
+                });
+                diseaseSelect.required = selectedDiseases.length === 0;
+            }
         }
 
-        if (diseaseSelect) {
+        if (diseaseSelect && diseaseTagsContainer) {
             diseaseSelect.addEventListener('change', function() {
                 const selectedValue = diseaseSelect.value;
                 const selectedText = diseaseSelect.options[diseaseSelect.selectedIndex].text;
@@ -481,9 +648,11 @@
             const form = document.querySelector(`#${id} form`);
             if (form) {
                 form.reset();
-                diseaseTagsContainer.innerHTML = '';
-                selectedDiseases = [];
-                updateHiddenInput();
+                if (diseaseTagsContainer) {
+                    diseaseTagsContainer.innerHTML = '';
+                    selectedDiseases = [];
+                    updateHiddenInput();
+                }
             }
         }
 
@@ -491,7 +660,9 @@
             button.addEventListener('click', () => resetForm('addPatientModal'));
         });
 
-        updateHiddenInput();
+        if (diseaseHiddenInput) {
+            updateHiddenInput();
+        }
     });
 
     function setDateFilter(type) {
@@ -542,11 +713,11 @@
     }
 
     const addHospitalModal = document.getElementById('addHospitalModal');
-
-    addHospitalModal.addEventListener('click', function(e) {
-        if (e.target === addHospitalModal) {
-            addHospitalModal.classList.add('hidden');
-        }
-    });
-
+    if (addHospitalModal) {
+        addHospitalModal.addEventListener('click', function(e) {
+            if (e.target === addHospitalModal) {
+                addHospitalModal.classList.add('hidden');
+            }
+        });
+    }
 </script>

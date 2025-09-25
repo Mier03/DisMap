@@ -60,6 +60,7 @@ Route::prefix('admin')
         });
 
         Route::post('patient-records/{id}/recovery', [PatientController::class, 'updateRecovery'])->name('patient_records.update_recovery');
+        Route::get('/patient-records/{id}', [PatientController::class, 'show']);
     });
 
 // Superadmin routes

@@ -124,6 +124,38 @@ class PatientController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\View\View
      */
+
+    /**
+ * Display a specific patient record.
+ *
+ * @param  int  $id
+ * @return \Illuminate\Http\JsonResponse
+ */
+    public function show($id)
+    {
+        try {
+            $record = PatientRecord::with([
+                'disease',
+                'reportedByDoctorHospital.doctor',
+                'reportedByDoctorHospital.hospital',
+                'recoveredByDoctorHospital.doctor',
+                'recoveredByDoctorHospital.hospital'
+            ])->findOrFail($id);
+
+            return response()->json([
+                'reported_remarks' => $record->reported_remarks ?? 'N/A',
+                'reported_doctor' => $record->reportedByDoctorHospital->doctor->name ?? 'N/A',
+                'reported_hospital' => $record->reportedByDoctorHospital->hospital->name ?? 'N/A',
+                'recovered_remarks' => $record->recovered_remarks,
+                'recovered_doctor' => $record->recoveredByDoctorHospital ? $record->recoveredByDoctorHospital->doctor->name : null,
+                'recovered_hospital' => $record->recoveredByDoctorHospital ? $record->recoveredByDoctorHospital->hospital->name : null,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching patient record: ' . $e->getMessage());
+            return response()->json(['error' => 'Record not found'], 404);
+        }
+    }
+
     public function viewPatient($id)
     {
         $patient = User::with([
