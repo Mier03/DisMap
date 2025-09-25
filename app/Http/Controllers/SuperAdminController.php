@@ -12,51 +12,80 @@ use Illuminate\Support\Facades\DB;
 
 class SuperAdminController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function verifyAdmins(Request $request)
     {
         $searchTerm = $request->input('q');
 
+        // This function defines the base search logic for reuse
+        $baseQuery = function ($query) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('username', 'LIKE', "%{$searchTerm}%")
+                    // Search within the related 'hospitals' table by name
+                    ->orWhereHas('hospitals', function ($subQuery) use ($searchTerm) {
+                        $subQuery->where('name', 'LIKE', "%{$searchTerm}%");
+                    });
+            });
+        };
+
+        // Get pending admins matching the search term
         $pendingAdmins = User::pendingAdmins()
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                return $query->where('name', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('username', 'LIKE', "%{$searchTerm}%");
-            })
+            ->when($searchTerm, $baseQuery)
             ->with('hospitals')
             ->get();
 
+        // Get all approved admins matching the search term
         $allAdmins = User::approvedAdmins()
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                return $query->where('name', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('username', 'LIKE', "%{$searchTerm}%");
-            })
+            ->when($searchTerm, $baseQuery)
             ->with('hospitals')
             ->get();
 
+        // For AJAX requests, return rendered HTML of the tables
         if ($request->ajax()) {
+            // Render the pending admins table component into an HTML string
+            $pendingHtml = view('components.tables', [
+                'tableType' => 'pendingAdmins',
+                'data' => $pendingAdmins,
+                'title' => 'Pending Approvals',
+                'icon' => 'gmdi-person-search-o'
+            ])->render();
+
+            // Render the all admins table component into an HTML string
+            $allHtml = view('components.tables', [
+                'tableType' => 'allAdmins',
+                'data' => $allAdmins,
+                'title' => 'All Administrators',
+                'icon' => 'gmdi-admin-panel-settings'
+            ])->render();
+
             return response()->json([
-                'pendingAdmins' => $pendingAdmins,
-                'allAdmins' => $allAdmins
+                'pendingHtml' => $pendingHtml,
+                'allHtml' => $allHtml
             ]);
         }
 
+        // For standard page loads, return the full view
         return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins', 'searchTerm'));
     }
 
 
+    /**
+     * Approve a pending admin.
+     */
     public function approveAdmin($id)
     {
         try {
             DB::transaction(function () use ($id) {
                 $user = User::findOrFail($id);
 
-                // Verify this is actually a Doctor user
                 if ($user->user_type !== 'Doctor') {
-                    return back()->with('error', 'User is not a doctor');
+                    throw new \Exception('User is not a doctor');
                 }
 
-                // Update the is_approved status on the users table
                 $user->is_approved = true;
                 $user->save();
             });
@@ -64,11 +93,10 @@ class SuperAdminController extends Controller
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor approved successfully');
         } catch (\Exception $e) {
             Log::error('Error approving doctor: ' . $e->getMessage());
-            return back()->with('error', 'Error approving doctor');
+            $errorMessage = $e->getMessage() === 'User is not a doctor' ? $e->getMessage() : 'Error approving doctor';
+            return back()->with('error', $errorMessage);
         }
     }
-
-    //----------------------------------------------------
 
     /**
      * Reject a pending admin.
@@ -79,25 +107,20 @@ class SuperAdminController extends Controller
             DB::transaction(function () use ($id) {
                 $user = User::findOrFail($id);
 
-                // Verify this is actually a Doctor user
                 if ($user->user_type !== 'Doctor') {
-                    return back()->with('error', 'User is not a doctor');
+                    throw new \Exception('User is not a doctor');
                 }
 
-                // If you don't have ON DELETE CASCADE, detach first
                 $user->hospitals()->detach();
-
-                // Delete the user record, which effectively rejects them
                 $user->delete();
             });
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor rejected successfully');
         } catch (\Exception $e) {
             Log::error('Error rejecting doctor: ' . $e->getMessage());
-            return back()->with('error', 'Error rejecting doctor');
+            $errorMessage = $e->getMessage() === 'User is not a doctor' ? $e->getMessage() : 'Error rejecting doctor';
+            return back()->with('error', $errorMessage);
         }
     }
-
-    //----------------------------------------------------
 
     /**
      * Delete an admin.
@@ -108,30 +131,28 @@ class SuperAdminController extends Controller
             DB::transaction(function () use ($id) {
                 $user = User::findOrFail($id);
 
-                // Verify this is actually a Doctor user
                 if ($user->user_type !== 'Doctor') {
-                    return back()->with('error', 'User is not a doctor');
+                    throw new \Exception('User is not a doctor');
                 }
-
-                // If you don't have ON DELETE CASCADE, detach first
+                
                 $user->hospitals()->detach();
-
-                // Delete the user record
                 $user->delete();
             });
 
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor deleted successfully');
         } catch (\Exception $e) {
             Log::error('Error deleting doctor: ' . $e->getMessage());
-            return back()->with('error', 'Error deleting doctor');
+            $errorMessage = $e->getMessage() === 'User is not a doctor' ? $e->getMessage() : 'Error deleting doctor';
+            return back()->with('error', $errorMessage);
         }
     }
 
-
+    /**
+     * Display the specified admin.
+     */
     public function viewAdmin($id)
     {
         try {
-            // $admin = User::findOrFail($id);
             $admin = User::with('hospitals')->findOrFail($id);
             $hospitals = Hospital::all();
 
@@ -139,7 +160,6 @@ class SuperAdminController extends Controller
                 return back()->with('error', 'User is not a doctor');
             }
 
-            // return view('superadmin.admin_details', compact('admin'));
             return view('superadmin.admin_details', compact('admin', 'hospitals'));
         } catch (\Exception $e) {
             Log::error('Error fetching doctor details: ' . $e->getMessage());
@@ -147,6 +167,9 @@ class SuperAdminController extends Controller
         }
     }
 
+    /**
+     * Update the specified admin in storage.
+     */
     public function updateAdmin(Request $request, $id)
     {
         try {
