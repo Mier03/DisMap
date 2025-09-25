@@ -3,7 +3,7 @@
 <select 
     {{ $disabled ? 'disabled' : '' }} 
     {{ $attributes->merge([
-        'class' => 'text-bold w-96 h-8 bg-zinc-100 rounded-[5px] border border-teal-700/60 focus:border-teal-800 focus:ring-teal-800 text-xs'
+        'class' => 'w-full h-[44px] border border-g-dark rounded px-3 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50'
     ]) }}
 >
     {{ $slot }}
