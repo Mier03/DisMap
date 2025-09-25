@@ -42,12 +42,19 @@
                             title="All Pending User Request"
                             icon="gmdi-person-search-o" 
                         />
-
+                          <div class="my-6"></div> 
+                          
+                           <x-tables
+                            tableType="pendingHospitals"
+                            :data="$pendingHospitals"
+                            title="All Pending Hospital Request"
+                            icon="gmdi-person-search-o" 
+                        />
                         <div class="my-6"></div> 
                     </div>
                 </div>
             </div>
         </div>
     </div>
-        <x-modals.form-modals id="reasonRequestModal" />
+        <x-modals.form-modals id="reasonRequestModal" /> 
 </x-app-layout>

@@ -10,6 +10,11 @@
         case 'allAdmins':
             $columns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates']; // Removed Actions
             break;
+
+        case 'pendingHospitals':
+        $columns = ['Doctor', 'Hospital', 'Certification', 'Actions'];
+        break;
+
         case 'patients':
             break;
         case 'diseases':
@@ -38,17 +43,21 @@
             @if(isset($data) && count($data) > 0)
                 @foreach($data as $item)
                     <tr class="border-b">
-                        @php
-                            // Certificate button (used in both pending and all admins)
-                            $hospital = $item->hospitals->first();
-                            $pivotCertification = $hospital?->pivot?->certification;
+                       @php
+                            $certificateButton = null;
 
-                            $certificateButton = $pivotCertification
-                                ? '<button onclick="viewCertificate(\'' . asset('storage/'.$pivotCertification) . '\')"
-                                          class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                          View
-                                      </button>'
-                                : '<span class="text-gray-500">No certificate</span>';
+                            if ($tableType === 'pendingAdmins' || $tableType === 'allAdmins') {
+                                // Here $item is a User
+                                $hospital = $item->hospitals->first();
+                                $pivotCertification = $hospital?->pivot?->certification;
+
+                                $certificateButton = $pivotCertification
+                                    ? '<button onclick="viewCertificate(\'' . asset('storage/'.$pivotCertification) . '\')"
+                                            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                            View
+                                        </button>'
+                                    : '<span class="text-gray-500">No certificate</span>';
+                            }
 
                             // Action buttons (only for pending admins)
                             if ($tableType === 'pendingAdmins') {
@@ -82,7 +91,26 @@
                                     <td class="p-2">{!! $actionButtons !!}</td>
                                 @endif
                                 @break
-                                
+                                @case('pendingHospitals')
+                                    <td class="p-2">{{ $item->doctor->name ?? 'N/A' }}</td>
+                                    <td class="p-2">{{ $item->hospital->name ?? 'N/A' }}</td>
+                                    <td class="p-2">
+                                        @if($item->certification)
+                                            <button onclick="viewCertificate('{{ asset('storage/'.$item->certification) }}')"
+                                                class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                                View
+                                            </button>
+                                        @else
+                                            <span class="text-gray-500">No certificate</span>
+                                        @endif
+                                    </td>
+                                    <td class="p-2">
+                                        <button 
+                                            class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
+                                        <button 
+                                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                                    </td>
+                                @break
                             @case('patients')
                                 {{-- Add patient row structure here --}}
                                 @break
