@@ -68,11 +68,6 @@ Route::prefix('superadmin')
     ->middleware(['auth', 'verified'])
     ->group(function () {
 
-        // Static views that don't need controller data
-        foreach (['datarequest'] as $page) {
-            Route::view($page, "superadmin.$page")->name($page);
-        }
-
         // Admin verification routes
         Route::controller(SuperAdminController::class)->group(function () {
             Route::get('verify', 'verifyAdmins')->name('verify_admins');
@@ -81,6 +76,7 @@ Route::prefix('superadmin')
             Route::delete('delete-admin/{id}', 'deleteAdmin')->name('delete_admin');
             Route::get('view-admin/{id}', 'viewAdmin')->name('view_admin');
             Route::put('update-admin/{id}', 'updateAdmin')->name('update_admin');
+            Route::get('datarequest', 'datarequest')->name('datarequest');
         });
     });
 
