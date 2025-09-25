@@ -39,45 +39,10 @@
                         </div>
                         
                         {{-- All Patient Records Table --}}
-                    
-                        @php
-                            $patients = $patients ?? [];
-                            $patientColumns = ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'];
-                            $patientRows = collect($patients)->map(function ($patient) {
-                                $latestRecord = $patient->patientRecords->first();
-
-                                if ($latestRecord) {
-                                    $dateReported = \Carbon\Carbon::parse($latestRecord->date_reported)->format('F j, Y') ?? 'N/A';
-                                    $statusType = $latestRecord->patient->status ?? 'No Records';                                         
-                                    $statusClass = '';
-                                    if ($statusType === 'Active') {
-                                        $statusClass = 'bg-yellow-200 text-yellow-800';
-                                    } elseif ($statusType === 'Recovered') {
-                                        $statusClass = 'bg-green-200 text-green-800';
-                                    } else {
-                                        $statusClass = 'bg-gray-200 text-gray-800';
-                                    }
-                                } else {
-                                    // Default values when no record exists
-                                    $dateReported = 'N/A';
-                                    $statusType = 'No Records';
-                                    $statusClass = 'bg-gray-200 text-gray-800';
-                                }
-                                    
-                                return [
-                                    "<a href='".route('admin.view_patients', $patient->id)."' class='text-blue-600 hover:underline'>{$patient->name}</a>",
-                                    \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y'),
-                                    $patient->barangay->name ?? 'N/A',
-                                    $dateReported,
-                                    "<span class='px-2 py-1 rounded text-sm {$statusClass}'>{$statusType}</span>",
-                                ];
-                            })->toArray();
-                        @endphp
-
-                        <x-table
-                            :columns="$patientColumns"
-                            :rows="$patientRows"
-                            table_title="All Patient Records"
+                        <x-Tables.tables
+                            tableType="allPatients"
+                            :data="$patients"
+                            title="All Patient Records"
                             icon="gmdi-people-alt-o"
                         />
                     </div>

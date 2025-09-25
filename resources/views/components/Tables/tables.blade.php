@@ -19,6 +19,12 @@
             break;
         case 'diseases':
             break;
+        case 'allPatients':
+            $columns = ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'];
+            break;
+        case 'patientRecords':
+            $columns = ['Disease', 'Date Reported', 'Date Recovered', 'Status', 'Details'];
+            break;
         default:
             $columns = ['Column 1', 'Column 2', 'Column 3', 'Actions'];
     }
@@ -26,10 +32,12 @@
 
 <div class="p-4 bg-white border border-g-dark rounded-lg">
     <p class="flex items-center space-x-2 text-m text-g-dark mb-4">
-        @if($icon)
-            <x-dynamic-component :component="$icon" class="w-7 h-7 text-g-dark" />
-        @endif
-        <span>{{ $title }}</span>
+        @isset($icon)
+            @if($icon)  {{-- Only render if non-empty --}}
+                <x-dynamic-component :component="$icon" class="w-7 h-7 text-g-dark" />
+            @endif
+        @endisset
+        <span class="underline">{{ $title }}</span>
     </p>
     <table class="w-full text-left">
         <thead>
@@ -118,7 +126,72 @@
                             @case('diseases')
                                 {{-- Add disease row structure here --}}
                                 @break
-                                
+
+                            {{-- Manage Patients --}}
+                            @case('allPatients')
+                                <td class="p-2">
+                                    <a href="{{ route('admin.view_patients', $item->id) }}" class="text-blue-600 hover:underline">
+                                        {{ $item->name }}
+                                    </a>
+                                </td>
+                                <td class="p-2">{{ \Carbon\Carbon::parse($item->birthdate)->format('F j, Y') }}</td>
+                                <td class="p-2">{{ $item->barangay?->name ?? 'N/A' }}</td>
+                                <td class="p-2">
+                                    @php
+                                        $latestRecord = $item->patientRecords?->first();
+                                        $dateReported = $latestRecord ? \Carbon\Carbon::parse($latestRecord->date_reported)->format('F j, Y') : 'N/A';
+                                    @endphp
+                                    {{ $dateReported }}
+                                </td>
+                                <td class="p-2">
+                                    @php
+                                        $statusType = $latestRecord ? ($latestRecord->patient->status ?? 'No Records') : 'No Records';
+                                        $statusClass = $statusType === 'Active' ? 'bg-yellow-100 text-yellow-800' : ($statusType === 'Recovered' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800');
+                                    @endphp
+                                    <span class="px-2 py-1 rounded text-sm {{ $statusClass }}">
+                                        {{ $statusType }}
+                                    </span>
+                                </td>
+                                @break
+                            
+                            {{-- Patient Medical Records --}}
+                            @case('patientRecords')
+                                <td class="p-2">{{ $item->disease->specification ?? 'N/A' }}</td>
+                                <td class="p-2">{{ \Carbon\Carbon::parse($item->date_reported)->format('F j, Y') }}</td>
+                                <td class="p-2">
+                                    @if($item->date_recovered)
+                                        {{ \Carbon\Carbon::parse($item->date_recovered)->format('F j, Y') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="p-2">
+                                    @php
+                                        $statusType = 'No Records';
+                                        $statusClass = 'bg-gray-100 text-gray-800';
+                                        if ($item->date_recovered && $item->recovered_dh_id) {
+                                            $statusType = 'Recovered';
+                                            $statusClass = 'bg-green-100 text-green-800';
+                                        } else {
+                                            if ($item->patient->status === 'Active') {
+                                                $statusType = 'Active';
+                                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                                            }
+                                        }
+                                    @endphp
+                                    <span class="px-2 py-1 rounded text-sm {{ $statusClass }}">
+                                        {{ $statusType }}
+                                    </span>
+                                </td>
+                                <td class="p-2">
+                                    <button 
+                                        onclick="showDetails({{ $item->id }})"
+                                        class="text-blue-600 hover:underline font-medium">
+                                        {{ $item->date_recovered ? 'View' : 'Update' }}
+                                    </button>
+                                </td>
+                                @break
+
                             @default
                                 {{-- Default row structure --}}
                                 <td class="p-2">{{ $item->id }}</td>
