@@ -27,66 +27,35 @@
                         <x-page-header title="Manage Admins" subtitle="Administrator data and pending approvals" />
 
                         {{-- Search Form --}}
-                        <form method="GET" action="{{ route('superadmin.verify_admins') }}">
-                            <x-search-bar placeholder="Search admins..." value="{{ request('q') }}" />
+                        <form id="admin-search-form" method="GET" action="{{ route('superadmin.verify_admins') }}">
+                            <x-search-bar
+                                id="admin-search-input"
+                                name="q"
+                                placeholder="Search by name, email, or hospital..."
+                                value="{{ request('q') }}" />
                         </form>
 
-                        {{-- Pending Approvals Table --}}
-                        <!-- @php
-                        $pendingColumns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'];
-                        $pendingRows = [];
-
-                        foreach($pendingAdmins as $admin) {
-                        $certificateButton = $admin->certification
-                        ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')"
-                            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                            View
-                        </button>'
-                        : '<span class="text-gray-500">No certificate</span>';
-
-                        $actionButtons = '
-                        <button type="button"
-                            onclick="openModal(\'approveModal-' . $admin->id . '\')"
-                            class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
-
-                        <button type="button"
-                            onclick="openModal(\'rejectModal-' . $admin->id . '\')"
-                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-                        ';
-
-                        $pendingRows[] = [
-                        '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                        // CORRECTED LINE: Access the hospital name via the relationship
-                        $admin->hospitals->first()->name ?? 'N/A',
-                        $admin->email,
-                        $admin->username,
-                        $certificateButton,
-                        $actionButtons
-                        ];
-                        }
-                        @endphp
-
-                        <x-table
-                            :columns="$pendingColumns"
-                            :rows="$pendingRows"
-                            table_title="Pending Approvals"
-                            icon="gmdi-person-search-o" /> -->
-
-                        <x-tables
-                            tableType="pendingAdmins"
-                            :data="$pendingAdmins"
-                            title="Pending Approvals"
-                            icon="gmdi-person-search-o" 
-                        />
+                        {{-- Container for Pending Admins table for AJAX updates --}}
+                        <div id="pending-admins-container">
+                            <x-tables
+                                tableType="pendingAdmins"
+                                :data="$pendingAdmins"
+                                title="Pending Approvals"
+                                icon="gmdi-person-search-o"
+                            />
+                        </div>
 
                         <div class="my-6"></div> 
 
-                        <x-tables
-                            tableType="allAdmins"
-                            :data="$allAdmins"
-                            title="All Administrators"
-                            icon="gmdi-admin-panel-settings" 
-                        />
+                        {{-- Container for All Admins table for AJAX updates --}}
+                        <div id="all-admins-container">
+                             <x-tables
+                                tableType="allAdmins"
+                                :data="$allAdmins"
+                                title="All Administrators"
+                                icon="gmdi-admin-panel-settings" 
+                            />
+                        </div>
 
                         {{-- Modals for Pending Approvals --}}
                         @foreach($pendingAdmins as $admin)
@@ -109,72 +78,60 @@
                             method="POST" />
                         @endforeach
 
-<!--
-                        {{-- All Administrators Table --}}
-                        @php
-                        $allColumns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'];
-                        $allRows = [];
-
-                        foreach($allAdmins as $admin) {
-                        $certificateButton = $admin->certification
-                        ? '<button onclick="viewCertificate(\'' . asset('storage/'.$admin->certification) . '\')"
-                            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                            View
-                        </button>'
-                        : '<span class="text-gray-500">No certificate</span>';
-
-                        $actionButton = '
-                        <button type="button"
-                            onclick="openModal(\'editModal-' . $admin->id . '\')"
-                            class="inline-block bg-g-dark text-white px-3 py-1 rounded mr-2">✎</button>
-
-                        <button type="button"
-                            onclick="openModal(\'deleteModal-' . $admin->id . '\')"
-                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-                        ';
-
-                        $allRows[] = [
-                        '<a href="' . route('superadmin.view_admin', $admin->id) . '" class="text-blue-600 hover:underline">' . $admin->name . '</a>',
-                        // CORRECTED LINE: Access the hospital name via the relationship
-                        $admin->hospitals->first()->name ?? 'N/A',
-                        $admin->email,
-                        $admin->username,
-                        $certificateButton,
-                        $actionButton
-                        ];
-                        }
-                        @endphp
-
-                        <x-table
-                            :columns="$allColumns"
-                            :rows="$allRows"
-                            table_title="All Administrators"
-                            icon="gmdi-admin-panel-settings" /> -->
-
-                        {{-- Modals for All Admins --}}
-                        <!-- @foreach($allAdmins as $admin)
-                        <x-modal-popup
-                            id="deleteModal-{{ $admin->id }}"
-                            title="Confirm Deletion"
-                            message="Are you sure you want to delete {{ $admin->name }}? This action cannot be undone."
-                            confirmText="Delete"
-                            cancelText="Cancel"
-                            :action="route('superadmin.delete_admin', $admin->id)"
-                            method="DELETE" />
-
-                        <x-modal-popup
-                            id="editModal-{{ $admin->id }}"
-                            title="Edit Admin"
-                            message="Do you want to edit {{ $admin->name }}'s details?"
-                            confirmText="Edit"
-                            cancelText="Cancel"
-                            {{-- :action="route('superadmin.edit_admin', $admin->id)" --}}
-                            method="GET" />
-                        @endforeach -->
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    {{-- You can include jQuery via a CDN like this if it's not in your project's asset bundle --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Debounce function to limit the rate at which a function gets called.
+            // This prevents sending a request for every single keystroke.
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            // The function that performs the AJAX search
+            const performSearch = () => {
+                const query = $('#admin-search-input').val();
+                const url = $('#admin-search-form').attr('action');
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: { q: query },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Important for Laravel's $request->ajax()
+                    },
+                    success: function(response) {
+                        // Replace the HTML content of the table containers with the new rendered HTML
+                        $('#pending-admins-container').html(response.pendingHtml);
+                        $('#all-admins-container').html(response.allHtml);
+                    },
+                    error: function(xhr) {
+                        console.error("An error occurred during search: " + xhr.status + " " + xhr.statusText);
+                    }
+                });
+            };
+
+            // Attach the debounced search function to the 'keyup' event of the search input
+            $('#admin-search-input').on('keyup', debounce(performSearch, 300)); // 300ms delay
+
+            // Prevent the form from doing a full page reload if the user hits Enter
+            $('#admin-search-form').on('submit', function(e) {
+                e.preventDefault();
+                performSearch(); // Trigger the search manually on submit
+            });
+        });
+    </script>
+    @endpush
+
 </x-app-layout>
