@@ -8,7 +8,7 @@
             $columns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'];
             break;
         case 'allAdmins':
-            $columns = ['Name', 'Hospital', 'Email', 'Username', 'Certificates']; // Removed Actions
+            $columns = ['Name', 'Hospital', 'Email', 'Username', 'Status', 'Certificates']; 
             break;
 
         case 'pendingHospitals':
@@ -83,6 +83,17 @@
                         
                         @switch($tableType)
                             @case('pendingAdmins')
+                            <td class="p-2">
+                                    <a href="{{ route('superadmin.view_admin', $item->id) }}" class="text-blue-600 hover:underline">
+                                        {{ $item->name }}
+                                    </a>
+                                </td>
+                                <td class="p-2">{{ $item->hospitals->first()->name ?? 'N/A' }}</td>
+                                <td class="p-2">{{ $item->email }}</td>
+                                <td class="p-2">{{ $item->username }}</td>
+                                <td class="p-2">{!! $certificateButton !!}</td>
+                                <td class="p-2">{!! $actionButtons !!}</td>
+                                @break
                             @case('allAdmins')
                                 <td class="p-2">
                                     <a href="{{ route('superadmin.view_admin', $item->id) }}" class="text-blue-600 hover:underline">
@@ -92,6 +103,19 @@
                                 <td class="p-2">{{ $item->hospitals->first()->name ?? 'N/A' }}</td>
                                 <td class="p-2">{{ $item->email }}</td>
                                 <td class="p-2">{{ $item->username }}</td>
+                                <td class="p-2">
+                                    @php
+                                        $status = $item->status ?? 'Active';
+                                        $statusClass = match($status) {
+                                            'Active' => 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium',
+                                            'Inactive' => 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium',
+                                            default => 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium'
+                                        };
+                                    @endphp
+                                    <span class="{{ $statusClass }}">
+                                        {{ ucfirst($status) }}
+                                    </span>
+                                </td>
                                 <td class="p-2">{!! $certificateButton !!}</td>
                                 
                                 {{-- Only show action buttons for pending admins --}}

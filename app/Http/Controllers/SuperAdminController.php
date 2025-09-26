@@ -73,7 +73,7 @@ class SuperAdminController extends Controller
         return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins', 'searchTerm'));
     }
 
-  public function datarequest(Request $request)
+    public function datarequest(Request $request)
     {
         $searchTerm = $request->input('q');
 
@@ -85,9 +85,9 @@ class SuperAdminController extends Controller
                         ->orWhere('email', 'LIKE', "%{$searchTerm}%")
                         ->orWhere('username', 'LIKE', "%{$searchTerm}%");
                 })
-                ->orWhereHas('hospital', function ($q) use ($searchTerm) {
-                    $q->where('name', 'LIKE', "%{$searchTerm}%");
-                });
+                    ->orWhereHas('hospital', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', "%{$searchTerm}%");
+                    });
             })
             ->get();
 
@@ -107,6 +107,7 @@ class SuperAdminController extends Controller
                 }
 
                 $user->is_approved = true;
+                $user->status = 'Active';
                 $user->save();
             });
 
@@ -154,7 +155,7 @@ class SuperAdminController extends Controller
                 if ($user->user_type !== 'Doctor') {
                     throw new \Exception('User is not a doctor');
                 }
-                
+
                 $user->hospitals()->detach();
                 $user->delete();
             });
@@ -195,19 +196,39 @@ class SuperAdminController extends Controller
         try {
             $admin = User::findOrFail($id);
 
-            $request->validate([
+            // Define validation rules
+            $validationRules = [
                 'name' => 'required|string|max:255',
                 'username' => 'required|string|unique:users,username,' . $id,
-                'hospital_id' => 'required|exists:hospitals,id'
-            ]);
+            ];
+
+            // Add status validation based on whether admin is approved
+            if ($admin->is_approved) {
+                $validationRules['status'] = 'required|in:Active,Inactive'; 
+            } else {
+                $validationRules['is_approved'] = 'required|boolean';
+            }
+
+            $request->validate($validationRules);
 
             DB::transaction(function () use ($request, $admin) {
-                $admin->update([
+                $updateData = [
                     'name' => $request->name,
                     'username' => $request->username
-                ]);
+                ];
 
-                $admin->hospitals()->sync([$request->hospital_id]);
+                // Update status based on whether admin is approved
+                if ($admin->is_approved) {
+                    $updateData['status'] = $request->status;
+                } else {
+                    $updateData['is_approved'] = $request->is_approved;
+                    // If approving for the first time, set status to Active
+                    if ($request->is_approved && !$admin->is_approved) {
+                        $updateData['status'] = 'Active'; 
+                    }
+                }
+
+                $admin->update($updateData);
             });
 
             return redirect()->route('superadmin.view_admin', $admin->id)
@@ -226,7 +247,7 @@ class SuperAdminController extends Controller
         $barangays = Barangay::all();
         $diseases = Disease::all();
 
-        return view('superadmin.home', compact('barangays', 'diseases'));
+        return view('dashboard', compact('barangays', 'diseases'));
     }
 
     /**
