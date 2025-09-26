@@ -156,20 +156,54 @@ class PatientController extends Controller
         }
     }
 
-    public function viewPatient($id)
+    public function viewPatient($id, Request $request) 
     {
         $patient = User::with([
             'barangay',
-            'patientRecords.disease',
-            'patientRecords.doctorHospital.hospital'
         ])->findOrFail($id);
+
+        $searchTerm = $request->input('q');
+
+        $patientRecordsQuery = PatientRecord::where('patient_id', $patient->id)
+            ->with(['disease', 'doctorHospital.hospital'])
+            ->latest(); // sort latest record first
+
+        // search medical records
+        if ($searchTerm) {
+            $patientRecordsQuery->where(function ($q) use ($searchTerm) {
+                $q->where('reported_remarks', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('recovered_remarks', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('status', 'LIKE', '%' . $searchTerm . '%') 
+                  ->orWhereHas('disease', function ($dr) use ($searchTerm) {
+                      $dr->where('specification', 'LIKE', '%' . $searchTerm . '%');
+                  })
+                  ->orWhereHas('reportedByDoctorHospital.doctor', function ($d) use ($searchTerm) {
+                      $d->where('name', 'LIKE', '%' . $searchTerm . '%');
+                  })
+                  ->orWhereHas('reportedByDoctorHospital.hospital', function ($h) use ($searchTerm) {
+                      $h->where('name', 'LIKE', '%' . $searchTerm . '%');
+                  })
+                  ->orWhereHas('recoveredByDoctorHospital.doctor', function ($d) use ($searchTerm) {
+                      $d->where('name', 'LIKE', '%' . $searchTerm . '%');
+                  })
+                  ->orWhereHas('recoveredByDoctorHospital.hospital', function ($h) use ($searchTerm) {
+                      $h->where('name', 'LIKE', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+
+        $patientRecords = $patientRecordsQuery->get();
 
         $userId = Auth::id();
         $hospitals = Hospital::whereHas('doctors', function ($query) use ($userId) {
             $query->where('doctor_id', $userId);
         })->get();
 
-        return view('admin.patient_details', compact('patient', 'hospitals'));
+        return view('admin.patient_details', [
+            'patient' => $patient,
+            'hospitals' => $hospitals,
+            'patientRecords' => $patientRecords 
+        ]);
     }
 
     /**
