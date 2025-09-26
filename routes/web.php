@@ -7,6 +7,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RequestDataController;
 use App\Http\Controllers\DoctorHospitalController;
+use App\Http\Controllers\DiseaseController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/diseaserecords', [DashboardController::class, 'diseaseRecords'])
+Route::get('/diseaserecords', [DiseaseController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('diseaserecords');
 

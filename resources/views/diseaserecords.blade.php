@@ -36,66 +36,20 @@
 
                         {{-- Stat Cards --}}
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div class="p-4 bg-white border border-g-dark rounded-lg text-center">
-                                <p class="text-3xl font-bold text-g-dark">2</p>
-                                <p class="text-sm text-gray-600">Total Disease Types</p>
-                            </div>
-                            <div class="p-4 bg-white border border-g-dark rounded-lg text-center">
-                                <p class="text-3xl font-bold text-g-dark">2</p>
-                                <p class="text-sm text-gray-600">Active Cases</p>
-                            </div>
-                            <div class="p-4 bg-white border border-g-dark rounded-lg text-center">
-                                <p class="text-3xl font-bold text-g-dark">1</p>
-                                <p class="text-sm text-gray-600">Recovered</p>
-                            </div>
-                            <div class="p-4 bg-white border border-g-dark rounded-lg text-center">
-                                <p class="text-3xl font-bold text-g-dark">2</p>
-                                <p class="text-sm text-gray-600">Barangay Coverage</p>
-                            </div>
+                            <x-stat-card :value="$diseaseRecords->count()" label="Total Disease Types" />
+                            <x-stat-card :value="$diseaseRecords->sum('active')" label="Active Cases" />
+                            <x-stat-card :value="$diseaseRecords->sum('recovered')" label="Recovered" />
+                            <x-stat-card value="2" label="Barangay Coverage" /> 
                         </div>
+
 
                         {{-- Table --}}
-                        <div class="p-4 bg-white border border-g-dark rounded-lg">
-                            <p class="flex items-center space-x-2 text-m text-g-dark mb-4 underline">
-                                <x-gmdi-medical-information-o class="w-7 h-7 text-g-dark" />
-                                <span>Disease Overview</span>  
-                            </p>
-
-                            <table class="w-full text-left">
-                                <thead>
-                                    <tr class="text-g-dark border-b">
-                                        <th class="p-2">Type</th>
-                                        <th class="p-2">Total Case</th>
-                                        <th class="p-2">Active</th>
-                                        <th class="p-2">Recovered</th>
-                                        <th class="p-2">Date Reported</th>
-                                        <th class="p-2">Patients</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-b">
-                                        <td class="p-2">Dengue</td>
-                                        <td class="p-2">1</td>
-                                        <td class="p-2">1</td>
-                                        <td class="p-2">0</td>
-                                        <td class="p-2">08/22/2025</td>
-                                        <td class="p-2">
-                                            <button class="bg-g-dark text-white px-3 py-1 rounded hover:bg-[#296E5B]/90">View</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-2">Malaria</td>
-                                        <td class="p-2">28</td>
-                                        <td class="p-2">0</td>
-                                        <td class="p-2">1</td>
-                                        <td class="p-2">08/22/2025</td>
-                                        <td class="p-2">
-                                            <button class="bg-g-dark text-white px-3 py-1 rounded hover:bg-[#296E5B]/90">View</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <x-tables 
+                            tableType="diseaseRecords"
+                            :data="$diseaseRecords"
+                            title="Disease Overview"
+                            icon="gmdi-medical-information-o"
+                        />
 
                     </div>
                 </div>

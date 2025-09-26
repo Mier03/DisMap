@@ -1,7 +1,9 @@
-<div class="border border-g-dark p-6 w-60 flex items-center justify-between rounded-md">
-    <span class="text-2xl">{{ $icon ?? "" }}</span>
-    <div class="text-g-dark text-center">
-        <h2 class="text-2xl font-bold">{{ $value ?? "" }}</h2>
-        <p class="text-sm">{{ $label ?? "" }}</p>
-    </div>
-</div> 
+@props([
+    'value' => 0, 
+    'label' => '', 
+])
+
+<div class="p-4 bg-white border border-g-dark rounded-lg text-center">
+    <p class="text-3xl font-bold text-g-dark">{{ $value }}</p>
+    <p class="text-sm text-gray-600">{{ $label }}</p>
+</div>
