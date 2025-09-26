@@ -51,12 +51,23 @@
                                 <h3 class="text-lg font-semibold text-g-dark">Status & Certification</h3>
                             </div>
                             <div class="space-y-3">
+                                <!-- Approval Status (for pending/approved) -->
                                 <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Status:</span>
+                                    <span class="text-sm font-medium text-gray-600">Approval Status:</span>
                                     <span class="px-3 py-1 rounded-full text-xs font-medium {{ $admin->is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                         {{ $admin->is_approved ? 'Approved' : 'Pending Approval' }}
                                     </span>
                                 </div>
+
+                                <!-- Active/Inactive Status (only for approved admins) -->
+                                @if($admin->is_approved)
+                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
+                                    <span class="text-sm font-medium text-gray-600">Account Status:</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $admin->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        {{ ucfirst($admin->status ?? 'Inactive') }}
+                                    </span>
+                                </div>
+                                @endif
                                 <div class="flex justify-between items-center py-2 border-b border-g-light/50">
                                     <span class="text-sm font-medium text-gray-600">User Type:</span>
                                     <span class="text-gray-800 capitalize">{{ $admin->user_type }}</span>
@@ -157,7 +168,7 @@
                         @endif
                     </div>
 
-                    
+
                     <!-- Edit Form-->
                     @if($isEditMode)
                     <div id="edit-form" class="mt-6 pt-4 border-t border-g-light">
@@ -201,29 +212,40 @@
                                 </div>
                             </div>
 
-                            <!-- Hospital Field-->
+                            <!-- Status Field (only show for approved admins) -->
+                            <!-- Status Field (only show for approved admins) -->
+                            @if($admin->is_approved)
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Hospital *</label>
-                                <select name="hospital_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-g-dark/50">
-                                    <option value="">Select a Hospital</option>
-                                    @foreach($hospitals as $hospital)
-                                    <option value="{{ $hospital->id }}" {{ old('hospital_id', $admin->hospitals->first()->id ?? '') == $hospital->id ? 'selected' : '' }}>
-                                        {{ $hospital->name }}
-                                    </option>
-                                    @endforeach
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Account Status *</label>
+                                <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                                    <option value="Active" {{ old('status', $admin->status) === 'Active' ? 'selected' : '' }}>Active</option>
+                                    <option value="Inactive" {{ old('status', $admin->status) === 'Inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
-                                @error('hospital_id')
+                                @error('status')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+                            @else
+                            <!-- Approval Status Field (for pending admins) -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Approval Status *</label>
+                                <select name="is_approved" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                                    <option value="1" {{ old('is_approved', $admin->is_approved) == 1 ? 'selected' : '' }}>Approve</option>
+                                    <option value="0" {{ old('is_approved', $admin->is_approved) == 0 ? 'selected' : '' }}>Keep Pending</option>
+                                </select>
+                                @error('is_approved')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
 
                             <div class="flex space-x-4 mt-6">
                                 <button type="submit" class="bg-g-dark text-white px-4 py-2 rounded hover:bg-g-dark/90 transition">
                                     Save Changes
                                 </button>
-                                <a href="{{ route('superadmin.view_admin', ['id' => $admin->id]) }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition text-center flex items-center">
+                                <!-- <a href="{{ route('superadmin.view_admin', ['id' => $admin->id]) }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition text-center flex items-center">
                                     Cancel
-                                </a>
+                                </a> -->
                             </div>
                         </form>
                     </div>
