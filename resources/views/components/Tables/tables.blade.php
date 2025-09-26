@@ -5,6 +5,7 @@
         'pendingAdmins' => ['Name', 'Hospital', 'Email', 'Username', 'Certificates', 'Actions'],
         'allAdmins' => ['Name', 'Hospital', 'Email', 'Username', 'Status', 'Certificates'],
         'pendingHospitals' => ['Doctor', 'Hospital', 'Certification', 'Actions'],
+        'pendingDataRequests' => ['Name', 'Email', 'Requested Data', 'Date Requested', 'Actions'],
         'allPatients' => ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'],
         'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Status', 'Details'],
         'diseaseRecords' => ['Name', 'Total Cases', 'Active', 'Recovered', 'Date Reported', 'Patients'],
@@ -78,13 +79,46 @@
 
                         {{-- Pending Hospitals --}}
                         @case('pendingHospitals')
-                            <x-tables.td>{{ $item->doctor_name }}</x-tables.td>
-                            <x-tables.td>{{ $item->hospital_name }}</x-tables.td>
+                            <x-tables.td>{{ $item->doctor->name ?? 'N/A' }}</x-tables.td>
+                            <x-tables.td>{{ $item->hospital->name ?? 'N/A' }}</x-tables.td>
                             <x-tables.td>
-                                <x-tables.certificate-button :certification="$item->certification" />
+                                @if($item->certification)
+                                    <button onclick="viewCertificate('{{ asset('storage/'.$item->certification) }}')"
+                                        class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                        View
+                                    </button>
+                                @else
+                                    <span class="text-gray-500">No certificate</span>
+                                @endif
                             </x-tables.td>
                             <x-tables.td>
-                                <x-tables.action-buttons :id="$item->id" />
+                                <button 
+                                    class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
+                                <button 
+                                    class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                            </x-tables.td>
+                        @break
+
+                        {{-- Pending Data Requests --}}
+                        @case('pendingDataRequests')
+                            <x-tables.td>{{ $item->name }}</x-tables.td>
+                            <x-tables.td>{{ $item->email }}</x-tables.td>
+                            <x-tables.td>
+                                <button onclick="viewRequestedData('{{ $item->requested_disease }}', '{{ $item->created_at->format('m/d/Y') }}')"
+                                    class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                    View
+                                </button>
+                            </x-tables.td>
+                            <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
+                            <x-tables.td>
+                                <form action="{{ route('superadmin.data-requests.update', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" name="status" value="approved" 
+                                            class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
+                                    <button type="submit" name="status" value="rejected" 
+                                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                                </form>
                             </x-tables.td>
                         @break
 

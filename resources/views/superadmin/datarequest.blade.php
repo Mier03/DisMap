@@ -37,9 +37,9 @@
                         </form>
 
                         <x-tables
-                            tableType="default"
-                            :data=[]
-                            title="All Pending User Request"
+                            tableType="pendingDataRequests"
+                            :data="$dataRequests"
+                            title="All Pending Data Requests"
                             icon="gmdi-person-search-o" 
                         />
                           <div class="my-6"></div> 
