@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PatientRecord;
-use App\Models\Barangay; // Add this import
-use App\Models\Disease;  // Add this import
+use App\Models\Barangay; 
+use App\Models\Disease; 
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
