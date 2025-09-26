@@ -58,46 +58,72 @@
     </section>
 
     <section id="heatmap" class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16">
-        <div class="text-center mb-6">
-            <h2 class="text-3xl md:text-4xl font-bold text-g-dark mb-2">
-                Disease Heatmap
-            </h2>
-            <p class="text-md md:text-lg text-g-dark">
-                Interactive map showing disease distribution across Cebu City barangays.
-            </p>
-        </div>
-
-        <div class="w-full max-w-4xl flex items-baseline gap-4 mb-6">
-            <div class="flex-grow">
-                <x-search-bar placeholder="Search diseases, locations..." />
+        <div class="w-full max-w-7xl">
+            {{-- Title Section --}}
+            <div class="text-center mb-6">
+                <h2 class="text-3xl md:text-4xl font-bold text-g-dark mb-2">
+                    Disease Heatmap
+                </h2>
+                <p class="text-md md:text-lg text-g-dark">
+                    Interactive map showing disease distribution across Cebu City barangays.
+                </p>
             </div>
 
-            <button
-                onclick="openModal('requestDataModal')"
-                class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
-                Request Data
-            </button>
-        </div>
+            {{-- Controls Section - All on one line --}}
+            <div class="flex items-center justify-between gap-4 mb-4">
+                {{-- Left side: Filters + Search --}}
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    {{-- Filter Button --}}
+                    <button
+                        id="openFilterModal"
+                        class="flex items-center space-x-2 bg-white border border-g-dark text-g-dark px-4 py-2.5 rounded-lg shadow-sm hover:bg-g-dark hover:text-white transition shrink-0 whitespace-nowrap">
+                        <x-gmdi-filter-alt-o class="w-4 h-4" />
+                        <span class="text-sm font-medium">Filters</span>
+                    </button>
 
-        <div class="text-sm text-g-dark">
-            <span class="font-semibold">Active Filters:</span>
-            <span class="inline-block bg-g-light text-g-dark px-3 py-1 rounded-full text-xs">Lahug</span>
-        </div>
+                    {{-- Search Bar --}}
+                    <div class="relative flex-1 min-w-0">
+                        <input 
+                            type="text" 
+                            placeholder="Search diseases, locations, barangays..."
+                            class="w-full rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-g-dark text-gray-700 border border-g-dark">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <x-gmdi-search-o class="w-5 h-5 text-gray-400" />
+                        </div>
+                    </div>
+                </div>
 
-        <div class="w-full max-w-7xl h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark mt-6">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62827.591820344635!2d123.84120593429692!3d10.315699291245336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995fb471b24d%3A0x8742b0c395c7a377!2sCebu%20City%2C%20Cebu!5e0!3m2!1sen!2sph!4v1630671470321!5m2!1sen!2sph"
-                width="100%"
-                height="100%"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+                {{-- Right side: Request Data Button --}}
+                <button
+                    onclick="openModal('requestDataModal')"
+                    class="border border-g-dark text-g-dark bg-white px-6 py-2.5 rounded-lg hover:bg-g-dark hover:text-white transition font-medium shrink-0 whitespace-nowrap">
+                    Request Data
+                </button>
+            </div>
+
+            {{-- Active Filters --}}
+            <div id="activeFiltersContainer" class="flex items-center space-x-3 mb-4">
+                <span class="text-g-dark font-medium">Active Filters:</span>
+                <!-- Filters will appear here -->
+            </div>
+
+            {{-- Map Container --}}
+            <div class="w-full h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62827.591820344635!2d123.84120593429692!3d10.315699291245336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995fb471b24d%3A0x8742b0c395c7a377!2sCebu%20City%2C%20Cebu!5e0!3m2!1sen!2sph!4v1630671470321!5m2!1sen!2sph"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+            </div>
         </div>
     </section>
 
-    {{-- Make sure this modal component exists --}}
-    {{-- <x-modals.form-modals id="requestDataModal" /> --}}
+    <x-modals.form-modals id="requestDataModal" /> 
+    <x-modals.pop-up-modals :barangays="$barangays ?? []" :diseases="$diseases ?? []" />
+    
 </body>
 </html>
