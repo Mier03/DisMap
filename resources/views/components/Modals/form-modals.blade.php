@@ -108,7 +108,7 @@
     {{-- =========================
         Add Hospital Modal
     ========================== --}}
-    <div id="addHospitalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div id="addHospitalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white p-6 rounded-lg shadow-lg w-[500px]">
             <x-input-label class="text-xl font-bold mb-4" :value="__('Add Hospital')" />
             
@@ -252,7 +252,7 @@
         Request Data Modal
     ========================== --}}
     <div id="requestDataModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
+        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative hidden">
             <div class="flex items-center mb-2">
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
                      viewBox="0 0 24 24">
@@ -309,7 +309,7 @@
     {{-- =========================
         View Reason of Request Modal - SuperAdmin Side
     ========================== --}}
-    <div id="reasonRequestModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div id="reasonRequestModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
             <div class="flex items-center mb-2">
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
@@ -365,16 +365,11 @@
     {{-- =========================
         Patient Details Modal
     ========================= --}}
-    <div id="patientDetailsModal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" 
+    <div id="patientDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50" 
         data-update-route="{{ route('admin.patient_records.update_recovery', ['id' => '__RECORD_ID__']) }}">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[80vh]">
             <div class="flex items-center mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[32px] h-[32px] text-g-dark fill-current"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"/>
-                </svg>
-                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Patient Details</h2>
+                <h2 class="text-[28px] font-bold text-g-dark">Patient Details</h2>
             </div>
             <p class="text-g-dark text-[16px] mb-6 ml-1">View or update patient record details</p>
 
@@ -449,13 +444,13 @@
                     <h4 class="font-bold text-lg mb-2 text-g-dark">Reported Details</h4>
                     <div class="mb-4">
                         <x-input-label for="reported_remarks" :value="__('Remarks')" />
-                        <x-text-input id="reported_remarks" class="block mt-1 w-full" 
+                        <x-text-input id="reported_remarks" class="block mt-1 w-80" 
                             type="text" value="${record.reported_remarks || 'N/A'}" readonly />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="reported_doctor" :value="__('Attending Doctor')" />
                         <x-text-input id="reported_doctor" class="block mt-1 w-full" 
-                            type="text" value="${record.reported_doctor || 'N/A'}" readonly />
+                            type="text" value="Dr. ${record.reported_doctor || 'N/A'}" readonly />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="reported_hospital" :value="__('Hospital')" />
@@ -472,13 +467,13 @@
                     <h4 class="font-bold text-lg mb-2 text-g-dark">Recovery Details</h4>
                     <div class="mb-4">
                         <x-input-label for="recovered_remarks" :value="__('Remarks')" />
-                        <x-text-input id="recovered_remarks" class="block mt-1 w-full" 
+                        <x-text-input id="recovered_remarks" class="block mt-1 w-80" 
                             type="text" value="${record.recovered_remarks || 'N/A'}" readonly />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="recovered_doctor" :value="__('Attending Doctor')" />
                         <x-text-input id="recovered_doctor" class="block mt-1 w-full" 
-                            type="text" value="${record.recovered_doctor || 'N/A'}" readonly />
+                            type="text" value="Dr. ${record.recovered_doctor || 'N/A'}" readonly />
                     </div>
                     <div class="mb-4">
                         <x-input-label for="recovered_hospital" :value="__('Hospital')" />
