@@ -8,17 +8,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RequestDataController;
 use App\Http\Controllers\DoctorHospitalController;
 use App\Http\Controllers\DiseaseController;
+use App\Http\Controllers\WelcomeController; // Add this line
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+// This is the updated route for your welcome page
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::post('/request-data', [RequestDataController::class, 'store'])->name('request-data.store');
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -42,11 +39,6 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['auth', 'verified'])
     ->group(function () {
-
-        // Other static admin pages that don't require controller data
-        // foreach (['accountsettings'] as $page) {
-        //     Route::view($page, "admin.$page")->name($page);
-        // }
 
         Route::get('/accountsettings', [DoctorHospitalController::class, 'index'])->name('accountsettings');
         Route::post('/accountsettings', [DoctorHospitalController::class, 'store'])->name('doctor_hospitals.store');
