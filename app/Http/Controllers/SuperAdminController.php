@@ -9,6 +9,7 @@ use App\Models\DoctorHospital;
 use App\Models\Hospital;
 use App\Models\Barangay;
 use App\Models\Disease;
+use App\Models\DataRequest;
 use Illuminate\Support\Facades\DB;
 
 class SuperAdminController extends Controller
@@ -73,26 +74,6 @@ class SuperAdminController extends Controller
         return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins', 'searchTerm'));
     }
 
-    public function datarequest(Request $request)
-    {
-        $searchTerm = $request->input('q');
-
-        $pendingHospitals = DoctorHospital::with(['doctor', 'hospital'])
-            ->where('status', 'pending')
-            ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->whereHas('doctor', function ($q) use ($searchTerm) {
-                    $q->where('name', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                        ->orWhere('username', 'LIKE', "%{$searchTerm}%");
-                })
-                    ->orWhereHas('hospital', function ($q) use ($searchTerm) {
-                        $q->where('name', 'LIKE', "%{$searchTerm}%");
-                    });
-            })
-            ->get();
-
-        return view('superadmin.datarequest', compact('pendingHospitals', 'searchTerm'));
-    }
     /**
      * Approve a pending admin.
      */
@@ -204,7 +185,7 @@ class SuperAdminController extends Controller
 
             // Add status validation based on whether admin is approved
             if ($admin->is_approved) {
-                $validationRules['status'] = 'required|in:Active,Inactive'; 
+                $validationRules['status'] = 'required|in:Active,Inactive';
             } else {
                 $validationRules['is_approved'] = 'required|boolean';
             }
@@ -224,7 +205,7 @@ class SuperAdminController extends Controller
                     $updateData['is_approved'] = $request->is_approved;
                     // If approving for the first time, set status to Active
                     if ($request->is_approved && !$admin->is_approved) {
-                        $updateData['status'] = 'Active'; 
+                        $updateData['status'] = 'Active';
                     }
                 }
 
@@ -259,5 +240,92 @@ class SuperAdminController extends Controller
         $diseases = Disease::all();
 
         return view('superadmin.dashboard', compact('barangays', 'diseases'));
+    }
+
+
+    /**
+     * Display data requests with search functionality.
+     */
+    public function datarequest(Request $request)
+    {
+        $searchTerm = $request->input('q');
+
+        // Get data requests with search
+        $dataRequests = DataRequest::with('handledBy')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('requested_disease', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('purpose', 'LIKE', "%{$searchTerm}%");
+                });
+            })
+            ->latest()
+            ->get();
+
+        $pendingHospitals = DoctorHospital::with(['doctor', 'hospital'])
+            ->where('status', 'pending')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->whereHas('doctor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('username', 'LIKE', "%{$searchTerm}%");
+                })
+                    ->orWhereHas('hospital', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', "%{$searchTerm}%");
+                    });
+            })
+            ->get();
+
+        // return view('superadmin.datarequest', compact('pendingHospitals', 'searchTerm'));
+        return view('superadmin.datarequest', compact('dataRequests', 'pendingHospitals', 'searchTerm'));
+    }
+
+
+    /**
+     * Store new data request from public users
+     */
+    public function storeDataRequest(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'purpose' => 'required|string',
+            'requested_disease' => 'required|string|max:255',
+        ]);
+
+        DataRequest::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'purpose' => $validated['purpose'],
+            'requested_disease' => $validated['requested_disease'],
+            'status' => 'pending',
+        ]);
+
+        return redirect()->back()->with('success', 'Data request submitted successfully!');
+    }
+
+    /**
+     * Update data request status (approve/reject)
+     */
+    public function updateDataRequestStatus(Request $request, $id)
+    {
+        try {
+            $dataRequest = DataRequest::findOrFail($id);
+
+            $validated = $request->validate([
+                'status' => 'required|in:pending,approved,rejected',
+            ]);
+
+            $dataRequest->update([
+                'status' => $validated['status'],
+                'handled_by_admin_id' => auth()->id(),
+            ]);
+
+            return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
+        } catch (\Exception $e) {
+            Log::error('Error updating data request: ' . $e->getMessage());
+            return back()->with('error', 'Error updating data request');
+        }
     }
 }

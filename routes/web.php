@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 // This is the updated route for your welcome page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
-Route::post('/request-data', [RequestDataController::class, 'store'])->name('request-data.store');
+// PUBLIC ROUTE - Data request form (accessible without auth)
+Route::post('/data-requests', [SuperAdminController::class, 'storeDataRequest'])->name('data-requests.store');
+
+// Route::post('/request-data', [RequestDataController::class, 'store'])->name('request-data.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -71,6 +74,8 @@ Route::prefix('superadmin')
             Route::get('view-admin/{id}', 'viewAdmin')->name('view_admin');
             Route::put('update-admin/{id}', 'updateAdmin')->name('update_admin');
             Route::get('datarequest', 'datarequest')->name('datarequest');
+
+            Route::patch('data-requests/{id}', 'updateDataRequestStatus')->name('data-requests.update');
         });
     });
 
