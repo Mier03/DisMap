@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PatientRecord;
+use App\Models\Barangay; 
+use App\Models\Disease; 
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
@@ -14,21 +16,23 @@ class WelcomeController extends Controller
      */
     public function index()
     {
-        // Fetch total number of patient records
+        
         $totalCases = PatientRecord::count();
-
-        // Fetch the number of records with 'Active' status
         $totalActiveCases = PatientRecord::where('status', 'Active')->count();
 
         // NOTE: The database schema does not currently have a way to identify "critical" cases.
-        // This could be a separate 'status' like 'Critical' or a property on the disease model.
-        // We are using a placeholder value from your design for now.
-        $totalCriticalCases = 9; // Placeholder
+        $totalCriticalCases = 9;
+
+        // Fetch barangays and diseases for the modal filters
+        $barangays = Barangay::all();
+        $diseases = Disease::all();
 
         return view('welcome', [
             'totalCases' => $totalCases,
             'totalActiveCases' => $totalActiveCases,
             'totalCriticalCases' => $totalCriticalCases,
+            'barangays' => $barangays,
+            'diseases' => $diseases,
         ]);
     }
 }
