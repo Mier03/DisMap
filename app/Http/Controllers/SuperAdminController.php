@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Models\DoctorHospital;
 use App\Models\Hospital;
 use App\Models\Barangay;
 use App\Models\Disease;
@@ -72,7 +73,26 @@ class SuperAdminController extends Controller
         return view('superadmin.verify_admins', compact('pendingAdmins', 'allAdmins', 'searchTerm'));
     }
 
+  public function datarequest(Request $request)
+    {
+        $searchTerm = $request->input('q');
 
+        $pendingHospitals = DoctorHospital::with(['doctor', 'hospital'])
+            ->where('status', 'pending')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->whereHas('doctor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('username', 'LIKE', "%{$searchTerm}%");
+                })
+                ->orWhereHas('hospital', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%");
+                });
+            })
+            ->get();
+
+        return view('superadmin.datarequest', compact('pendingHospitals', 'searchTerm'));
+    }
     /**
      * Approve a pending admin.
      */
