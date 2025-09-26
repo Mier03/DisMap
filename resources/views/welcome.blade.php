@@ -35,11 +35,12 @@
         </p>
 
         <!-- Stats Cards -->
-        <div class="flex flex-col md:flex-row justify-center gap-6">
+        <!-- I COMMENTED SINCE THIS IS SUBJECT TO CHANGE -->
+        <!-- <div class="flex flex-col md:flex-row justify-center gap-6">
             <x-stat-card icon="👤" value="999" label="Total Cases" />
             <x-stat-card icon="➕" value="99" label="Total Active Cases" />
             <x-stat-card icon="⭐" value="9" label="Total Critical Cases" />
-        </div>
+        </div> -->
 
        
     </section>
