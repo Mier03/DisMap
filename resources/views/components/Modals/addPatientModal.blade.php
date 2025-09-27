@@ -4,7 +4,7 @@
     Add Patient Modal
 ========================= --}}
 <div id="addPatientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[80vh]">
+    <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[90vh]">
         <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">Add Patient</h2>
         <p class="text-g-dark text-base mt-2 ml-8">Record a new patient case</p>
 
@@ -82,27 +82,6 @@
                         <x-input-error :messages="$errors->get('street_address')" class="mt-2" />
                     </div>
 
-                    {{-- Contact Number --}}
-                    <div class="mb-4">
-                        <x-input-label for="contact_number_input" :value="__('Contact Number')" />
-                        <div class="flex items-center space-x-2">
-                            <div class="relative">
-                                <select id="country_code" name="country_code" disabled
-                                    class="block w-[80px] mt-1 rounded-l border border-g-dark bg-[#F2F2F2] pl-3 pr-3 py-2 text-sm text-g-dark focus:outline-none focus:ring-2 focus:ring-g-dark/50">
-                                    <option value="+63" selected>PH +63</option>
-                                </select>
-                            </div>
-                            <x-text-input id="contact_number_input" class="block mt-1 flex-1" 
-                                type="tel" :value="old('contact_number_input')" 
-                                required placeholder="9123456789" 
-                                pattern="[0-9]{9,10}" 
-                                onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" 
-                                oninput="updateContactNumber()" />
-                            <input type="hidden" id="contact_number" name="contact_number" :value="old('contact_number')" />
-                        </div>
-                        <x-input-error :messages="$errors->get('contact_number')" class="mt-2" />
-                    </div>
-
                     {{-- Barangay --}}
                     <div class="mb-4">
                         <x-input-label for="barangay_id" :value="__('Barangay')" />
@@ -115,6 +94,27 @@
                         <x-input-error :messages="$errors->get('barangay_id')" class="mt-2" />
                     </div>
 
+                    {{-- Contact Number --}}
+                    <div class="mb-4">
+                        <x-input-label for="contact_number_input" :value="__('Contact Number')" />
+                        <div class="flex items-center space-x-2">
+                            <div class="relative">
+                                <select id="country_code" name="country_code" disabled
+                                    class="block w-[90px] mt-1 rounded-l border border-g-dark bg-[#F2F2F2] pl-3 pr-3 py-2 text-sm text-g-dark focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                                    <option value="+63" selected>PH +63</option>
+                                </select>
+                            </div>
+                            <x-text-input id="contact_number_input" class="block mt-1 flex-1" 
+                                type="tel" :value="old('contact_number_input')" 
+                                required placeholder="XXXXXXXXXX" 
+                                pattern="[0-9]{9,10}" 
+                                onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" 
+                                oninput="updateContactNumber()" />
+                            <input type="hidden" id="contact_number" name="contact_number" :value="old('contact_number')" />
+                        </div>
+                        <x-input-error :messages="$errors->get('contact_number')" class="mt-2" />
+                    </div>
+
                     {{-- Email --}}
                     <div class="mb-4">
                         <x-input-label for="email" :value="__('Email')" />
@@ -124,16 +124,34 @@
                         <x-input-error :messages="$errors->get('email')" class="mt-2" />
                     </div>
 
-                    <div class="flex justify-end mt-6">
+                    <div class="flex flex-col sm:flex-row gap-40 mt-10">
+                        <x-secondary-button type="button" onclick="closeModal('{{ $id }}')">
+                            Cancel
+                        </x-secondary-button>
                         <x-primary-button type="button" onclick="nextPhase(1)">
                             Next
                         </x-primary-button>
+                        
                     </div>
                 </div>
 
                 {{-- Phase 2: Medical Information --}}
                 <div id="phase2" class="hidden">
                     <h3 class="text-2xl font-bold text-g-dark mb-4">Medical Information</h3>
+
+                    {{-- Hospital --}}
+                    <div class="mb-4">
+                        <x-input-label for="hospital_id" :value="__('Hospital')" />
+                        <x-dropdown-select id="hospital_id" name="hospital_id" required>
+                            <option value="" disabled selected>Select hospital...</option>
+                            @if(Auth::check())
+                                @foreach(Auth::user()->approvedHospitals as $hospital)
+                                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                                @endforeach
+                            @endif
+                        </x-dropdown-select>
+                        <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
+                    </div>
 
                     {{-- Diseases Container --}}
                     <div id="diseases-container">
@@ -158,30 +176,16 @@
                         </div>
                     </div>
 
-                    <a href="#" onclick="addAnotherDisease()" class="text-blue-600 hover:underline mb-4 block">Add another disease</a>
+                    <a href="#" onclick="addAnotherDisease()" class="text-g-dark hover:underline mb-4 block">Add another disease</a>
 
-                    {{-- Hospital --}}
-                    <div class="mb-4">
-                        <x-input-label for="hospital_id" :value="__('Hospital')" />
-                        <x-dropdown-select id="hospital_id" name="hospital_id" required>
-                            <option value="" disabled selected>Select hospital...</option>
-                            @if(Auth::check())
-                                @foreach(Auth::user()->approvedHospitals as $hospital)
-                                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
-                                @endforeach
-                            @endif
-                        </x-dropdown-select>
-                        <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
-                    </div>
-
-                    <div class="flex justify-between mt-6">
-                        <button type="button" onclick="prevPhase(2)"
-                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    <div class="flex flex-col sm:flex-row gap-40 mt-10">
+                        <x-secondary-button type="button" onclick="prevPhase(2)">
                             Back
-                        </button>
+                        </x-secondary-button>
                         <x-primary-button type="button" onclick="nextPhase(2)">
                             Next
                         </x-primary-button>
+                        
                     </div>
                 </div>
 
@@ -193,17 +197,21 @@
                         <!-- Summary will be populated by JS -->
                     </div>
 
-                    <div class="flex justify-between mt-6">
-                        <button type="button" onclick="prevPhase(3)"
-                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    <div class="flex flex-col sm:flex-row gap-40 mt-10">
+                        <x-secondary-button type="button" onclick="prevPhase(3)">
                             Back
-                        </button>
+                        </x-secondary-button>
                         <x-primary-button type="submit">
                             + Add Patient
                         </x-primary-button>
+                        
                     </div>
                 </div>
             </form>
+            <button type="button" onclick="closeModal('{{$id}}')"
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                    ✕
+            </button>
         </div>
     </div>
 </div>
@@ -223,14 +231,14 @@
 
         const diseaseHtml = `
             <div class="mb-2">
-                <label for="disease_id_${diseaseCounter}" class="block text-sm font-medium text-gray-900">Disease</label>
+                <label for="disease_id_${diseaseCounter}" class="block text-[14px] font-semibold text-g-dark">Disease</label>
                 <select id="disease_id_${diseaseCounter}" name="disease_id[]" required
-                    class="block w-full mt-1 rounded border border-g-dark bg-[#F2F2F2] px-3 py-2 text-sm text-g-dark focus:outline-none focus:ring-2 focus:ring-g-dark/50">
+                    class="w-full h-[44px] border border-g-dark rounded px-3 mt-1 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
                     ${optionsHTML}
                 </select>
             </div>
             <div class="mb-2">
-                <label for="reported_remarks_${diseaseCounter}" class="block text-sm font-medium text-gray-900">Remarks</label>
+                <label for="reported_remarks_${diseaseCounter}" class="block text-[14px] font-semibold text-g-dark">Remarks</label>
                 <textarea id="reported_remarks_${diseaseCounter}" name="reported_remarks[]" 
                     class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
                     placeholder="Enter remarks..." required></textarea>
@@ -280,6 +288,9 @@
     }
 
     function nextPhase(current) {
+        if (current === 1) {
+            updateContactNumber();
+        }
         if (!validatePhase(current)) {
             alert('Please fill out all required fields correctly.');
             return;
@@ -312,9 +323,8 @@
             <p><strong>Date of Birth:</strong> ${document.getElementById('birthdate').value}</p>
             <p><strong>Sex:</strong> ${document.getElementById('sex').value}</p>
             <p><strong>Ethnicity:</strong> ${document.getElementById('ethnicity').value}</p>
-            <p><strong>Street Address:</strong> ${document.getElementById('street_address').value}</p>
+            <p><strong>Address:</strong> ${document.getElementById('street_address').value}, ${document.getElementById('barangay_id').options[document.getElementById('barangay_id').selectedIndex].text}, Cebu City, Philippines</p>
             <p><strong>Contact Number:</strong> ${document.getElementById('contact_number').value}</p>
-            <p><strong>Barangay:</strong> ${document.getElementById('barangay_id').options[document.getElementById('barangay_id').selectedIndex].text}</p>
             <p><strong>Email:</strong> ${document.getElementById('email').value}</p>`;
         summary.appendChild(personal);
 
@@ -322,6 +332,7 @@
         const medical = document.createElement('div');
         medical.innerHTML = '<h4 class="font-bold text-lg mb-2">Medical Information</h4>';
 
+        medical.innerHTML += `<p><strong>Hospital:</strong> ${document.getElementById('hospital_id').options[document.getElementById('hospital_id').selectedIndex]?.text || 'Not selected'}</p>`;
         const diseaseEntries = document.querySelectorAll('.disease-entry');
         diseaseEntries.forEach((entry, index) => {
             const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
@@ -331,7 +342,6 @@
             medical.appendChild(diseaseP);
         });
 
-        medical.innerHTML += `<p><strong>Hospital:</strong> ${document.getElementById('hospital_id').options[document.getElementById('hospital_id').selectedIndex]?.text || 'Not selected'}</p>`;
         summary.appendChild(medical);
     }
 

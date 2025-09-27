@@ -31,16 +31,20 @@
                                     <span class="text-gray-800" id="patient-name">{{ $patient->name }}</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Birthdate:</span>
-                                    <span class="text-gray-800" id="patient-birthdate">{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }}</span>
+                                    <span class="text-sm font-medium text-gray-600">Birthdate (Age):</span>
+                                    <span class="text-gray-800" id="patient-birthdate">{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($patient->birthdate)->age }})</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Age:</span>
-                                    <span class="text-gray-800" id="patient-age">{{ \Carbon\Carbon::parse($patient->birthdate)->age }}</span>
+                                    <span class="text-sm font-medium text-gray-600">Sex:</span>
+                                    <span class="text-gray-800" id="patient-age">{{ $patient->sex }}</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
+                                    <span class="text-sm font-medium text-gray-600">Ethnicity:</span>
+                                    <span class="text-gray-800" id="patient-age">{{ $patient->ethnicity }}</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2">
-                                    <span class="text-sm font-medium text-gray-600">Barangay:</span>
-                                    <span class="text-gray-800" id="patient-barangay">{{ $patient->barangay->name ?? 'N/A' }}</span>
+                                    <span class="text-sm font-medium text-gray-600">Address:</span>
+                                    <span class="text-gray-800" id="patient-address">{{ $patient->street_address ?? 'N/A'}}, {{ $patient->barangay->name ?? 'N/A' }}, Cebu City</span>
                                 </div>
                             </div>
                         </div>
@@ -70,6 +74,10 @@
                                     <span class="text-sm font-medium text-gray-600">User Type:</span>
                                     <span class="text-gray-800" id="patient-username">{{ $patient->user_type }}</span>
                                 </div>
+                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
+                                    <span class="text-sm font-medium text-gray-600">Contact Number:</span>
+                                    <span class="text-gray-800" id="patient-username">{{ $patient->contact_number }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -84,7 +92,7 @@
                                 </form>
                             </div>
                             <button
-                                onclick="openModal('addPatientModal')"
+                                onclick="openModal('')"
                                 class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition shrink-0">
                                 + New
                             </button>
