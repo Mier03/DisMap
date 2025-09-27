@@ -7,7 +7,7 @@
         'pendingHospitals' => ['Doctor', 'Hospital', 'Certification', 'Actions'],
         'pendingDataRequests' => ['Name', 'Email', 'Requested Data', 'Date Requested', 'Actions'],
         'allPatients' => ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'],
-        'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Status', 'Details'],
+        'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Doctor', 'Hospital', 'Status'],
         'diseaseRecords' => ['Name', 'Total Cases', 'Active', 'Recovered', 'Date Reported', 'Patients'],
         default => ['Column 1', 'Column 2', 'Column 3', 'Actions'],
     };
@@ -115,27 +115,27 @@
                         @break
 
                         {{-- Pending Data Requests --}}
-@case('pendingDataRequests')
-    <x-tables.td>{{ $item->name }}</x-tables.td>
-    <x-tables.td>{{ $item->email }}</x-tables.td>
-    <x-tables.td>
-        <button onclick="viewRequestedData({{ $item->id }})"
-            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-            View
-        </button>
-    </x-tables.td>
-    <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
-    <x-tables.td>
-        <form action="{{ route('superadmin.data-requests.update', $item->id) }}" method="POST" class="inline">
-            @csrf
-            @method('PATCH')
-            <button type="submit" name="status" value="approved" 
-                    class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
-            <button type="button" onclick="declineRequest({{ $item->id }})" 
-                    class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-        </form>
-    </x-tables.td>
-@break
+                        @case('pendingDataRequests')
+                            <x-tables.td>{{ $item->name }}</x-tables.td>
+                            <x-tables.td>{{ $item->email }}</x-tables.td>
+                            <x-tables.td>
+                                <button onclick="viewRequestedData({{ $item->id }})"
+                                    class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+                                    View
+                                </button>
+                            </x-tables.td>
+                            <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
+                            <x-tables.td>
+                                <form action="{{ route('superadmin.data-requests.update', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" name="status" value="approved" 
+                                            class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
+                                    <button type="button" onclick="declineRequest({{ $item->id }})" 
+                                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                                </form>
+                            </x-tables.td>
+                        @break
 
                         {{-- Manage Patients --}}
                         @case('allPatients')
@@ -191,19 +191,36 @@
 
                         {{-- Patient Records --}}
                         @case('patientRecords')
+                            {{-- Disease --}}
                             <x-tables.td>{{ $item->disease->specification ?? 'N/A' }}</x-tables.td>
+
+                            {{-- Date Reported --}}
                             <x-tables.td>{{ \Carbon\Carbon::parse($item->date_reported)->format('F j, Y') }}</x-tables.td>
-                            <x-tables.td>{{ $item->date_recovered ? \Carbon\Carbon::parse($item->date_recovered)->format('F j, Y') : '-' }}</x-tables.td>
+
+                            {{-- Date Recovered --}}
+                            <x-tables.td>
+                                @if($item->date_recovered)
+                                    {{ \Carbon\Carbon::parse($item->date_recovered)->format('F j, Y') }}
+                                @else
+                                    <x-tables.button 
+                                        label="Add" 
+                                        onclick="showDetails({{ $item->id }})" 
+                                    />
+                                @endif
+                            </x-tables.td>
+
+                            {{-- Doctor --}}
+                            <x-tables.td>{{ $item->recoveredByDoctorHospital->doctor->name ?? 'N/A' }}</x-tables.td>
+
+                            {{-- Hospital --}}
+                            <x-tables.td>{{ $item->recoveredByDoctorHospital->hospital->name ?? 'N/A' }}</x-tables.td>
+
+                            {{-- Status --}}
                             <x-tables.td>
                                 <x-tables.status-badge :status="$item->date_recovered ? 'Recovered' : $item->patient->status" />
                             </x-tables.td>
-                            <x-tables.td>
-                                <button onclick="showDetails({{ $item->id }})" 
-                                        class="text-blue-600 hover:underline font-medium">
-                                    {{ $item->date_recovered ? 'View' : 'Update' }}
-                                </button>
-                            </x-tables.td>
                         @break
+
 
                         {{-- Default fallback --}}
                         @default
