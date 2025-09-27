@@ -7,7 +7,7 @@
         'pendingHospitals' => ['Doctor', 'Hospital', 'Certification', 'Actions'],
         'pendingDataRequests' => ['Name', 'Email', 'Requested Data', 'Date Requested', 'Actions'],
         'allPatients' => ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'],
-        'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Doctor', 'Hospital', 'Status'],
+        'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Status', 'Details'],
         'diseaseRecords' => ['Name', 'Total Cases', 'Active', 'Recovered', 'Date Reported', 'Patients'],
         default => ['Column 1', 'Column 2', 'Column 3', 'Actions'],
     };
@@ -202,22 +202,21 @@
                                 @if($item->date_recovered)
                                     {{ \Carbon\Carbon::parse($item->date_recovered)->format('F j, Y') }}
                                 @else
-                                    <x-tables.button 
-                                        label="Add" 
-                                        onclick="showDetails({{ $item->id }})" 
-                                    />
+                                    -
                                 @endif
                             </x-tables.td>
-
-                            {{-- Doctor --}}
-                            <x-tables.td>{{ $item->recoveredByDoctorHospital->doctor->name ?? 'N/A' }}</x-tables.td>
-
-                            {{-- Hospital --}}
-                            <x-tables.td>{{ $item->recoveredByDoctorHospital->hospital->name ?? 'N/A' }}</x-tables.td>
 
                             {{-- Status --}}
                             <x-tables.td>
                                 <x-tables.status-badge :status="$item->date_recovered ? 'Recovered' : $item->patient->status" />
+                            </x-tables.td>
+
+                            {{-- Details --}}
+                            <x-tables.td>
+                                <x-tables.button 
+                                    :label="$item->date_recovered ? 'View' : 'Update'" 
+                                    onclick="showDetails({{ $item->id }})" 
+                                />
                             </x-tables.td>
                         @break
 

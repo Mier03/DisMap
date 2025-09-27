@@ -2,114 +2,12 @@
 
 {{-- Wrapper that holds ALL modals --}}
 <div>
-    {{-- =========================
-        Add Patient Modal
-    ========================== --}}
-    <div id="addPatientModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-[500px] text-left relative overflow-y-auto max-h-[80vh]">
-            <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">Add Patient</h2>
-            <p class="text-g-dark text-base mt-2 ml-8">Record a new patient case</p>
-
-            <div class="px-8 py-4">
-                <form action="{{ route('admin.patients.store') }}" method="POST">
-                    @csrf
-
-                    {{-- Full Name --}}
-                    <div class="mb-4">
-                        <x-input-label for="fullName" :value="__('Full Name')" />
-                        <x-text-input id="fullName" class="block mt-1 w-full" 
-                            type="text" name="fullName" :value="old('fullName')" 
-                            required placeholder="Enter patient full name..." />
-                        <x-input-error :messages="$errors->get('fullName')" class="mt-2" />
-                    </div>
-
-                    {{-- Birthdate --}}
-                    <div class="mb-4">
-                        <x-input-label for="birthdate" :value="__('Birthdate')" />
-                        <x-text-input id="birthdate" class="block mt-1 w-full" 
-                            type="date" name="birthdate" :value="old('birthdate')" 
-                            required />
-                        <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
-                    </div>
-
-                    {{-- Barangay --}}
-                    <div class="mb-4">
-                        <x-input-label for="barangay_id" :value="__('Barangay')" />
-                        <x-dropdown-select id="barangay_id" name="barangay_id" required>
-                            <option value="" disabled selected>Select barangay...</option>
-                            @foreach($barangays as $barangay)
-                                <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
-                            @endforeach
-                        </x-dropdown-select>
-                        <x-input-error :messages="$errors->get('barangay_id')" class="mt-2" />
-                    </div>
-
-                    {{-- Diseases --}}
-                    <div class="mb-4">
-                        <x-input-label for="disease_id" :value="__('Disease')" />
-                        <x-dropdown-select id="disease_id" name="disease_select">
-                            <option value="" disabled selected>Select patient’s disease...</option>
-                            @foreach($diseases as $disease)
-                                <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
-                            @endforeach
-                        </x-dropdown-select>
-                        <input type="hidden" name="disease_id[]" id="disease_id_hidden" value="">
-                        <div id="disease-tags" class="mt-2 flex flex-wrap gap-2"></div>
-                        <x-input-error :messages="$errors->get('disease_id')" class="mt-2" />
-                        <x-input-error :messages="$errors->get('disease_id.*')" class="mt-2" />
-                    </div>
-
-                    {{-- Remarks --}}
-                    <div class="mb-4">
-                        <x-input-label for="reported_remarks" :value="__('Remarks')" />
-                        <x-text-input id="reported_remarks" class="block mt-1 w-full" 
-                            type="text" name="reported_remarks" :value="old('reported_remarks')" 
-                            placeholder="Enter any relevant remarks..." />
-                        <x-input-error :messages="$errors->get('reported_remarks')" class="mt-2" />
-                    </div>
-
-                    {{-- Hospital --}}
-                    <div class="mb-4">
-                        <x-input-label for="hospital_id" :value="__('Hospital')" />
-                        <x-dropdown-select id="hospital_id" name="hospital_id" required>
-                            <option value="" disabled selected>Select hospital...</option>
-                            @if(Auth::check())
-                                @foreach(Auth::user()->approvedHospitals as $hospital)
-                                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
-                                @endforeach
-                            @endif
-                        </x-dropdown-select>
-                        <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
-                    </div>
-
-                    {{-- Email --}}
-                    <div class="mb-4">
-                        <x-input-label for="email" :value="__('Email')" />
-                        <x-text-input id="email" class="block mt-1 w-full" 
-                            type="email" name="email" :value="old('email')" 
-                            required placeholder="Enter valid email address..." />
-                        <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                    </div>
-
-                    <div class="flex justify-between space-x-2 mt-6">
-                        <x-primary-button id="addPatientButton">
-                            {{ __('+ Add Patient') }}
-                        </x-primary-button>
-                        <button type="button" onclick="closeModal('addPatientModal')"
-                                class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
     {{-- =========================
         Add Hospital Modal
     ========================== --}}
-    <div id="addHospitalModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-[500px]">
+    <div id="addHospitalModal" class="hidden fixed inset-0 flex bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
             <x-input-label class="text-xl font-bold mb-4" :value="__('Add Hospital')" />
             
             <form id="hospitalForm" method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
@@ -138,12 +36,14 @@
                     <x-input-error :messages="$errors->get('certification')" class="mt-2" />
                 </div>
 
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="document.getElementById('addHospitalModal').classList.add('hidden')"
-                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">Cancel</button>
+
+                <div class="flex justify-center gap-4 mt-8">
                     <x-primary-button>
                         {{ __('Submit') }}
                     </x-primary-button>
+                    <x-secondary-button type="button" onclick="closeModal('addHospitalModal')">
+                        Cancel
+                    </x-secondary-button>
                 </div>
             </form>
         </div>
@@ -152,20 +52,20 @@
     {{-- =========================
         Edit Patient Modal
     ========================== --}}
-    <div id="editPatientModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-[500px]">
+    <div id="editPatientModal" class="hidden fixed inset-0 flex bg-black bg-opacity-50 items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
             <h2 class="text-2xl font-bold text-g-dark">Edit Patient</h2>
             <p class="text-g-dark text-base">Edit patient details here...</p>
-            <button onclick="closeModal('editPatientModal')" class="mt-4 w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+            <x-secondary-button type="button" onclick="closeModal('editPatientModal')">
                 Close
-            </button>
+            </x-secondary-button>
         </div>
     </div>
 
     {{-- =========================
         Export Modal
     ========================== --}}
-    <div id="exportModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+    <div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
             <div class="flex items-center mb-2">
                 <svg class="w-[32px] h-[32px] text-g-dark fill-current"
@@ -236,14 +136,13 @@
                 </x-dropdown-select>
             </div>
 
-            <div class="flex justify-center gap-4 mt-10">
+            <div class="flex justify-center gap-4 mt-8">
                 <x-primary-button>
                     {{ __('Export PDF') }}
                 </x-primary-button>
-                <button type="button" onclick="closeModal('exportModal')"
-                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                <x-secondary-button type="button" onclick="closeModal('exportModal')">
                     Cancel
-                </button>
+                </x-secondary-button>
             </div>
         </div>
     </div>
@@ -251,8 +150,8 @@
     {{-- =========================
         Request Data Modal
     ========================== --}}
-    <div id="requestDataModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative hidden">
+    <div id="requestDataModal" class="hidden fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
             <div class="flex items-center mb-2">
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
                      viewBox="0 0 24 24">
@@ -292,10 +191,9 @@
                     <x-primary-button>
                         {{ __('Submit') }}
                     </x-primary-button>
-                    <button type="button" onclick="closeModal('requestDataModal')"
-                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
                         Cancel
-                    </button>
+                    </x-secondary-button>
                 </div>
             </form>
 
@@ -309,7 +207,7 @@
     {{-- =========================
         View Reason of Request Modal - SuperAdmin Side
     ========================== --}}
-    <div id="reasonRequestModal" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+    <div id="reasonRequestModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
             <div class="flex items-center mb-2">
                 <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
@@ -348,10 +246,9 @@
                     <x-primary-button>
                         {{ __('Accept') }}
                     </x-primary-button>
-                    <button type="button" onclick="closeModal('reasonRequestModal')"
-                            class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                    <x-secondary-button type="button" onclick="closeModal('reasonRequestModal')">
                         Decline
-                    </button>
+                    </x-secondary-button>
                 </div>
             </form>
 
@@ -378,10 +275,12 @@
             </div>
 
             <div class="flex justify-center gap-4 mt-8">
-                <button type="button" onclick="closeModal('patientDetailsModal')"
-                        class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
+                <x-primary-button id="saveRecoveryBtn" class="hidden" type="submit" form="recoveryForm">
+                    Save Changes
+                </x-primary-button>
+                <x-secondary-button type="button" onclick="closeModal('patientDetailsModal')">
                     Close
-                </button>
+                </x-secondary-button>
             </div>
 
             <button type="button" onclick="closeModal('patientDetailsModal')"
@@ -409,6 +308,12 @@
     function closeModal(id) {
         const modal = document.getElementById(id);
         if (modal) {
+            const saveBtn = document.getElementById('saveRecoveryBtn');
+            const recoveryForm = document.getElementById('recoveryForm');
+
+            if (saveBtn) saveBtn.classList.add('hidden');
+            if (recoveryForm) recoveryForm.classList.add('hidden');
+
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
@@ -425,6 +330,9 @@
             console.error('Content div not found in patient details modal');
             return;
         }
+
+        const saveRecoveryBtn = document.getElementById('saveRecoveryBtn');
+        saveRecoveryBtn.classList.add('hidden');
 
         try {
             const response = await fetch(`/admin/patient-records/${recordId}`, {
@@ -515,11 +423,6 @@
                             <x-input-error :messages="$errors->get('recovered_remarks')" class="mt-2" />
                         </div>
                         <div class="flex justify-center gap-4">
-                            <button type="button" id="cancelRecoveryForm" 
-                                class="w-[168px] h-[40px] bg-[#F2F2F2] text-g-dark text-[14px] font-semibold rounded hover:bg-gray-200 transition">
-                                Cancel
-                            </button>
-                            <x-primary-button>Save Changes</x-primary-button>
                         </div>
                     </form>
                 `;
@@ -530,19 +433,12 @@
 
             const addRecoveryBtn = document.getElementById('addRecoveryDetailsBtn');
             const recoveryForm = document.getElementById('recoveryForm');
-            const cancelBtn = document.getElementById('cancelRecoveryForm');
 
             if (addRecoveryBtn && recoveryForm) {
                 addRecoveryBtn.addEventListener('click', () => {
                     addRecoveryBtn.classList.add('hidden');
                     recoveryForm.classList.remove('hidden');
-                });
-            }
-
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', () => {
-                    recoveryForm.classList.add('hidden');
-                    addRecoveryBtn.classList.remove('hidden');
+                    saveRecoveryBtn.classList.remove('hidden');
                 });
             }
 
@@ -577,88 +473,6 @@
             alert('Failed to load record details.');
         }
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const modals = document.querySelectorAll('.fixed.bg-black.bg-opacity-50');
-        modals.forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeModal(modal.id);
-                }
-            });
-        });
-
-        // Handle disease selection and tags
-        const diseaseSelect = document.getElementById('disease_id');
-        const diseaseTagsContainer = document.getElementById('disease-tags');
-        const diseaseHiddenInput = document.getElementById('disease_id_hidden');
-        let selectedDiseases = [];
-
-        function updateHiddenInput() {
-            if (diseaseHiddenInput) {
-                diseaseHiddenInput.value = selectedDiseases.join(',');
-                const existingInputs = document.querySelectorAll('input[name="disease_id[]"]');
-                existingInputs.forEach(input => input.remove());
-                selectedDiseases.forEach(diseaseId => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'disease_id[]';
-                    input.value = diseaseId;
-                    diseaseTagsContainer.appendChild(input);
-                });
-                diseaseSelect.required = selectedDiseases.length === 0;
-            }
-        }
-
-        if (diseaseSelect && diseaseTagsContainer) {
-            diseaseSelect.addEventListener('change', function() {
-                const selectedValue = diseaseSelect.value;
-                const selectedText = diseaseSelect.options[diseaseSelect.selectedIndex].text;
-
-                if (selectedValue && selectedText !== 'Select patient’s disease...' && !selectedDiseases.includes(selectedValue)) {
-                    selectedDiseases.push(selectedValue);
-
-                    const tag = document.createElement('span');
-                    tag.className = 'bg-gray-200 text-gray-700 text-sm px-2 py-1 rounded flex items-center';
-                    tag.textContent = selectedText;
-
-                    const removeBtn = document.createElement('button');
-                    removeBtn.textContent = 'x';
-                    removeBtn.className = 'ml-2 text-gray-500 hover:text-gray-700';
-                    removeBtn.onclick = () => {
-                        selectedDiseases = selectedDiseases.filter(id => id !== selectedValue);
-                        tag.remove();
-                        updateHiddenInput();
-                    };
-                    tag.appendChild(removeBtn);
-                    diseaseTagsContainer.appendChild(tag);
-
-                    diseaseSelect.value = '';
-                    updateHiddenInput();
-                }
-            });
-        }
-
-        function resetForm(id) {
-            const form = document.querySelector(`#${id} form`);
-            if (form) {
-                form.reset();
-                if (diseaseTagsContainer) {
-                    diseaseTagsContainer.innerHTML = '';
-                    selectedDiseases = [];
-                    updateHiddenInput();
-                }
-            }
-        }
-
-        document.querySelectorAll('button[onclick^="closeModal"]').forEach(button => {
-            button.addEventListener('click', () => resetForm('addPatientModal'));
-        });
-
-        if (diseaseHiddenInput) {
-            updateHiddenInput();
-        }
-    });
 
     function setDateFilter(type) {
         const fromInput = document.getElementById('fromDate');

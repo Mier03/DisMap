@@ -83,7 +83,12 @@ class PatientController extends Controller
     ]);
 
     DB::transaction(function () use ($request) {
-        $username = strtolower($request->input('first_name') . '.' . $request->input('last_name') . rand(1000, 9999));
+        $username = strtolower(
+            str_replace(' ', '', $request->input('first_name')) .
+            '.' .
+            str_replace(' ', '', $request->input('last_name')) .
+            rand(1000, 9999)
+        );
         $fullName = $request->input('first_name') . ' ' . $request->input('middle_name') . ' ' . $request->input('last_name');
 
         // Create the user
