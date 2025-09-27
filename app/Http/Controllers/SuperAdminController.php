@@ -252,6 +252,7 @@ class SuperAdminController extends Controller
 
         // Get data requests with search
         $dataRequests = DataRequest::with('handledBy')
+        ->where('status', 'pending') 
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
@@ -306,26 +307,61 @@ class SuperAdminController extends Controller
     }
 
     /**
-     * Update data request status (approve/reject)
+ * Update data request status (approve/reject)
+ */
+public function updateDataRequestStatus(Request $request, $id)
+{
+    try {
+        $dataRequest = DataRequest::findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,approved,rejected',
+        ]);
+
+        $dataRequest->update([
+            'status' => $validated['status'],
+            'handled_by_admin_id' => auth()->id(),
+            'updated_at' => now(),
+        ]);
+
+        // For AJAX requests (modal form), return JSON response
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Data request status updated!']);
+        }
+
+        // For regular form submissions (table buttons), redirect
+        return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
+    } catch (\Exception $e) {
+        Log::error('Error updating data request: ' . $e->getMessage());
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => false, 'error' => 'Error updating data request'], 500);
+        }
+        
+        return back()->with('error', 'Error updating data request');
+    }
+}
+
+    /**
+     * Get individual data request details for modal
      */
-    public function updateDataRequestStatus(Request $request, $id)
+    public function getDataRequest($id)
     {
         try {
             $dataRequest = DataRequest::findOrFail($id);
-
-            $validated = $request->validate([
-                'status' => 'required|in:pending,approved,rejected',
+            
+            return response()->json([
+                'name' => $dataRequest->name,
+                'email' => $dataRequest->email,
+                'requested_type' => $dataRequest->requested_type,
+                'requested_disease' => $dataRequest->requested_disease,
+                'purpose' => $dataRequest->purpose,
+                'status' => $dataRequest->status,
+                'created_at' => $dataRequest->created_at,
             ]);
-
-            $dataRequest->update([
-                'status' => $validated['status'],
-                'handled_by_admin_id' => auth()->id(),
-            ]);
-
-            return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
         } catch (\Exception $e) {
-            Log::error('Error updating data request: ' . $e->getMessage());
-            return back()->with('error', 'Error updating data request');
+            Log::error('Error fetching data request: ' . $e->getMessage());
+            return response()->json(['error' => 'Data request not found'], 404);
         }
     }
 }
