@@ -133,5 +133,5 @@
         });
     </script>
     @endpush
-
+    <x-certificate-modal />
 </x-app-layout>
