@@ -25,11 +25,6 @@
             </div>
         </nav>
     </header>
-        @if(session('success'))
-        <script>
-            alert("{{ session('success') }}");
-        </script>
-        @endif
 
     <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center"
         style="background-image: url({{ Vite::asset('resources/svg/welcomebg.svg') }});">

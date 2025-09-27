@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
             if (!$user->is_approved) {
                 Auth::logout(); // log out the user immediately
                 return redirect()->route('login')->withErrors([
-                    'login' => 'Your account is not approved yet. Please wait for admin approval.',
+                    'email' => 'Your account is not approved yet. Please wait for admin approval.',
                 ]);
             }
             if ($user->user_type === 'Doctor') {

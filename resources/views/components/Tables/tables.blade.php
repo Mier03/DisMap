@@ -50,16 +50,9 @@
                             <x-tables.td>{{ $item->hospitals->first()->name ?? 'N/A' }}</x-tables.td>
                             <x-tables.td>{{ $item->email }}</x-tables.td>
                             <x-tables.td>{{ $item->username }}</x-tables.td>
-                             <x-tables.td>
-                                 @if($item->hospitals->first()?->pivot?->certification)
-                                    <button 
-                                        onclick="viewCertificate('{{ asset('storage/'.$item->hospitals->first()->pivot->certification) }}')"
-                                        class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                        View
-                                    </button>
-                                @else
-                                    <span class="text-gray-400 italic">No Certificate</span>
-                                @endif                            </x-tables.td>
+                            <x-tables.td>
+                                <x-tables.certificate-button :certification="$item->hospitals->first()?->pivot?->certification" />
+                            </x-tables.td>
                             <x-tables.td>
                                 <x-tables.action-buttons :id="$item->id" />
                             </x-tables.td>
@@ -80,15 +73,7 @@
                                 <x-tables.status-badge :status="$item->status ?? 'Active'" />
                             </x-tables.td>
                             <x-tables.td>
-                                 @if($item->hospitals->first()?->pivot?->certification)
-                                    <button 
-                                        onclick="viewCertificate('{{ asset('storage/'.$item->hospitals->first()->pivot->certification) }}')"
-                                        class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                        View
-                                    </button>
-                                @else
-                                    <span class="text-gray-400 italic">No Certificate</span>
-                                @endif
+                                <x-tables.certificate-button :certification="$item->hospitals->first()?->pivot?->certification" />
                             </x-tables.td>
                         @break
 
