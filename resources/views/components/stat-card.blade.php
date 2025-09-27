@@ -7,7 +7,7 @@
 <div class="bg-white border border-b-4 border-[#2D6A4F] rounded-lg shadow-md flex items-center gap-5 p-5 w-full md:w-auto min-w-[280px]">
     {{-- Icon Slot --}}
     <div class="text-[#2D6A4F]">
-        {{ $icon }}
+        {{ $icon ?? '' }}
     </div>
 
     {{-- Value and Label --}}
