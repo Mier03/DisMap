@@ -90,6 +90,9 @@ class SuperAdminController extends Controller
                 $user->is_approved = true;
                 $user->status = 'Active';
                 $user->save();
+
+                 DoctorHospital::where('doctor_id', $user->id)
+                ->update(['status' => 'approved']);
             });
 
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor approved successfully');
