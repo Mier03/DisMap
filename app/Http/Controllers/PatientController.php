@@ -63,60 +63,68 @@ class PatientController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'fullName' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'barangay_id' => 'required|exists:barangays,id',
-            'disease_id' => 'required|array',
-            'disease_id.*' => 'required|exists:diseases,id', 
-            'email' => 'required|email|unique:users,email',
-            'hospital_id' => 'required|exists:hospitals,id',
-            'reported_remarks' => 'required|string',
-            'recovered_remarks' => 'nullable|string',
+{
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'required|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'birthdate' => 'required|date',
+        'sex' => 'required|in:Male,Female,Other',
+        'ethnicity' => 'required|string|max:255',
+        'street_address' => 'required|string|max:255',
+        'contact_number' => 'required|string|max:20',
+        'barangay_id' => 'required|exists:barangays,id',
+        'disease_id' => 'required|array',
+        'disease_id.*' => 'required|exists:diseases,id',
+        'reported_remarks' => 'required|array',
+        'reported_remarks.*' => 'required|string',
+        'hospital_id' => 'required|exists:hospitals,id',
+        'email' => 'required|email|unique:users,email',
+    ]);
+
+    DB::transaction(function () use ($request) {
+        $username = strtolower($request->input('first_name') . '.' . $request->input('last_name') . rand(1000, 9999));
+        $fullName = $request->input('first_name') . ' ' . $request->input('middle_name') . ' ' . $request->input('last_name');
+
+        // Create the user
+        $user = User::create([
+            'name' => $fullName,
+            'username' => $username,
+            'email' => $request->input('email'),
+            'password' => Hash::make('12345678'),
+            'birthdate' => $request->input('birthdate'),
+            'sex' => $request->input('sex'),
+            'ethnicity' => $request->input('ethnicity'),
+            'street_address' => $request->input('street_address'),
+            'contact_number' => $request->input('contact_number'),
+            'barangay_id' => $request->input('barangay_id'),
+            'user_type' => 'patient',
+            'is_approved' => true,
+            'profile_image' => 'images/profiles/default.png',
+            'status' => 'Active',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $nameParts = explode(' ', $request->input('fullName'));
-            $firstName = strtolower($nameParts[0]);
-            $lastName = strtolower(end($nameParts));
-            $username = $firstName . '.' . $lastName . rand(1000, 9999);
+        // Create doctor-hospital relationship
+        $doctorHospital = DoctorHospital::firstOrCreate([
+            'doctor_id' => Auth::id(),
+            'hospital_id' => $request->input('hospital_id'),
+        ]);
 
-            // Create the user
-            $user = User::create([
-                'name' => $request->input('fullName'),
-                'username' => $username,
-                'email' => $request->input('email'),
-                'password' => Hash::make('12345678'),    
-                'birthdate' => $request->input('birthdate'),
-                'barangay_id' => $request->input('barangay_id'),
-                'user_type' => 'patient',
-                'is_approved' => true,
-                'profile_image' => 'images/profiles/default.png',
-                'status' => 'Active'
+        // Create a patient record for each selected disease with corresponding remarks
+        foreach ($request->input('disease_id') as $index => $diseaseId) {
+            PatientRecord::create([
+                'patient_id' => $user->id,
+                'reported_dh_id' => $doctorHospital->id,
+                'disease_id' => $diseaseId,
+                'status' => 'Active',
+                'reported_remarks' => $request->input('reported_remarks')[$index],
+                'date_reported' => now(),
             ]);
+        }
+    });
 
-            // Create doctor-hospital relationship
-            $doctorHospital = DoctorHospital::firstOrCreate([
-                'doctor_id' => Auth::id(),
-                'hospital_id' => $request->input('hospital_id'),
-            ]);
-
-            // Create a patient record for each selected disease
-            foreach ($request->input('disease_id') as $diseaseId) {
-                PatientRecord::create([
-                    'patient_id' => $user->id,
-                    'reported_dh_id' => $doctorHospital->id,
-                    'disease_id' => $diseaseId,
-                    'status' => 'Active',
-                    'reported_remarks' => $request->input('reported_remarks'),
-                    'date_reported' => now(),
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
-    }
+    return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
+}
 
     /**
      * Display the specified patient's details and medical history.

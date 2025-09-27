@@ -28,6 +28,10 @@ class User extends Authenticatable
         'profile_image',
         'is_approved',
         'status',
+        'sex', 
+        'ethnicity',
+        'street_address', 
+        'contact_number',
     ];
 
     /**

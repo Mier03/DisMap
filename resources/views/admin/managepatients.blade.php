@@ -13,10 +13,7 @@
                         
                         {{-- Header --}}
                         <div class="flex items-center justify-between">
-                            {{-- Header --}}
                             <x-page-header title="Manage Patients" subtitle="Patient Records" />
-
-                            {{-- Export Button --}}
                             <button
                                 onclick="openModal('exportModal')"
                                 class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
@@ -52,6 +49,6 @@
     </div>
 
     {{-- Modals are centralized --}}
-    <x-modals.form-modals id="addPatientModal" />
-    <x-modals.form-modals id="exportModal" />
+    <x-modals.addPatientModal id="addPatientModal" :hospitals="$hospitals" :barangays="$barangays" :diseases="$diseases" />
+    <x-modals.form-modals id="exportModal" :hospitals="$hospitals" :barangays="$barangays" :diseases="$diseases" />
 </x-app-layout>
