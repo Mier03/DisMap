@@ -32,7 +32,7 @@
         @endif
 
     <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center"
-        style="background-image: url({{ Vite::asset('resources/svg/welcomebg.svg') }});">
+        style="background-image: url({{ asset('images/welcomebg.svg') }});">
 
         <div class="relative z-10">
             <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-4">
