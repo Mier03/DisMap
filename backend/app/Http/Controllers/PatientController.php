@@ -56,6 +56,38 @@ class PatientController extends Controller
         ]);
     }
 
+     public function storeRecord(Request $request)
+    {
+                // Validate input
+            $validated = $request->validate([
+                'patient_id' => 'required|exists:users,id',
+                'hospital_id' => 'required|exists:hospitals,id',
+                'disease_id' => 'required|array',
+                'disease_id.*' => 'exists:diseases,id',
+                'reported_remarks' => 'required|array',
+                'reported_remarks.*' => 'string|max:255',
+            ]);
+
+            // Create doctor-hospital relationship
+            $doctorHospital = DoctorHospital::firstOrCreate([
+                'doctor_id' => Auth::id(),
+                'hospital_id' => $request->input('hospital_id'),
+            ]);
+
+            // Create a patient record for each selected disease with corresponding remarks
+            foreach ($request->input('disease_id') as $index => $diseaseId) {
+                PatientRecord::create([
+                    'patient_id' => $request->input('patient_id'),  // ✅ use patient_id from form
+                    'reported_dh_id' => $doctorHospital->id,
+                    'disease_id' => $diseaseId,
+                    'status' => 'Active',
+                    'reported_remarks' => $request->input('reported_remarks')[$index],
+                    'date_reported' => now(),
+                ]);
+            }
+        return redirect()->back()->with('success', 'Patient record added successfully!');
+    }
+
     /**
      * Store a newly created patient record in the database.
      *
@@ -164,7 +196,7 @@ class PatientController extends Controller
                 'recovered_hospital' => $record->recoveredByDoctorHospital ? $record->recoveredByDoctorHospital->hospital->name : null,
             ], 200);
         } catch (\Exception $e) {
-            \Log::error('Error fetching patient record: ' . $e->getMessage());
+            Log::error('Error fetching patient record: ' . $e->getMessage());
             return response()->json(['error' => 'Record not found'], 404);
         }
     }
@@ -211,11 +243,13 @@ class PatientController extends Controller
         $hospitals = Hospital::whereHas('doctors', function ($query) use ($userId) {
             $query->where('doctor_id', $userId);
         })->get();
+        $diseases = Disease::all();
 
         return view('admin.patient_details', [
             'patient' => $patient,
             'hospitals' => $hospitals,
-            'patientRecords' => $patientRecords 
+            'patientRecords' => $patientRecords,
+            'diseases' => $diseases
         ]);
     }
 

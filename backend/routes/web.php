@@ -42,31 +42,33 @@ Route::middleware('auth')
 
 
 // Admin routes
-Route::prefix('admin')
-    ->name('admin.')
-    ->middleware(['auth', 'verified'])
-    ->group(function () {
+    Route::prefix('admin')
+        ->name('admin.')
+        ->middleware(['auth', 'verified'])
+        ->group(function () {
 
-        // Other static admin pages that don't require controller data
-        // foreach (['accountsettings'] as $page) {
-        //     Route::view($page, "admin.$page")->name($page);
-        // }
+            // Other static admin pages that don't require controller data
+            // foreach (['accountsettings'] as $page) {
+            //     Route::view($page, "admin.$page")->name($page);
+            // }
 
-        Route::get('/accountsettings', [DoctorHospitalController::class, 'index'])->name('accountsettings');
-        Route::post('/accountsettings', [DoctorHospitalController::class, 'store'])->name('doctor_hospitals.store');
-
-        // Patient management routes
-        Route::controller(PatientController::class)->group(function () {
-            Route::get('/managepatients', 'index')->name('managepatients');
-            Route::post('/patients', 'store')->name('patients.store');
-            Route::patch('/patients/{patient}', 'update')->name('patients.update');
-            Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
-            Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
+            Route::get('/accountsettings', [DoctorHospitalController::class, 'index'])->name('accountsettings');
+            Route::post('/accountsettings', [DoctorHospitalController::class, 'store'])->name('doctor_hospitals.store');
+       
+            Route::controller(PatientController::class)->group(function () {
+                Route::get('/managepatients', 'index')->name('managepatients');
+                Route::post('/patients', 'store')->name('patients.store');
+                Route::patch('/patients/{patient}', 'update')->name('patients.update');
+                Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
+                Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
+                  Route::post('/patients/store-record','storeRecord')->name('patients.storeRecord');
+            });
+             Route::post('/patients/store-record', [PatientController::class, 'storeRecord'])
+                ->name('patients.storeRecord');
+            // Patient management routes
+            Route::post('patient-records/{id}/recovery', [PatientController::class, 'updateRecovery'])->name('patient_records.update_recovery');
+            Route::get('/patient-records/{id}', [PatientController::class, 'show']);
         });
-
-        Route::post('patient-records/{id}/recovery', [PatientController::class, 'updateRecovery'])->name('patient_records.update_recovery');
-        Route::get('/patient-records/{id}', [PatientController::class, 'show']);
-    });
 
 // Superadmin routes
 Route::prefix('superadmin')
