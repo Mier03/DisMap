@@ -253,7 +253,7 @@ class SuperAdminController extends Controller
     {
         $searchTerm = $request->input('q');
 
-        // Get data requests with search
+
         // Get data requests with search
         $dataRequests = DataRequest::where('status', 'pending')
             ->when($searchTerm, function ($query) use ($searchTerm) {
@@ -267,6 +267,20 @@ class SuperAdminController extends Controller
             ->latest()
             ->get();
 
+        // Get ALL data requests (for All Requests tab)
+        $allDataRequests = DataRequest::where('status', '!=', 'pending')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('requested_disease', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('purpose', 'LIKE', "%{$searchTerm}%");
+                });
+            })
+            ->latest()
+            ->get();
+
+        // Get PENDING hospital requests
         $pendingHospitals = DoctorHospital::with(['doctor', 'hospital'])
             ->where('status', 'pending')
             ->when($searchTerm, function ($query) use ($searchTerm) {
@@ -281,8 +295,30 @@ class SuperAdminController extends Controller
             })
             ->get();
 
+        // Get ALL hospital requests (for All Requests tab)
+        $allHospitalRequests = DoctorHospital::with(['doctor', 'hospital'])
+            ->where('status', '!=', 'pending')
+            ->when($searchTerm, function ($query) use ($searchTerm) {
+                $query->whereHas('doctor', function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('username', 'LIKE', "%{$searchTerm}%");
+                })
+                    ->orWhereHas('hospital', function ($q) use ($searchTerm) {
+                        $q->where('name', 'LIKE', "%{$searchTerm}%");
+                    });
+            })
+            ->latest()
+            ->get();
+
         // return view('superadmin.datarequest', compact('pendingHospitals', 'searchTerm'));
-        return view('superadmin.datarequest', compact('dataRequests', 'pendingHospitals', 'searchTerm'));
+        return view('superadmin.datarequest', compact(
+            'dataRequests', 
+            'pendingHospitals', 
+            'allDataRequests',
+            'allHospitalRequests',
+            'searchTerm'
+        ));
     }
 
 
@@ -332,7 +368,11 @@ class SuperAdminController extends Controller
 
             // For AJAX requests (modal form), return JSON response
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => true, 'message' => 'Data request status updated!']);
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Data request status updated!',
+                    'status' => $validated['status']
+                ]);
             }
 
             // For regular form submissions (table buttons), redirect
@@ -385,6 +425,15 @@ class SuperAdminController extends Controller
                 'status' => 'approved',
             ]);
 
+            // Check if it's an AJAX request
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Hospital request approved successfully!',
+                    'status' => 'approved'
+                ]);
+            }
+
             return redirect()->route('superadmin.datarequest')->with('success', 'Hospital request approved successfully!');
         } catch (\Exception $e) {
             Log::error('Error approving hospital request: ' . $e->getMessage());
@@ -403,6 +452,15 @@ class SuperAdminController extends Controller
             $doctorHospital->update([
                 'status' => 'rejected',
             ]);
+
+            // Check if it's an AJAX request
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Hospital request rejected successfully!',
+                    'status' => 'rejected'
+                ]);
+            }
 
             return redirect()->route('superadmin.datarequest')->with('success', 'Hospital request rejected successfully!');
         } catch (\Exception $e) {
