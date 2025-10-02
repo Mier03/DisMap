@@ -54,14 +54,14 @@
                         />
                         <div class="my-6"></div> 
 
-                        <!-- <x-modals.pop-up-modals
+                        <x-modals.pop-up-modals
                             id="confirmationModal"
                             title="Confirm Action"
                             message="Are you sure you want to proceed?"
                             confirmText="Confirm"
                             cancelText="Cancel"
                             :isConfirmation="true"
-                        /> -->
+                        />
                         @foreach($dataRequests as $request)
                         <x-modal-popup
                             id="approveModal-{{ $request->id }}"
