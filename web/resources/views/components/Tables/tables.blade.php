@@ -126,14 +126,7 @@
                             </x-tables.td>
                             <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
                             <x-tables.td>
-                                <form action="{{ route('superadmin.data-requests.update', $item->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" name="status" value="approved" 
-                                            class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
-                                    <button type="button" onclick="declineRequest({{ $item->id }})" 
-                                            class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
-                                </form>
+                                <x-tables.action-buttons :id="$item->id" />
                             </x-tables.td>
                         @break
 

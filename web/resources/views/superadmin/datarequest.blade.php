@@ -54,14 +54,41 @@
                         />
                         <div class="my-6"></div> 
 
-                        <x-modals.pop-up-modals
+                        <!-- <x-modals.pop-up-modals
                             id="confirmationModal"
                             title="Confirm Action"
                             message="Are you sure you want to proceed?"
                             confirmText="Confirm"
                             cancelText="Cancel"
                             :isConfirmation="true"
-                        />
+                        /> -->
+                        @foreach($dataRequests as $request)
+                        <x-modal-popup
+                            id="approveModal-{{ $request->id }}"
+                            title="Approve Data Request"
+                            message="Do you want to approve the data request from {{ $request->name }}?"
+                            confirmText="Approve"
+                            cancelText="Cancel"
+                            :action="route('superadmin.data-requests.update', $request->id)"
+                            method="PATCH">
+                            @slot('formFields')
+                                <input type="hidden" name="status" value="approved">
+                            @endslot
+                        </x-modal-popup>
+
+                        <x-modal-popup
+                            id="rejectModal-{{ $request->id }}"
+                            title="Reject Data Request"
+                            message="Do you want to reject the data request from {{ $request->name }}?"
+                            confirmText="Reject"
+                            cancelText="Cancel"
+                            :action="route('superadmin.data-requests.update', $request->id)"
+                            method="PATCH">
+                            @slot('formFields')
+                                <input type="hidden" name="status" value="rejected">
+                            @endslot
+                        </x-modal-popup>
+                        @endforeach
                     </div>
                 </div>
             </div>

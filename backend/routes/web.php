@@ -90,6 +90,8 @@ Route::prefix('superadmin')
     //         Route::get('/superadmin/data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])
     // ->name('superadmin.data-requests.show');
             Route::get('data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])->name('data-requests.show');
+            Route::post('data-requests/{id}/approve', [SuperAdminController::class, 'approveDataRequest'])->name('data-requests.approve');
+            Route::post('data-requests/{id}/reject', [SuperAdminController::class, 'rejectDataRequest'])->name('data-requests.reject');
         });
     });
 
