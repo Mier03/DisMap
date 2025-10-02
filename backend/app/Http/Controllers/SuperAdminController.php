@@ -254,8 +254,8 @@ class SuperAdminController extends Controller
         $searchTerm = $request->input('q');
 
         // Get data requests with search
-        $dataRequests = DataRequest::with('handledBy')
-        ->where('status', 'pending') 
+       // Get data requests with search
+        $dataRequests = DataRequest::where('status', 'pending') 
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
@@ -296,6 +296,8 @@ class SuperAdminController extends Controller
             'email' => 'required|email|max:255',
             'purpose' => 'required|string',
             'requested_disease' => 'required|string|max:255',
+            'from_date' => 'nullable|string|max:255',
+            'to_date' => 'nullable|string|max:255',
         ]);
 
         DataRequest::create([
@@ -303,6 +305,8 @@ class SuperAdminController extends Controller
             'email' => $validated['email'],
             'purpose' => $validated['purpose'],
             'requested_disease' => $validated['requested_disease'],
+            'from_date' => $validated['from_date'] ?? null,
+            'to_date' => $validated['to_date'] ?? null,
             'status' => 'pending',
         ]);
 
@@ -323,7 +327,6 @@ public function updateDataRequestStatus(Request $request, $id)
 
         $dataRequest->update([
             'status' => $validated['status'],
-            'handled_by_admin_id' => auth()->id(),
             'updated_at' => now(),
         ]);
 
@@ -346,25 +349,26 @@ public function updateDataRequestStatus(Request $request, $id)
 }
 
     /**
-     * Get individual data request details for modal
-     */
-    public function getDataRequest($id)
-    {
-        try {
-            $dataRequest = DataRequest::findOrFail($id);
-            
-            return response()->json([
-                'name' => $dataRequest->name,
-                'email' => $dataRequest->email,
-                'requested_type' => $dataRequest->requested_type,
-                'requested_disease' => $dataRequest->requested_disease,
-                'purpose' => $dataRequest->purpose,
-                'status' => $dataRequest->status,
-                'created_at' => $dataRequest->created_at,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching data request: ' . $e->getMessage());
-            return response()->json(['error' => 'Data request not found'], 404);
-        }
+ * Get individual data request details for modal
+ */
+public function getDataRequest($id)
+{
+    try {
+        $dataRequest = DataRequest::findOrFail($id);
+        
+        return response()->json([
+            'name' => $dataRequest->name,
+            'email' => $dataRequest->email,
+            'requested_disease' => $dataRequest->requested_disease,
+            'from_date' => $dataRequest->from_date,
+            'to_date' => $dataRequest->to_date,
+            'purpose' => $dataRequest->purpose,
+            'status' => $dataRequest->status,
+            'created_at' => $dataRequest->created_at,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error fetching data request: ' . $e->getMessage());
+        return response()->json(['error' => 'Data request not found'], 404);
     }
+}
 }

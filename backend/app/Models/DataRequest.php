@@ -13,17 +13,11 @@ class DataRequest extends Model
         'name',
         'email',
         'purpose',
-        'requested_type',
         'requested_disease',
+        'from_date',
+        'to_date',
         'status',
-        'handled_by_admin_id'
     ];
-
-    // Relationship to admin who handled the request
-    public function handledBy()
-    {
-        return $this->belongsTo(User::class, 'handled_by_admin_id');
-    }
 
     // Relationship to barangay if needed later
     public function barangay()

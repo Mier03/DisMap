@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->text('purpose');
-            $table->string('requested_type')->default('statistics');
             $table->string('requested_disease');
+            $table->string('from_date')->nullable();
+            $table->string('to_date')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->foreignId('handled_by_admin_id')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

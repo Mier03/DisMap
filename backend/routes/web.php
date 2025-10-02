@@ -87,8 +87,9 @@ Route::prefix('superadmin')
             Route::get('datarequest', 'datarequest')->name('datarequest');
 
             Route::patch('data-requests/{id}', 'updateDataRequestStatus')->name('data-requests.update');
-            Route::get('/superadmin/data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])
-    ->name('superadmin.data-requests.show');
+    //         Route::get('/superadmin/data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])
+    // ->name('superadmin.data-requests.show');
+            Route::get('data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])->name('data-requests.show');
         });
     });
 

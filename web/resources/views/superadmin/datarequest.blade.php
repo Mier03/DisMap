@@ -1,5 +1,7 @@
 <x-app-layout>
     <x-certificate-modal />
+    <x-modals.pop-up-modals />
+    
 
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
@@ -51,10 +53,20 @@
                             icon="gmdi-person-search-o" 
                         />
                         <div class="my-6"></div> 
+
+                        <x-modals.pop-up-modals
+                            id="confirmationModal"
+                            title="Confirm Action"
+                            message="Are you sure you want to proceed?"
+                            confirmText="Confirm"
+                            cancelText="Cancel"
+                            :isConfirmation="true"
+                        />
                     </div>
                 </div>
             </div>
         </div>
     </div>
         <x-modals.form-modals id="reasonRequestModal" /> 
+         
 </x-app-layout>
