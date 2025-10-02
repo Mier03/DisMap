@@ -91,8 +91,8 @@
                                     <x-search-bar placeholder="Search medical history..." value="{{ request('q') }}" />
                                 </form>
                             </div>
-                            <button
-                                onclick="openModal('')"
+                           <button
+                                onclick="openModal('addRecordModal')"
                                 class="bg-g-dark text-white px-4 py-2 rounded-lg hover:bg-[#296E5B]/90 transition shrink-0">
                                 + New
                             </button>
@@ -116,5 +116,11 @@
         cancelText="Close"
         :isConfirmation="false"
         :hospitals="$hospitals"
+    />
+    <x-modals.addPatientModal 
+        id="addRecordModal" 
+        :hospitals="$hospitals" 
+        :diseases="$diseases" 
+        :patient="$patient" 
     />
 </x-app-layout>
