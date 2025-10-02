@@ -33,6 +33,9 @@ class PatientController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'LIKE', "%{$searchTerm}%")
                     ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereHas('barangay', function ($b) use ($searchTerm) {
+                        $b->where('name', 'LIKE', "%{$searchTerm}%");
+                    })
                     ->orWhereHas('patientRecords.disease', function ($dr) use ($searchTerm) {
                         $dr->where('specification', 'LIKE', "%{$searchTerm}%");
                     });
@@ -58,33 +61,32 @@ class PatientController extends Controller
 
      public function storeRecord(Request $request)
     {
-                // Validate input
-            $validated = $request->validate([
-                'patient_id' => 'required|exists:users,id',
-                'hospital_id' => 'required|exists:hospitals,id',
-                'disease_id' => 'required|array',
-                'disease_id.*' => 'exists:diseases,id',
-                'reported_remarks' => 'required|array',
-                'reported_remarks.*' => 'string|max:255',
-            ]);
+            // Validate input
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:users,id',
+            'hospital_id' => 'required|exists:hospitals,id',
+            'disease_id' => 'required|array',
+            'disease_id.*' => 'exists:diseases,id',
+            'reported_remarks' => 'required|array',
+            'reported_remarks.*' => 'string|max:255',
+        ]);
 
-            // Create doctor-hospital relationship
-            $doctorHospital = DoctorHospital::firstOrCreate([
-                'doctor_id' => Auth::id(),
-                'hospital_id' => $request->input('hospital_id'),
-            ]);
+        
+        $doctorHospital = DoctorHospital::firstOrCreate([
+            'doctor_id' => Auth::id(),
+            'hospital_id' => $request->input('hospital_id'),
+        ]);
 
-            // Create a patient record for each selected disease with corresponding remarks
-            foreach ($request->input('disease_id') as $index => $diseaseId) {
-                PatientRecord::create([
-                    'patient_id' => $request->input('patient_id'),  // ✅ use patient_id from form
-                    'reported_dh_id' => $doctorHospital->id,
-                    'disease_id' => $diseaseId,
-                    'status' => 'Active',
-                    'reported_remarks' => $request->input('reported_remarks')[$index],
-                    'date_reported' => now(),
-                ]);
-            }
+        foreach ($request->input('disease_id') as $index => $diseaseId) {
+            PatientRecord::create([
+                'patient_id' => $request->input('patient_id'),
+                'reported_dh_id' => $doctorHospital->id,
+                'disease_id' => $diseaseId,
+                'status' => 'Active',
+                'reported_remarks' => $request->input('reported_remarks')[$index],
+                'date_reported' => now(),
+            ]);
+        }
         return redirect()->back()->with('success', 'Patient record added successfully!');
     }
 
@@ -217,23 +219,23 @@ class PatientController extends Controller
         if ($searchTerm) {
             $patientRecordsQuery->where(function ($q) use ($searchTerm) {
                 $q->where('reported_remarks', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('recovered_remarks', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('status', 'LIKE', '%' . $searchTerm . '%') 
-                  ->orWhereHas('disease', function ($dr) use ($searchTerm) {
-                      $dr->where('specification', 'LIKE', '%' . $searchTerm . '%');
-                  })
-                  ->orWhereHas('reportedByDoctorHospital.doctor', function ($d) use ($searchTerm) {
-                      $d->where('name', 'LIKE', '%' . $searchTerm . '%');
-                  })
-                  ->orWhereHas('reportedByDoctorHospital.hospital', function ($h) use ($searchTerm) {
-                      $h->where('name', 'LIKE', '%' . $searchTerm . '%');
-                  })
-                  ->orWhereHas('recoveredByDoctorHospital.doctor', function ($d) use ($searchTerm) {
-                      $d->where('name', 'LIKE', '%' . $searchTerm . '%');
-                  })
-                  ->orWhereHas('recoveredByDoctorHospital.hospital', function ($h) use ($searchTerm) {
-                      $h->where('name', 'LIKE', '%' . $searchTerm . '%');
-                  });
+                    ->orWhere('recovered_remarks', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('status', 'LIKE', '%' . $searchTerm . '%') 
+                    ->orWhereHas('disease', function ($dr) use ($searchTerm) {
+                        $dr->where('specification', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('reportedByDoctorHospital.doctor', function ($d) use ($searchTerm) {
+                        $d->where('name', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('reportedByDoctorHospital.hospital', function ($h) use ($searchTerm) {
+                        $h->where('name', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('recoveredByDoctorHospital.doctor', function ($d) use ($searchTerm) {
+                        $d->where('name', 'LIKE', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereHas('recoveredByDoctorHospital.hospital', function ($h) use ($searchTerm) {
+                        $h->where('name', 'LIKE', '%' . $searchTerm . '%');
+                    });
             });
         }
 
