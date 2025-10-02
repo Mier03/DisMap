@@ -91,8 +91,8 @@ class SuperAdminController extends Controller
                 $user->status = 'Active';
                 $user->save();
 
-                 DoctorHospital::where('doctor_id', $user->id)
-                ->update(['status' => 'approved']);
+                DoctorHospital::where('doctor_id', $user->id)
+                    ->update(['status' => 'approved']);
             });
 
             return redirect()->route('superadmin.verify_admins')->with('success', 'Doctor approved successfully');
@@ -254,8 +254,8 @@ class SuperAdminController extends Controller
         $searchTerm = $request->input('q');
 
         // Get data requests with search
-       // Get data requests with search
-        $dataRequests = DataRequest::where('status', 'pending') 
+        // Get data requests with search
+        $dataRequests = DataRequest::where('status', 'pending')
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where(function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%")
@@ -314,63 +314,100 @@ class SuperAdminController extends Controller
     }
 
     /**
- * Update data request status (approve/reject)
- */
-public function updateDataRequestStatus(Request $request, $id)
-{
-    try {
-        $dataRequest = DataRequest::findOrFail($id);
+     * Update data request status (approve/reject)
+     */
+    public function updateDataRequestStatus(Request $request, $id)
+    {
+        try {
+            $dataRequest = DataRequest::findOrFail($id);
 
-        $validated = $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-        ]);
+            $validated = $request->validate([
+                'status' => 'required|in:pending,approved,rejected',
+            ]);
 
-        $dataRequest->update([
-            'status' => $validated['status'],
-            'updated_at' => now(),
-        ]);
+            $dataRequest->update([
+                'status' => $validated['status'],
+                'updated_at' => now(),
+            ]);
 
-        // For AJAX requests (modal form), return JSON response
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Data request status updated!']);
+            // For AJAX requests (modal form), return JSON response
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'Data request status updated!']);
+            }
+
+            // For regular form submissions (table buttons), redirect
+            return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
+        } catch (\Exception $e) {
+            Log::error('Error updating data request: ' . $e->getMessage());
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'error' => 'Error updating data request'], 500);
+            }
+
+            return back()->with('error', 'Error updating data request');
         }
-
-        // For regular form submissions (table buttons), redirect
-        return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
-    } catch (\Exception $e) {
-        Log::error('Error updating data request: ' . $e->getMessage());
-        
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json(['success' => false, 'error' => 'Error updating data request'], 500);
-        }
-        
-        return back()->with('error', 'Error updating data request');
     }
-}
 
     /**
- * Get individual data request details for modal
- */
-public function getDataRequest($id)
-{
-    try {
-        $dataRequest = DataRequest::findOrFail($id);
-        
-        return response()->json([
-            'name' => $dataRequest->name,
-            'email' => $dataRequest->email,
-            'requested_disease' => $dataRequest->requested_disease,
-            'from_date' => $dataRequest->from_date,
-            'to_date' => $dataRequest->to_date,
-            'purpose' => $dataRequest->purpose,
-            'status' => $dataRequest->status,
-            'created_at' => $dataRequest->created_at,
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error fetching data request: ' . $e->getMessage());
-        return response()->json(['error' => 'Data request not found'], 404);
+     * Get individual data request details for modal
+     */
+    public function getDataRequest($id)
+    {
+        try {
+            $dataRequest = DataRequest::findOrFail($id);
+
+            return response()->json([
+                'name' => $dataRequest->name,
+                'email' => $dataRequest->email,
+                'requested_disease' => $dataRequest->requested_disease,
+                'from_date' => $dataRequest->from_date,
+                'to_date' => $dataRequest->to_date,
+                'purpose' => $dataRequest->purpose,
+                'status' => $dataRequest->status,
+                'created_at' => $dataRequest->created_at,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching data request: ' . $e->getMessage());
+            return response()->json(['error' => 'Data request not found'], 404);
+        }
     }
-}
 
 
+    /**
+     * Approve a pending hospital request.
+     */
+    public function approveHospital($id)
+    {
+        try {
+            $doctorHospital = DoctorHospital::with(['doctor', 'hospital'])->findOrFail($id);
+            
+            $doctorHospital->update([
+                'status' => 'approved',
+            ]);
+
+            return redirect()->route('superadmin.datarequest')->with('success', 'Hospital request approved successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error approving hospital request: ' . $e->getMessage());
+            return back()->with('error', 'Error approving hospital request');
+        }
+    }
+
+    /**
+     * Reject a pending hospital request.
+     */
+    public function rejectHospital($id)
+    {
+        try {
+            $doctorHospital = DoctorHospital::with(['doctor', 'hospital'])->findOrFail($id);
+            
+            $doctorHospital->update([
+                'status' => 'rejected',
+            ]);
+
+            return redirect()->route('superadmin.datarequest')->with('success', 'Hospital request rejected successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error rejecting hospital request: ' . $e->getMessage());
+            return back()->with('error', 'Error rejecting hospital request');
+        }
+    }
 }

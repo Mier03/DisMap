@@ -62,6 +62,8 @@
                             cancelText="Cancel"
                             :isConfirmation="true"
                         />
+
+                        {{-- Data Request Modals --}}
                         @foreach($dataRequests as $request)
                         <x-modal-popup
                             id="approveModal-{{ $request->id }}"
@@ -89,6 +91,27 @@
                             @endslot
                         </x-modal-popup>
                         @endforeach
+
+                        {{-- Hospital Request Modals --}}
+@foreach($pendingHospitals as $hospital)
+<x-modal-popup
+    id="approveModal-{{ $hospital->id }}"
+    title="Approve Hospital Request"
+    message="Do you want to approve the hospital request for {{ $hospital->doctor->name ?? 'N/A' }} at {{ $hospital->hospital->name ?? 'N/A' }}?"
+    confirmText="Approve"
+    cancelText="Cancel"
+    :action="route('superadmin.approve_hospital', $hospital->id)"
+    method="POST" />
+
+<x-modal-popup
+    id="rejectModal-{{ $hospital->id }}"
+    title="Reject Hospital Request"
+    message="Do you want to reject the hospital request for {{ $hospital->doctor->name ?? 'N/A' }} at {{ $hospital->hospital->name ?? 'N/A' }}?"
+    confirmText="Reject"
+    cancelText="Cancel"
+    :action="route('superadmin.reject_hospital', $hospital->id)"
+    method="POST" />
+@endforeach
                     </div>
                 </div>
             </div>

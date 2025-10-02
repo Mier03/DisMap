@@ -107,10 +107,7 @@
                                 @endif
                             </x-tables.td>
                             <x-tables.td>
-                                <button 
-                                    class="bg-g-dark text-white px-3 py-1 rounded mr-2 hover:bg-g-dark/80 transition">✓</button>
-                                <button 
-                                    class="bg-r-dark text-white px-3 py-1 rounded hover:bg-red-600 transition">✕</button>
+                                <x-tables.action-buttons :id="$item->id" />
                             </x-tables.td>
                         @break
 

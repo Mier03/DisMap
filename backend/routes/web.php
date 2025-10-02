@@ -92,6 +92,10 @@ Route::prefix('superadmin')
             Route::get('data-requests/{id}', [SuperAdminController::class, 'getDataRequest'])->name('data-requests.show');
             Route::post('data-requests/{id}/approve', [SuperAdminController::class, 'approveDataRequest'])->name('data-requests.approve');
             Route::post('data-requests/{id}/reject', [SuperAdminController::class, 'rejectDataRequest'])->name('data-requests.reject');
+
+            // Hospital approval routes
+            Route::post('hospitals/{id}/approve', [SuperAdminController::class, 'approveHospital'])->name('approve_hospital');
+            Route::post('hospitals/{id}/reject', [SuperAdminController::class, 'rejectHospital'])->name('reject_hospital');
         });
     });
 
