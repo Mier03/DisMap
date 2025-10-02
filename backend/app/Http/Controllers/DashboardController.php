@@ -17,6 +17,9 @@ class DashboardController extends Controller
 
     public function diseaseRecords()
     {
-        return view('diseaserecords');
+        // Ensure the diseaserecords view is always rendered by DiseaseController@index
+        // which supplies the required stat variables. Redirecting prevents accidental
+        // direct rendering of the view without those variables.
+        return redirect()->route('diseaserecords');
     }
 }
