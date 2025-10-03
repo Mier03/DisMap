@@ -4,6 +4,7 @@ import 'components/textfield.dart';
 import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
 import 'pages/records_page.dart';
+import 'forgetpassword.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -79,9 +80,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
 
+               // In your login.dart, update the GestureDetector for "Forgot Password?"
                 GestureDetector(
                   onTap: () {
-                    // TODO: Forgot password logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
+                    );
                   },
                   child: const Text(
                     "Forgot Password?",
