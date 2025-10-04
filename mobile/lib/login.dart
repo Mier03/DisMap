@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'components/button.dart';
 import 'components/textfield.dart';
 import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
 import 'pages/records_page.dart';
-import 'forgetpassword.dart'; 
+import 'forgetpassword.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,24 +20,68 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _handleLogin() {
-    final username = usernameController.text.trim();
+  bool isLoading = false;
+
+  Future<void> _handleLogin() async {
+    final email = usernameController.text.trim();
     final password = passwordController.text.trim();
 
-    if (username == "test" && password == "test123") {
-      // Navigate to records_page.dart
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const RecordsPage()),
-      );
-    } else {
-      // Show error snackbar
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Invalid username or password"),
+          content: Text("Please fill in all fields"),
           backgroundColor: Colors.red,
         ),
       );
+      return;
+    }
+
+    setState(() => isLoading = true);
+
+    try {
+      // ⚠️ Change this IP to your computer's local IP address (not 127.0.0.1)
+      final response = await http.post(
+        Uri.parse("http://192.168.1.12:8000/api/login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": email,
+          "password": password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+        final user = data['user'];
+
+        // Print to console to verify successful login
+        print("✅ Login successful");
+        print("User: $user");
+        print("Token: $token");
+
+        // Navigate to records page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const RecordsPage()),
+        );
+      } else {
+        final error = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error['error'] ?? "Invalid credentials"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error connecting to server: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
@@ -61,8 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 40),
 
                 CustomTextField(
-                  label: "Username",
-                  hintText: "Enter your username...",
+                  label: "Email",
+                  hintText: "Enter your email...",
                   controller: usernameController,
                 ),
                 const SizedBox(height: 20),
@@ -75,12 +122,11 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 30),
 
                 Button(
-                  text: "Sign In",
-                  onPressed: _handleLogin,
+                  text: isLoading ? "Signing In..." : "Sign In",
+                  onPressed: isLoading ? null : () => _handleLogin(),
                 ),
                 const SizedBox(height: 20),
 
-               // In your login.dart, update the GestureDetector for "Forgot Password?"
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
