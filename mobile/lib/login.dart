@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       // ⚠️ Change this IP to your computer's local IP address (not 127.0.0.1)
       final response = await http.post(
-        Uri.parse("http://192.168.1.12:8000/api/login"),
+        Uri.parse("http://192.168.1.6:8000/api/login"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "email": email,
