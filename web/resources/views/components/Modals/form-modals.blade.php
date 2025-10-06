@@ -18,9 +18,20 @@
                     <x-input-label for="hospitalSelect" :value="__('Select Hospital')" />
                     <x-dropdown-select id="hospitalSelect" name="hospital_id" required>
                         @foreach($hospitals as $hospital)
-                        @if(!Auth::user()->approvedHospitals->contains($hospital->id))
-                        <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
-                        @endif
+                            @php
+                                $dh = Auth::user()->doctorHospitals
+                                        ->where('hospital_id', $hospital->id)
+                                        ->first();
+                            @endphp
+
+                            @if(!$dh || in_array($dh->status, ['pending', 'rejected', 'removed']))
+                                <option value="{{ $hospital->id }}">
+                                    {{ $hospital->name }}
+                                    @if($dh && $dh->status == 'pending') (Pending) @endif
+                                    @if($dh && $dh->status == 'rejected') (Rejected) @endif
+                                    @if($dh && $dh->status == 'removed') (Removed) @endif
+                                </option>
+                            @endif
                         @endforeach
                     </x-dropdown-select>
                     <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />

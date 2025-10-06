@@ -54,7 +54,8 @@ Route::middleware('auth')
 
             Route::get('/accountsettings', [DoctorHospitalController::class, 'index'])->name('accountsettings');
             Route::post('/accountsettings', [DoctorHospitalController::class, 'store'])->name('doctor_hospitals.store');
-       
+            Route::delete('/doctor-hospital/{hospital}/unassign', [DoctorHospitalController::class, 'unassign'])
+                ->name('hospitals.unassign');
             Route::controller(PatientController::class)->group(function () {
                 Route::get('/managepatients', 'index')->name('managepatients');
                 Route::post('/patients', 'store')->name('patients.store');
