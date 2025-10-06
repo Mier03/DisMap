@@ -62,11 +62,13 @@
         </div>
     </div>
 
-    {{-- =========================
-        Export Modal
-    ========================== --}}
-    <div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
+  {{-- =========================
+    Export Modal
+========================= --}}
+<div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
+        <form action="{{ route('admin.export') }}" method="GET" target="_blank">
+            @csrf
             <div class="flex items-center mb-2">
                 <svg class="w-[32px] h-[32px] text-g-dark fill-current"
                     xmlns="resources/svg/filter.svg" viewBox="0 0 24 24">
@@ -76,6 +78,7 @@
             </div>
             <p class="text-g-dark text-[16px] mb-6 ml-1">Filter and export data</p>
 
+            {{-- Date Range --}}
             <div class="px-[10px]">
                 <div class="flex justify-between items-center mb-2">
                     <x-input-label :value="__('Date Range')" />
@@ -85,9 +88,9 @@
                 </div>
                 <div class="flex gap-3 mb-3">
                     <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
-                        type="date" name="fromDate" :value="old('fromDate')" />
+                        type="date" name="fromDate" />
                     <x-text-input id="toDate" class="w-full h-[40px] text-sm"
-                        type="date" name="toDate" :value="old('toDate')" />
+                        type="date" name="toDate" />
                 </div>
 
                 <div class="flex gap-3">
@@ -106,6 +109,7 @@
                 </div>
             </div>
 
+            {{-- Hospital --}}
             <div class="mt-6 px-[10px]">
                 <div class="flex justify-between items-center mb-2">
                     <x-input-label for="export_hospital_id" :value="__('Hospital')" />
@@ -116,11 +120,12 @@
                 <x-dropdown-select id="export_hospital_id" name="hospital_id">
                     <option value="" selected>Select hospital...</option>
                     @foreach($hospitals as $hospital)
-                    <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
+                        <option value="{{ $hospital->id }}">{{ $hospital->name }}</option>
                     @endforeach
                 </x-dropdown-select>
             </div>
 
+            {{-- Disease --}}
             <div class="mt-6 px-[10px]">
                 <div class="flex justify-between items-center mb-2">
                     <x-input-label for="export_disease_id" :value="__('Disease Type')" />
@@ -131,21 +136,23 @@
                 <x-dropdown-select id="export_disease_id" name="disease_id">
                     <option value="" selected>Select disease...</option>
                     @foreach($diseases as $disease)
-                    <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
+                        <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
                     @endforeach
                 </x-dropdown-select>
             </div>
 
+            {{-- Buttons --}}
             <div class="flex justify-center gap-4 mt-8">
-                <x-primary-button>
+                <x-primary-button type="submit">
                     {{ __('Export PDF') }}
                 </x-primary-button>
                 <x-secondary-button type="button" onclick="closeModal('exportModal')">
                     Cancel
                 </x-secondary-button>
             </div>
-        </div>
+        </form>
     </div>
+</div>
 
     {{-- =========================
         Request Data Modal
