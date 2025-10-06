@@ -62,6 +62,7 @@ Route::middleware('auth')
                 Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
                 Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
                   Route::post('/patients/store-record','storeRecord')->name('patients.storeRecord');
+                   Route::get('/export/patients/pdf', 'exportPdf')->name('export');
             });
              Route::post('/patients/store-record', [PatientController::class, 'storeRecord'])
                 ->name('patients.storeRecord');

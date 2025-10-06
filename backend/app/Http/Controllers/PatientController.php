@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Mpdf\Mpdf;
+use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
 
 class PatientController extends Controller
@@ -299,4 +301,95 @@ class PatientController extends Controller
             return response()->json(['message' => 'Failed to update recovery details'], 500);
         }
     }
+public function exportPdf(Request $request)
+{
+    $fromDate = $request->input('fromDate');
+    $toDate = $request->input('toDate');
+    $hospitalId = $request->input('hospital_id');
+    $diseaseId = $request->input('disease_id');
+
+    $user = auth()->user(); // Get the logged-in user
+
+    $query = PatientRecord::with([
+        'patient',
+        'disease',
+        'reportedByDoctorHospital.hospital',
+        'reportedByDoctorHospital.doctor',
+        'recoveredByDoctorHospital.doctor'
+    ]);
+
+    // ✅ Apply filters
+    if ($fromDate && $toDate) {
+        $query->whereBetween('date_reported', [$fromDate, $toDate]);
+    } elseif ($fromDate) {
+        $query->whereDate('date_reported', '>=', $fromDate);
+    } elseif ($toDate) {
+        $query->whereDate('date_reported', '<=', $toDate);
+    }
+
+    if ($hospitalId) {
+        $query->whereHas('reportedByDoctorHospital', fn($q) =>
+            $q->where('hospital_id', $hospitalId)
+        );
+    }
+
+    if ($diseaseId) {
+        $query->where('disease_id', $diseaseId);
+    }
+
+    // ✅ If no filters applied → show only patients handled by logged-in user
+    $isFilterApplied = $fromDate || $toDate || $hospitalId || $diseaseId;
+
+    if (!$isFilterApplied ) {
+        $query->where(function ($q) use ($user) {
+            $q->whereHas('reportedByDoctorHospital', fn($sub) =>
+                $sub->where('doctor_id',$user->id)
+            )->orWhereHas('recoveredByDoctorHospital', fn($sub) =>
+                $sub->where('doctor_id', $user->id)
+            );
+        });
+    }
+    $hospitalName = $hospitalId ? Hospital::find($hospitalId)?->name : null;
+    $diseaseName = $diseaseId ? Disease::find($diseaseId)?->specification : null;
+
+    $patientRecords = $query->get();
+
+    // ✅ Generate PDF
+    $html = view('pdf.patient-report', compact(
+        'patientRecords',
+        'fromDate',
+        'toDate',
+        'hospitalId',
+        'diseaseId',
+        'isFilterApplied',
+        'hospitalName',
+        'diseaseName'
+    ))->render();
+
+    $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+    $fontDirs = $defaultConfig['fontDir'];
+    $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+    $fontData = $defaultFontConfig['fontdata'];
+
+    $mpdf = new \Mpdf\Mpdf([
+        'tempDir' => storage_path('app/mpdf'),
+        'fontDir' => array_merge($fontDirs, [resource_path('fonts')]),
+        'fontdata' => $fontData + [
+            'inter' => [
+                'R' => 'Inter_18pt-Regular.ttf',
+                'B' => 'Inter_18pt-Bold.ttf',
+                'I' => 'Inter_18pt-Italic.ttf',
+            ],
+        ],
+        'default_font' => 'inter',
+        'margin_left' => 10,
+        'margin_right' => 10,
+        'margin_top' => 10,
+        'margin_bottom' => 10,
+    ]);
+
+    $mpdf->WriteHTML($html);
+    return $mpdf->Output('patient-records.pdf', 'I');
+}
+
 }
