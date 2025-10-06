@@ -2,7 +2,7 @@
     <!-- Profile Section -->
     <div class="flex items-center mb-6">
         <div class="w-16 h-16 bg-white rounded-[8px] flex items-center justify-center overflow-hidden">
-            <img src="{{ asset('images/profile-placeholder.png') }}" alt="Profile" class="w-full h-full object-cover">
+            <img src="/images/defaultprofile.jpg" alt="Profile" class="w-full h-full object-cover">
         </div>
         <div class="ml-3">
             <h2 class="text-lg font-semibold">
