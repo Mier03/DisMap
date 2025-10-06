@@ -76,7 +76,7 @@
                                     <h4 class="text-2xl font-bold text-g-dark">Assigned Hospitals</h4>
                                     <p class="text-gray-600">Manage your hospital assignments</p>
                                 </div>
-                                <button id="addHospitalBtn" class="bg-gradient-to-r from-[#296E5B] to-[#1e5a48] text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:from-[#1e5a48] hover:to-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
+                                <button onclick ="openModal('addHospitalModal')" id="addHospitalBtn" class="bg-gradient-to-r from-[#296E5B] to-[#1e5a48] text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:from-[#1e5a48] hover:to-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
                                     <i class="fas fa-plus"></i> Add Hospital
                                 </button>
                             </div>
@@ -86,12 +86,25 @@
                                 <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                                     <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                                         @foreach(Auth::user()->approvedHospitals as $hospital)
-                                            <x-cards :hospital="$hospital" />
+                                            {{-- PASS A VARIABLE TO ENABLE THE REMOVE BUTTON --}}
+                                            <x-cards :hospital="$hospital" can-remove="true" />
+
+                                            @if (true) {{-- $canRemove is always true here --}}
+                                                <x-modal-popup
+                                                    id="removeModal-{{ $hospital->id }}"
+                                                    title="Remove Hospital"
+                                                    message="Are you sure you want to remove {{ $hospital->name }} from your assignments?"
+                                                    confirmText="Remove"
+                                                    cancelText="Cancel"
+                                                    :action="route('admin.hospitals.unassign', $hospital->id)"
+                                                    method="DELETE">
+                                                </x-modal-popup>
+                                            @endif
                                         @endforeach
                                     
                                     <!-- Empty card for adding new hospitals -->
                                     <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 flex-shrink-0 w-64 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition"
-                                         onclick="document.getElementById('addHospitalModal').classList.remove('hidden')">
+                                         onclick="openModal('addHospitalModal')">
                                         <div class="text-center text-gray-500">
                                             <i class="fas fa-plus-circle text-2xl mb-2"></i>
                                             <p>Add New Hospital</p>

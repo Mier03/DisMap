@@ -53,6 +53,20 @@ class DoctorHospitalController extends Controller
             'public'
         );
 
+        // Check if this doctor already has an existing record for this hospital
+    $existing = DoctorHospital::where('doctor_id', $user->id)
+        ->where('hospital_id', $request->hospital_id)
+        ->first();
+
+    if ($existing) {
+        // If record exists, update status and certification file
+        $existing->update([
+            'status' => 'pending',
+            'certification' => $certificationPath,
+        ]);
+
+        return back()->with('success', 'Hospital reapplication submitted successfully! Status set to pending.');
+    }
 
         // Save to doctor_hospitals
         DoctorHospital::create([
@@ -90,11 +104,26 @@ class DoctorHospitalController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+   /**
+ * Mark a hospital as removed instead of deleting the record.
+ */
+    public function unassign($hospitalId)
     {
-        //
+        $user = auth()->user();
+
+        // Find the pivot record
+        $doctorHospital = DoctorHospital::where('doctor_id', $user->id)
+            ->where('hospital_id', $hospitalId)
+            ->first();
+
+        if (!$doctorHospital) {
+            return back()->with('error', 'Hospital relationship not found.');
+        }
+
+        // Update status to "removed"
+        $doctorHospital->status = 'removed';
+        $doctorHospital->save();
+
+        return back()->with('success', 'Hospital has been marked as removed.');
     }
 }
