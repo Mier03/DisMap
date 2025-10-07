@@ -341,7 +341,7 @@
                     <x-primary-button type="button" onclick="approveRequest()">
                         {{ __('Accept') }}
                     </x-primary-button>
-                    <x-secondary-button type="button" onclick="declineRequestModal()">
+                    <x-secondary-button type="button" onclick="declineRequest()">
                         Decline
                     </x-secondary-button>
                 </div>
@@ -355,7 +355,7 @@
     </div>
 
     {{-- Decline Reason Modal --}}
-    <div id="declineReasonModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <!-- <div id="declineReasonModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg w-[450px] p-5 text-left relative">
             <h2 class="text-lg font-bold text-g-dark mb-3">Decline Request</h2>
 
@@ -382,7 +382,7 @@
                 ✕
             </button>
         </div>
-    </div>
+    </div> -->
 
     {{-- =========================
         Patient Details Modal
@@ -711,27 +711,39 @@
         );
     }
 
-    function declineRequestModal() {
-        closeModal('reasonRequestModal');
-        openModal('declineReasonModal');
-    }
+    // function declineRequestModal() {
+    //     closeModal('reasonRequestModal');
+    //     openModal('declineReasonModal');
+    // }
+    function declineRequest() {
+    if (!currentRequestId) return;
 
-    function submitDecline() {
-        if (!currentRequestId) return;
+    pendingAction = 'decline';
+    closeModal('reasonRequestModal');
+    showConfirmation(
+        'Decline Request?',
+        'Are you sure you want to decline this data request?',
+        'Decline',
+        'Cancel'
+    );
+}
 
-        const declineReason = document.getElementById('decline_reason').value;
+    // function submitDecline() {
+    //     if (!currentRequestId) return;
 
-        pendingAction = 'decline';
-        const message = 'Are you sure you want to decline this data request?' +
-            (declineReason ? '\n\nReason: ' + declineReason : '');
-        closeModal('declineReasonModal');
-        showConfirmation(
-            'Decline Request?',
-            message,
-            'Decline',
-            'Cancel'
-        );
-    }
+    //     const declineReason = document.getElementById('decline_reason').value;
+
+    //     pendingAction = 'decline';
+    //     const message = 'Are you sure you want to decline this data request?' +
+    //         (declineReason ? '\n\nReason: ' + declineReason : '');
+    //     closeModal('declineReasonModal');
+    //     showConfirmation(
+    //         'Decline Request?',
+    //         message,
+    //         'Decline',
+    //         'Cancel'
+    //     );
+    // }
 
     function showConfirmation(title, message, confirmText, cancelText) {
         // Use the pop-up-modals component
@@ -786,59 +798,111 @@
         openModal('confirmationModal');
     }
 
+    // function processAction() {
+    //     if (!currentRequestId) return;
+
+    //     closeModal('confirmationModal');
+
+    //     if (pendingAction === 'decline') {
+    //         closeModal('declineReasonModal');
+    //     } else {
+    //         closeModal('reasonRequestModal');
+    //     }
+
+    //     const status = pendingAction === 'approve' ? 'approved' : 'rejected';
+    //     const declineReason = document.getElementById('decline_reason').value;
+
+    //     // Create form data
+    //     const formData = new FormData();
+    //     formData.append('status', status);
+    //     formData.append('_token', '{{ csrf_token() }}');
+    //     formData.append('_method', 'PATCH');
+
+    //     if (declineReason) {
+    //         formData.append('decline_reason', declineReason);
+    //     }
+
+    //     // Send the request
+    //     fetch(`/superadmin/data-requests/${currentRequestId}`, {
+    //             method: 'POST',
+    //             body: formData,
+    //             headers: {
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         })
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 return response.json().then(errorData => {
+    //                     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    //                 });
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             if (data.success) {
+    //                 // Success - reload the page to update the table
+    //                 location.reload();
+    //             } else {
+    //                 throw new Error(data.error || 'Unknown error occurred');
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error updating request:', error);
+    //             alert('Error: ' + error.message);
+    //         });
+    // }
     function processAction() {
-        if (!currentRequestId) return;
+    if (!currentRequestId) return;
 
-        closeModal('confirmationModal');
+    closeModal('confirmationModal');
 
-        if (pendingAction === 'decline') {
-            closeModal('declineReasonModal');
-        } else {
-            closeModal('reasonRequestModal');
-        }
+    const status = pendingAction === 'approve' ? 'approved' : 'rejected';
+    // const declineReason = document.getElementById('decline_reason').value;
 
-        const status = pendingAction === 'approve' ? 'approved' : 'rejected';
-        const declineReason = document.getElementById('decline_reason').value;
+    // Create form data
+    const formData = new FormData();
+    formData.append('status', status);
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('_method', 'PATCH');
 
-        // Create form data
-        const formData = new FormData();
-        formData.append('status', status);
-        formData.append('_token', '{{ csrf_token() }}');
-        formData.append('_method', 'PATCH');
+    // if (declineReason) {
+    //     formData.append('decline_reason', declineReason);
+    // }
 
-        if (declineReason) {
-            formData.append('decline_reason', declineReason);
-        }
+    // Show loading state
+    const confirmButton = document.getElementById('confirmActionButton');
+    const originalText = confirmButton.textContent;
+    confirmButton.textContent = 'Processing...';
+    confirmButton.disabled = true;
 
-        // Send the request
-        fetch(`/superadmin/data-requests/${currentRequestId}`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errorData => {
-                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Success - reload the page to update the table
-                    location.reload();
-                } else {
-                    throw new Error(data.error || 'Unknown error occurred');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating request:', error);
-                alert('Error: ' + error.message);
-            });
-    }
+    // Send the request
+    fetch(`/superadmin/data-requests/${currentRequestId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                alert(data.message || 'Request updated successfully! Email notification sent.');
+                location.reload();
+            } else {
+                throw new Error(data.error || 'Unknown error occurred');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating request:', error);
+            alert('Error: ' + error.message);
+            
+            // Reset button
+            confirmButton.textContent = originalText;
+            confirmButton.disabled = false;
+        });
+}
 
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
@@ -850,14 +914,14 @@
         document.getElementById(modalId).classList.remove('flex');
 
         // Reset decline reason if closing decline modal
-        if (modalId === 'declineReasonModal') {
-            document.getElementById('decline_reason').value = '';
-        }
+        // if (modalId === 'declineReasonModal') {
+        //     document.getElementById('decline_reason').value = '';
+        // }
     }
 
     // Close modal when clicking outside
     document.addEventListener('click', function(event) {
-        const modals = ['reasonRequestModal', 'declineReasonModal', 'confirmationModal'];
+        const modals = ['reasonRequestModal', 'confirmationModal'];
         modals.forEach(modalId => {
             const modal = document.getElementById(modalId);
             if (event.target === modal) {

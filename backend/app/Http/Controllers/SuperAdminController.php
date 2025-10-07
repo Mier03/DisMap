@@ -11,6 +11,9 @@ use App\Models\Barangay;
 use App\Models\Disease;
 use App\Models\DataRequest;
 use Illuminate\Support\Facades\DB;
+use App\Mail\DataRequestApproved;
+use App\Mail\DataRequestRejected;
+use Illuminate\Support\Facades\Mail;
 
 class SuperAdminController extends Controller
 {
@@ -352,6 +355,41 @@ class SuperAdminController extends Controller
     /**
      * Update data request status (approve/reject)
      */
+    // public function updateDataRequestStatus(Request $request, $id)
+    // {
+    //     try {
+    //         $dataRequest = DataRequest::findOrFail($id);
+
+    //         $validated = $request->validate([
+    //             'status' => 'required|in:pending,approved,rejected',
+    //         ]);
+
+    //         $dataRequest->update([
+    //             'status' => $validated['status'],
+    //             'updated_at' => now(),
+    //         ]);
+
+    //         // For AJAX requests (modal form), return JSON response
+    //         if ($request->ajax() || $request->wantsJson()) {
+    //             return response()->json([
+    //                 'success' => true, 
+    //                 'message' => 'Data request status updated!',
+    //                 'status' => $validated['status']
+    //             ]);
+    //         }
+
+    //         // For regular form submissions (table buttons), redirect
+    //         return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
+    //     } catch (\Exception $e) {
+    //         Log::error('Error updating data request: ' . $e->getMessage());
+
+    //         if ($request->ajax() || $request->wantsJson()) {
+    //             return response()->json(['success' => false, 'error' => 'Error updating data request'], 500);
+    //         }
+
+    //         return back()->with('error', 'Error updating data request');
+    //     }
+    // }
     public function updateDataRequestStatus(Request $request, $id)
     {
         try {
@@ -359,32 +397,51 @@ class SuperAdminController extends Controller
 
             $validated = $request->validate([
                 'status' => 'required|in:pending,approved,rejected',
+                // 'decline_reason' => 'nullable|string|max:500',
             ]);
 
-            $dataRequest->update([
-                'status' => $validated['status'],
-                'updated_at' => now(),
-            ]);
+            DB::transaction(function () use ($dataRequest, $validated, $request) {
+                $dataRequest->update([
+                    'status' => $validated['status'],
+                    // 'decline_reason' => $validated['decline_reason'] ?? null,
+                    'processed_at' => now(),
+                ]);
+
+                // Log email attempt
+            Log::info("Attempting to send email for data request {$dataRequest->id} to {$dataRequest->email}");
+
+                // Send email notification
+            if ($validated['status'] === 'approved') {
+                Mail::to($dataRequest->email)->send(new DataRequestApproved($dataRequest, $dataRequest));
+                Log::info("Approval email sent to {$dataRequest->email}");
+            } elseif ($validated['status'] === 'rejected') {
+                Mail::to($dataRequest->email)->send(new DataRequestRejected($dataRequest, $dataRequest));
+                Log::info("Rejection email sent to {$dataRequest->email}");
+            }
+            });
 
             // For AJAX requests (modal form), return JSON response
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true, 
-                    'message' => 'Data request status updated!',
+                    'message' => 'Data request status updated and email notification sent!',
                     'status' => $validated['status']
                 ]);
             }
 
             // For regular form submissions (table buttons), redirect
-            return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated!');
+            return redirect()->route('superadmin.datarequest')->with('success', 'Data request status updated and email notification sent!');
         } catch (\Exception $e) {
             Log::error('Error updating data request: ' . $e->getMessage());
 
             if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['success' => false, 'error' => 'Error updating data request'], 500);
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Error updating data request: ' . $e->getMessage()
+                ], 500);
             }
 
-            return back()->with('error', 'Error updating data request');
+            return back()->with('error', 'Error updating data request: ' . $e->getMessage());
         }
     }
 
