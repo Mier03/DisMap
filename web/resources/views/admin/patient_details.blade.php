@@ -17,69 +17,65 @@
                 </div>
 
                 <div>
-                    <!-- Patient Information Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <!-- Personal Information Card -->
-                        <div class="bg-white border border-g-dark rounded-lg p-4">
-                            <div class="flex items-center mb-3">
-                                <span class="material-icons text-g-dark mr-2">person</span>
-                                <h3 class="text-lg font-semibold text-g-dark">Personal Information</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Name:</span>
-                                    <span class="text-gray-800" id="patient-name">{{ $patient->name }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Birthdate (Age):</span>
-                                    <span class="text-gray-800" id="patient-birthdate">{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($patient->birthdate)->age }})</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Sex:</span>
-                                    <span class="text-gray-800" id="patient-age">{{ $patient->sex }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Ethnicity:</span>
-                                    <span class="text-gray-800" id="patient-age">{{ $patient->ethnicity }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2">
-                                    <span class="text-sm font-medium text-gray-600">Address:</span>
-                                    <span class="text-gray-800" id="patient-address">{{ $patient->street_address ?? 'N/A'}}, {{ $patient->barangay->name ?? 'N/A' }}, Cebu City</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Patient Information Cards -->
+                    <x-cards.info_cards
+                        title="Personal Information"
+                        icon="person"
+                        :items="[
+                            [
+                                'label' => 'Name:',
+                                'value' => $patient->name
+                            ],
+                            [
+                                'label' => 'Birthdate (Age):',
+                                'value' => \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') . ' (' . \Carbon\Carbon::parse($patient->birthdate)->age . ')'
+                            ],
+                            [
+                                'label' => 'Sex:',
+                                'value' => $patient->sex
+                            ],
+                            [
+                                'label' => 'Ethnicity:',
+                                'value' => $patient->ethnicity
+                            ],
+                            [
+                                'label' => 'Address:',
+                                'value' => ($patient->street_address ?? 'N/A') . ', ' . ($patient->barangay->name ?? 'N/A') . ', Cebu City'
+                            ],
+                        ]"
+                    />
 
-                        <!-- Account Information Card -->
-                        <div class="bg-white border border-g-dark rounded-lg p-4">
-                            <div class="flex items-center mb-3">
-                                <span class="material-icons text-g-dark mr-2">verified_user</span>
-                                <h3 class="text-lg font-semibold text-g-dark">Account Information</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Email:</span>
-                                    <span class="text-gray-800" id="patient-email">{{ $patient->email }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Username:</span>
-                                    <span class="text-gray-800" id="patient-username">{{ $patient->username }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2">
-                                    <span class="text-sm font-medium text-gray-600">Account Status:</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $patient->status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ ucfirst($patient->status ?? 'Inactive') }}
-                                    </span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">User Type:</span>
-                                    <span class="text-gray-800" id="patient-username">{{ $patient->user_type }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Contact Number:</span>
-                                    <span class="text-gray-800" id="patient-username">{{ $patient->contact_number }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Account Information Card -->
+                    <x-cards.info_cards
+                        title="Account Information"
+                        icon="verified_user"
+                        :items="[
+                            [
+                                'label' => 'Email:',
+                                'value' => $patient->email
+                            ],
+                            [
+                                'label' => 'Username:',
+                                'value' => $patient->username
+                            ],
+                            [
+                                'label' => 'User Type:',
+                                'value' => $patient->user_type
+                            ],
+                            [
+                                'label' => 'Contact Number:',
+                                'value' => $patient->contact_number ?? 'N/A'
+                            ],
+                            [
+                                'label' => 'Account Status:',
+                                'badge' => [
+                                    'text' => ucfirst($patient->status ?? 'Inactive'),
+                                    'class' => $patient->status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                ]
+                            ],
+                        ]"
+                    />
                     </div>
 
                     <!-- Medical History Table -->

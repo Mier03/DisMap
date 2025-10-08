@@ -460,34 +460,83 @@
         const summary = document.getElementById('review-summary');
         summary.innerHTML = '';
 
-        // Personal Info
-        const personal = document.createElement('div');
-        personal.innerHTML = `
-            <h4 class="font-bold text-lg mb-2">Personal Information</h4>
-            <p><strong>Full Name:</strong> ${document.getElementById('first_name').value} ${document.getElementById('middle_name').value} ${document.getElementById('last_name').value}</p>
-            <p><strong>Date of Birth:</strong> ${document.getElementById('birthdate').value}</p>
-            <p><strong>Sex:</strong> ${document.getElementById('sex').value}</p>
-            <p><strong>Ethnicity:</strong> ${document.getElementById('ethnicity').value}</p>
-            <p><strong>Address:</strong> ${document.getElementById('street_address').value}, ${document.getElementById('barangay_id').options[document.getElementById('barangay_id').selectedIndex].text}, Cebu City, Philippines</p>
-            <p><strong>Contact Number:</strong> ${document.getElementById('contact_number').value}</p>
-            <p><strong>Email:</strong> ${document.getElementById('email').value}</p>`;
-        summary.appendChild(personal);
+        function createInfoCardHtml(title, icon, items) {
+            let content = '';
+            
+            items.forEach((item, index) => {
+                const borderClass = index < items.length - 1 ? 'border-b border-g-light/50' : '';
+                let valueHtml = '';
 
-        // Medical Info
-        const medical = document.createElement('div');
-        medical.innerHTML = '<h4 class="font-bold text-lg mb-2">Medical Information</h4>';
+                if (item.badge) {
+                    valueHtml = `<span class="px-3 py-1 rounded-full text-xs font-medium ${item.badge.class ?? ''}">
+                                    ${item.badge.text ?? 'N/A'}
+                                </span>`;
+                } else {
+                    valueHtml = `<span class="text-sm text-gray-800 text-right break-words">${item.value ?? 'N/A'}</span>`;
+                }
 
-        medical.innerHTML += `<p><strong>Hospital:</strong> ${document.getElementById('hospital_id').options[document.getElementById('hospital_id').selectedIndex]?.text || 'Not selected'}</p>`;
+                content += `
+                    <div class="flex justify-between items-start py-2 ${borderClass}">
+                        <span class="text-sm font-medium text-gray-600 mr-4">${item.label}</span>
+                        ${valueHtml}
+                    </div>`;
+            });
+            return `
+                <div class="bg-white border border-g-dark rounded-lg p-4 shadow-md transition duration-300 hover:shadow-xl">
+                    <div class="flex items-center mb-4 pb-2 border-b border-g-light/50">
+                        <span class="material-icons text-g-dark mr-2 text-xl">${icon}</span>
+                        <h3 class="text-lg font-semibold text-g-dark">${title}</h3>
+                    </div>
+                    <div class="space-y-1">
+                        ${content}
+                    </div>
+                </div>`;
+        }
+
+        // --- 2. DATA COLLECTION & CARD GENERATION ---
+
+        // A. Personal & Account Info Card Data
+        const barangaySelect = document.getElementById('barangay_id');
+        const barangayText = barangaySelect.options[barangaySelect.selectedIndex]?.text || 'N/A';
+
+        const personalInfoItems = [
+            { label: 'Full Name:', value: `${document.getElementById('first_name').value} ${document.getElementById('middle_name').value} ${document.getElementById('last_name').value}`.trim() },
+            { label: 'Date of Birth:', value: document.getElementById('birthdate').value },
+            { label: 'Sex:', value: document.getElementById('sex').value },
+            { label: 'Ethnicity:', value: document.getElementById('ethnicity').value },
+            { label: 'Address:', value: `${document.getElementById('street_address').value}, ${barangayText}, Cebu City, Philippines` },
+            { label: 'Contact Number:', value: document.getElementById('contact_number').value },
+            { label: 'Email:', value: document.getElementById('email').value },
+        ];
+        
+        // B. Medical Information Card Data
+        const medicalInfoItems = [];
+
+        // Hospital
+        const hospitalSelect = document.getElementById('hospital_id');
+        const hospitalText = hospitalSelect?.options[hospitalSelect.selectedIndex]?.text || 'Not selected';
+        medicalInfoItems.push({ label: 'Hospital:', value: hospitalText });
+
+        // Diseases and Remarks
         const diseaseEntries = document.querySelectorAll('.disease-entry');
         diseaseEntries.forEach((entry, index) => {
             const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
             const remarks = entry.querySelector(`textarea[name="reported_remarks[]"]`);
-            const diseaseP = document.createElement('p');
-            diseaseP.innerHTML = `<strong>Disease ${index + 1}:</strong> ${diseaseSelect.options[diseaseSelect.selectedIndex]?.text || 'Not selected'}<br><strong>Remarks:</strong> ${remarks.value || 'N/A'}`;
-            medical.appendChild(diseaseP);
+            const diseaseText = diseaseSelect?.options[diseaseSelect.selectedIndex]?.text || 'Not selected';
+            
+            medicalInfoItems.push({ label: `Disease ${index + 1}:`, value: diseaseText }); 
+            medicalInfoItems.push({ label: 'Remarks:', value: remarks.value || 'N/A' });
         });
 
-        summary.appendChild(medical);
+        const personalCardHtml = createInfoCardHtml('Personal Information', 'person', personalInfoItems);
+        const medicalCardHtml = createInfoCardHtml('Medical Information', 'healing', medicalInfoItems); // Using 'healing' icon
+
+        const cardsContainer = document.createElement('div');
+        cardsContainer.className = 'grid grid-cols-1 md:grid-cols-1 gap-6 mb-6';
+
+        cardsContainer.innerHTML = personalCardHtml + medicalCardHtml;
+        
+        summary.appendChild(cardsContainer);
     }
 
     function resetAddPatientForm() {
