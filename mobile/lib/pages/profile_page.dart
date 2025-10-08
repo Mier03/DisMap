@@ -5,16 +5,58 @@ import '../components/footer.dart';
 import 'records_page.dart';
 import 'settings_page.dart';
 
+class ProfileTheme {
+  final Color backgroundColor;
+  final Color primaryColor;
+  final Color titleTextColor;
+  final Color valueTextColor;
+  final Color infoTitleColor;
+  final Color cardColor;
+  final Color borderColor;
+
+  const ProfileTheme({
+    required this.backgroundColor,
+    required this.primaryColor,
+    required this.titleTextColor,
+    required this.valueTextColor,
+    required this.infoTitleColor,
+    required this.cardColor,
+    required this.borderColor,
+  });
+
+  // Light Theme
+  static const light = ProfileTheme(
+    backgroundColor: Colors.white,
+    primaryColor: Color(0xFF296E5B),
+    titleTextColor: Colors.white,
+    valueTextColor: Color(0xFF296E5B),
+    infoTitleColor: Colors.black87,
+    cardColor: Colors.white,
+    borderColor: Color(0xFFE5E7EB),
+  );
+
+  // Dark Theme - updated with #111827 background
+  static const dark = ProfileTheme(
+    backgroundColor: Color(0xFF111827),
+    primaryColor: Color(0xFF296E5B),
+    titleTextColor: Colors.white,
+    valueTextColor: Colors.white,
+    infoTitleColor: Colors.white70,
+    cardColor: Color(0xFF1F2937),
+    borderColor: Color(0xFF374151),
+  );
+}
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final bool isDarkMode;
+  const ProfilePage({super.key, this.isDarkMode = false});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int _selectedIndex = -1; // e.g. 2 for Profile tab
+  final int _selectedIndex = -1;
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -22,41 +64,43 @@ class _ProfilePageState extends State<ProfilePage> {
     if (index == 0) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const RecordsPage()),
+        MaterialPageRoute(builder: (_) => RecordsPage(isDarkMode: widget.isDarkMode)),
       );
     } else if (index == 1) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const SettingsPage()),
+        MaterialPageRoute(builder: (_) => SettingsPage(initialIsDarkMode: widget.isDarkMode)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final ProfileTheme theme = widget.isDarkMode ? ProfileTheme.dark : ProfileTheme.light;
+
     return Scaffold(
+      backgroundColor: theme.backgroundColor,
       appBar: const AppHeader(
         title: "Disease Mapper",
-        showProfile: false, // already on profile page
+        showProfile: false,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Top section with avatar and name
             Container(
-              color: const Color(0xFF296E5B),
+              color: theme.primaryColor,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Column(
                 children: [
                   Container(
-                    width: 120, // same as diameter (2x radius 60)
+                    width: 120,
                     height: 120,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white, // optional background
+                      color: Colors.white,
                     ),
-                    padding: const EdgeInsets.all(8), // optional padding
+                    padding: const EdgeInsets.all(8),
                     child: ClipOval(
                       child: SvgPicture.asset(
                         "assets/images/profile-default.svg",
@@ -65,10 +109,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Jennie Ruby Jane Kim",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.titleTextColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -79,39 +123,69 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 16),
 
-            // Information rows
-            _InfoRow(title: "Birthdate", value: "January 16, 1996"),
-            _InfoRow(title: "Nationality", value: "Filipino"),
-            _InfoRow(title: "Email Address", value: "jenduki@gmail.com"),
-            _InfoRow(
-              title: "Address",
-              value:
-                  "150 Archbishop Reyes Avenue, Banilad, Cebu City,\nCebu 6000, Philippines",
+            // Information rows - now in cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  _InfoCard(
+                    title: "Birthdate", 
+                    value: "January 16, 1996",
+                    theme: theme,
+                  ),
+                  const SizedBox(height: 12),
+                  _InfoCard(
+                    title: "Nationality", 
+                    value: "Filipino",
+                    theme: theme,
+                  ),
+                  const SizedBox(height: 12),
+                  _InfoCard(
+                    title: "Email Address", 
+                    value: "jenduki@gmail.com",
+                    theme: theme,
+                  ),
+                  const SizedBox(height: 12),
+                  _InfoCard(
+                    title: "Address",
+                    value: "150 Archbishop Reyes Avenue, Banilad, Cebu City,\nCebu 6000, Philippines",
+                    theme: theme,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-
-      // ✅ Add footer here
       bottomNavigationBar: Footer(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        isDarkMode: widget.isDarkMode,
       ),
     );
   }
 }
 
-
-class _InfoRow extends StatelessWidget {
+class _InfoCard extends StatelessWidget {
   final String title;
   final String value;
+  final ProfileTheme theme;
 
-  const _InfoRow({required this.title, required this.value});
+  const _InfoCard({
+    required this.title, 
+    required this.value,
+    required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(12),
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.borderColor),
+      ),
+      padding: const EdgeInsets.all(16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -119,14 +193,17 @@ class _InfoRow extends StatelessWidget {
             width: 100,
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: theme.infoTitleColor,
+              ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                color: Color(0xFF296E5B),
+              style: TextStyle(
+                color: theme.valueTextColor,
                 fontWeight: FontWeight.bold,
               ),
             ),

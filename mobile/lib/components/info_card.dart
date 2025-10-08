@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class InfoCard extends StatefulWidget {
+class InfoCard extends StatelessWidget {
   final String date;
   final String diagnosis;
   final String doctor;
   final String hospital;
-  final String remarks;
-  final String status; 
+  final String status;
+  final bool isDarkMode;
 
   const InfoCard({
     super.key,
@@ -14,92 +14,141 @@ class InfoCard extends StatefulWidget {
     required this.diagnosis,
     required this.doctor,
     required this.hospital,
-    this.remarks = "This is the sample remarks Dolor id id ea est adipisicing ut mollit in sint cillum tempor. Aute minim ad ex sit id anim ex fugiat proident. Lorem fugiat tempor magna esse cupidatat sunt adipisicing cupidatat ipsum. Sint quis ut sunt ut aliqua occaecat Lorem culpa excepteur. Fugiat est qui ad eiusmod labore officia veniam sit non minim est reprehenderit. Irure duis proident aute eiusmod officia tempor laborum magna nostrud dolore fugiat. Officia exercitation dolore deserunt reprehenderit veniam velit officia officia elit voluptate labore mollit amet sint.",
-    this.status = "Active", // default value
+    required this.status,
+    this.isDarkMode = false,
   });
 
   @override
-  State<InfoCard> createState() => _InfoCardState();
-}
-
-class _InfoCardState extends State<InfoCard> {
-  bool _expanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    Color statusBg;
-    Color statusText;
+    // Colors for dark mode
+    final Color darkCardColor = const Color(0xFF1F2937);
+    final Color darkBorderColor = const Color(0xFF374151);
+    final Color darkTextColor = Colors.white;
+    final Color darkSecondaryTextColor = Colors.grey.shade300;
+    
+    // Colors for light mode
+    final Color lightCardColor = Colors.white;
+    final Color lightBorderColor = const Color(0xFF296E5B);
+    final Color lightTextColor = Colors.black87;
+    final Color lightSecondaryTextColor = Colors.grey.shade600;
 
-    if (widget.status == "Active") {
-      statusBg = Colors.yellow.shade200;
-      statusText = Colors.brown;
-    } else if (widget.status == "Recovered") {
-      statusBg = Colors.green.shade100;
-      statusText = Colors.green;
-    } else {
-      statusBg = Colors.grey.shade200;
-      statusText = Colors.black;
-    }
+    final Color cardColor = isDarkMode ? darkCardColor : lightCardColor;
+    final Color borderColor = isDarkMode ? darkBorderColor : lightBorderColor;
+    final Color textColor = isDarkMode ? darkTextColor : lightTextColor;
+    final Color secondaryTextColor = isDarkMode ? darkSecondaryTextColor : lightSecondaryTextColor;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF296E5B)),
+        side: BorderSide(color: borderColor),
       ),
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text(
-            widget.date,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF296E5B),
-            ),
-          ),
-          const SizedBox(height: 6),
-            Text("Diagnosis: ${widget.diagnosis}"),
-            Text("Doctor: ${widget.doctor}"),
-            Text("Hospital: ${widget.hospital}"),
-
-            // Expanded section
-            if (_expanded) ...[
-              Text("Remarks: ${widget.remarks}"),
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  "Status: ${widget.status}",
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  date,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: statusText,
+                    color: secondaryTextColor,
+                    fontSize: 14,
                   ),
                 ),
-              ),
-            ],
-
-            // See More / See Less button
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  setState(() => _expanded = !_expanded);
-                },
-                child: Text(
-                  _expanded ? "See Less" : "See More",
-                  style: const TextStyle(color: Color(0xFF296E5B)),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: status == "Active" 
+                        ? const Color(0xFFDC2626) 
+                        : const Color(0xFF16A34A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    status,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              diagnosis,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const SizedBox(height: 8),
+            _InfoRow(
+              label: "Doctor",
+              value: doctor,
+              textColor: textColor,
+              secondaryTextColor: secondaryTextColor,
+            ),
+            _InfoRow(
+              label: "Hospital",
+              value: hospital,
+              textColor: textColor,
+              secondaryTextColor: secondaryTextColor,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color textColor;
+  final Color secondaryTextColor;
+
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.textColor,
+    required this.secondaryTextColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              "$label:",
+              style: TextStyle(
+                color: secondaryTextColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
