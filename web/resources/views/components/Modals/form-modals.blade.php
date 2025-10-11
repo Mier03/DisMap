@@ -168,19 +168,22 @@
     {{-- =========================
         Request Data Modal
     ========================== --}}
-    <div id="requestDataModal" class="hidden fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative">
-            <div class="flex items-center mb-2">
-                <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                </svg>
-                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Data Request Form</h2>
-            </div>
-            <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
+<div id="requestDataModal" class="hidden fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg shadow-lg w-[600px] max-h-[90vh] p-8 text-left relative flex flex-col">
+        <!-- Header Section -->
+        <div class="flex items-center mb-2">
+            <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+            </svg>
+            <h2 class="ml-3 text-[28px] font-bold text-g-dark">Data Request Form</h2>
+        </div>
+        <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
 
-            <form action="javascript:void(0)" method="POST" class="space-y-5">
+        <!-- Form Section -->
+        <div class="flex-1 overflow-y-auto pr-2">
+            <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
                 @csrf
                 <div>
                     <x-input-label for="full_name" :value="__('Full Name')" />
@@ -197,6 +200,41 @@
                         placeholder="Enter your email address..." />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
+                
+                {{-- Disease --}}
+                <div class="mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <x-input-label for="requested_disease" :value="__('Disease Type')" />
+                    </div>
+                    <x-dropdown-select id="requested_disease" name="requested_disease" class="w-full h-[40px] text-sm">
+                        <option value="" selected>Select disease...</option>
+                        @foreach($diseases as $disease)
+                            <option value="{{ $disease->specification }}">{{ $disease->specification }}</option>
+                        @endforeach
+                    </x-dropdown-select>
+                </div>
+                
+                {{-- Date Range --}}
+                <div class="mt-6">
+                    <div class="flex justify-between mb-2">
+                        <div class="w-1/2 pr-2">
+                            <x-input-label for="fromDate" :value="__('From')" />
+                        </div>
+                        <div class="w-1/2 pl-2">
+                            <x-input-label for="toDate" :value="__('To')" />
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="w-1/2">
+                            <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
+                                type="date" name="fromDate" />
+                        </div>
+                        <div class="w-1/2">
+                            <x-text-input id="toDate" class="w-full h-[40px] text-sm"
+                                type="date" name="toDate" />
+                        </div>
+                    </div>
+                </div>
 
                 <div>
                     <x-input-label for="reason" :value="__('Reason for Request')" />
@@ -204,9 +242,9 @@
                         class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
                     <x-input-error :messages="$errors->get('reason')" class="mt-2" />
                 </div>
-
-                <div class="flex justify-center gap-4 mt-8">
-                    <x-primary-button>
+                
+                <div class="flex justify-center gap-4 mt-8 pt-4 border-t border-gray-200">
+                    <x-primary-button type="submit">
                         {{ __('Submit') }}
                     </x-primary-button>
                     <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
@@ -215,12 +253,16 @@
                 </div>
             </form>
 
-            <button type="button" onclick="closeModal('requestDataModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                ✕
-            </button>
         </div>
+
+
+        <button type="button" onclick="closeModal('requestDataModal')"
+            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+            ✕
+        </button>
     </div>
+</div>
+
 
     {{-- =========================
         View Reason of Request Modal - SuperAdmin Side
@@ -415,7 +457,6 @@
         </div>
     </div>
 </div>
-
 {{-- ========== SCRIPTS ========== --}}
 <script>
     // Pass hospitals data from the controller
