@@ -9,6 +9,7 @@ use App\Http\Controllers\RequestDataController;
 use App\Http\Controllers\DoctorHospitalController;
 use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\WelcomeController; // Add this line
+use App\Http\Controllers\DataRequestController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // PUBLIC ROUTE - Data request form (accessible without auth)
 Route::post('/data-requests', [SuperAdminController::class, 'storeDataRequest'])->name('data-requests.store');
-
+Route::post('/data-request/store', [DataRequestController::class, 'store'])->name('data-request.store');
 // Route::post('/request-data', [RequestDataController::class, 'store'])->name('request-data.store');
 
 // Route::get('/dashboard', function () {
