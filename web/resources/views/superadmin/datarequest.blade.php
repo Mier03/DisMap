@@ -25,14 +25,10 @@
                             {{ session('error') }}
                         </div>
                         @endif
-                        <div class="flex items-center justify-between">
-                            <x-page-header title="Data Requests" subtitle="User data requests" />
-                                <button
-                                    onclick="openModal('reasonRequestModal')"
-                                    class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
-                                    Data Requests
-                                </button>
-                        </div>
+
+                        <x-page-header title="Data Requests" subtitle="User data requests" 
+                        buttonText="Data Requests" buttonClick="openModal('reasonRequestModal')"/>
+
                         {{-- Search Form --}}
                         <form method="GET" action="{{ route('superadmin.datarequest') }}">
                             <x-search-bar placeholder="Search users..." value="{{ request('q') }}" />
