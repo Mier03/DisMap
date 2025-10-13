@@ -10,9 +10,7 @@
 					<div class="p-6 bg-inherit text-gray-900">
 
 						{{-- Header --}}
-						<div class="mb-6">
-							<h2 class="text-5xl font-extrabold text-[#19664E]">Dashboard</h2>
-						</div>
+						 <x-page-header title="Dashboard" />
 
 						{{-- Filters + Search --}}
 						<div class="mb-4">

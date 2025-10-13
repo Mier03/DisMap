@@ -12,14 +12,8 @@
                     <div class="p-6 bg-inherit text-gray-900">
                         
                         {{-- Header --}}
-                        <div class="flex items-center justify-between">
-                            <x-page-header title="Manage Patients" subtitle="Patient Records" />
-                            <button
-                                onclick="openModal('exportModal')"
-                                class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
-                                Export
-                            </button>
-                        </div>
+                        <x-page-header title="Manage Patients" subtitle="Patient Records" 
+                        buttonText="Export" buttonClick="openModal('exportModal')" />
 
                         {{-- Search --}}
                         <div class="flex items-start justify-between">

@@ -10,10 +10,7 @@
                     <div class="p-6 bg-inherit text-gray-900">
                         
                         {{-- Header --}}
-                        <div class="mb-6">
-                            <h2 class="text-5xl font-bold text-g-dark">Profile Information</h2>
-                            <p class="text-g-dark mt-1">Manage your account information and security</p>
-                        </div>
+                        <x-page-header title="Profile Information" subtitle="Manage your account information and security" />
 
                         <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start relative">
                             {{-- Profile Image --}}

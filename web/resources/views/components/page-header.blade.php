@@ -1,4 +1,4 @@
-@props(['title', 'subtitle', 'buttonText' => null])
+@props(['title', 'subtitle' => null, 'buttonText' => null, 'buttonClick' => null])
 
 <div class="flex justify-between items-center mb-6">
     <div>
@@ -9,7 +9,9 @@
     
     @if($buttonText)
         <div>
-            <button class="bg-gray-100 border border-g-dark text-g-dark font-bold px-4 py-2 rounded-lg">
+            <button 
+                @if($buttonClick) onclick="{{ $buttonClick }}" @endif
+                class="border border-g-dark text-g-dark bg-white px-4 py-2 rounded-lg hover:bg-[#F2F2F2]/90 transition shrink-0">
                 {{ $buttonText }}
             </button>
         </div>
