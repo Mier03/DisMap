@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Disease;
 use Illuminate\Http\Request;
+use App\Models\PatientRecord;
 
 class DiseaseController extends Controller
 {
@@ -41,27 +42,18 @@ class DiseaseController extends Controller
         ->with(['patientRecords' => function($q) {
             $q->orderByDesc('date_reported');
         }])
+        ->has('patientRecords', '>=', 1)
         ->get();
 
-        // Compute overall (unfiltered) statistics so the stat cards are
-        // not affected by the current search/filter in the table.
-        $allDiseases = Disease::withCount([
-            'patientRecords as total_cases',
-            'patientRecords as active' => function($q) {
-                $q->where('status', 'Active');
-            },
-            'patientRecords as recovered' => function($q) {
-                $q->where('status', 'Recovered');
-            },
-        ])->get();
+        $statsTotalTypes = PatientRecord::distinct('disease_id')->count('disease_id');
+        $statsTotalCases = PatientRecord::count();
+        $statsActive = PatientRecord::where('status', 'Active')->count();
+        $statsRecovered = PatientRecord::where('status', 'Recovered')->count();
 
-        $statsTotalTypes = $allDiseases->count();
-        $statsActive = $allDiseases->sum('active');
-        $statsRecovered = $allDiseases->sum('recovered');
-
-        return view('diseaserecords', compact(
+        return response()->view('diseaserecords', compact(
             'diseaseRecords',
             'statsTotalTypes',
+            'statsTotalCases',
             'statsActive',
             'statsRecovered'
         ));

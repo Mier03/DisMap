@@ -19,9 +19,7 @@ class WelcomeController extends Controller
         
         $totalCases = PatientRecord::count();
         $totalActiveCases = PatientRecord::where('status', 'Active')->count();
-
-        // NOTE: The database schema does not currently have a way to identify "critical" cases.
-        $totalCriticalCases = 9;
+        $totalRecoveredCases = PatientRecord::where('status', 'Recovered')->count();
 
         // Fetch barangays and diseases for the modal filters
         $barangays = Barangay::all();
@@ -30,7 +28,7 @@ class WelcomeController extends Controller
         return view('welcome', [
             'totalCases' => $totalCases,
             'totalActiveCases' => $totalActiveCases,
-            'totalCriticalCases' => $totalCriticalCases,
+            'totalRecoveredCases' => $totalRecoveredCases,
             'barangays' => $barangays,
             'diseases' => $diseases,
         ]);

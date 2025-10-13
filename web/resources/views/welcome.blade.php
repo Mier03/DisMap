@@ -43,21 +43,21 @@
             </p>
 
             <div class="flex flex-col md:flex-row justify-center items-center gap-8 z-10">
-                <x-stat-card :value="$totalCases" label="Total Cases">
+                <x-cards.stat-card :value="$totalCases" label="Total Cases" statCardType="welcome">
                     <x-slot name="icon">
                         @svg('gmdi-people-alt-o', 'h-12 w-12 text-g-dark')
                     </x-slot>
-                </x-stat-card>
-                <x-stat-card :value="$totalActiveCases" label="Total Active Cases">
+                </x-cards.stat-card>
+                <x-cards.stat-card :value="$totalActiveCases" label="Total Active Cases" statCardType="welcome">
                     <x-slot name="icon">
                         @svg('gmdi-search', 'h-12 w-12 text-g-dark')
                     </x-slot>
-                </x-stat-card>
-                <x-stat-card :value="$totalCriticalCases" label="Total Critical Cases">
+                </x-cards.stat-card>
+                <x-cards.stat-card :value="$totalRecoveredCases" label="Total Critical Cases" statCardType="welcome">
                     <x-slot name="icon">
                         @svg('gmdi-medical-information-o', 'h-12 w-12 text-g-dark')
                     </x-slot>
-                </x-stat-card>
+                </x-cards.stat-card>
             </div>
         </div>
     </section>
