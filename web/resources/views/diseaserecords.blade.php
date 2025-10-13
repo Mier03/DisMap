@@ -45,10 +45,10 @@
                         {{-- Stat Cards --}}
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                             {{-- Use overall stats (unfiltered) so search doesn't change stat cards --}}
-                            <x-stat-card :value="$statsTotalTypes" label="Total Disease Types" />
-                            <x-stat-card :value="$statsActive" label="Active Cases" />
-                            <x-stat-card :value="$statsRecovered" label="Recovered" />
-                            <x-stat-card value="2" label="Barangay Coverage" /> 
+                            <x-cards.stat-card :value="$statsTotalTypes" label="Total Disease Types" />
+                            <x-cards.stat-card :value="$statsTotalCases" label="Total Cases" /> 
+                            <x-cards.stat-card :value="$statsActive" label="Active Cases" />
+                            <x-cards.stat-card :value="$statsRecovered" label="Recovered" />
                         </div>
 
 
