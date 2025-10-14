@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -29,6 +30,7 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . Auth::id()],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . Auth::id()],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ]);
 
         $user = $request->user();
@@ -36,6 +38,21 @@ class ProfileController extends Controller
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null; // re-verify if email changes
+        }
+
+                if ($request->hasFile('profile_image')) {
+            // Delete old image (if not default)
+            if ($user->profile_image && $user->profile_image !== 'images/profiles/default.png') {
+                Storage::disk('public')->delete($user->profile_image);
+            }
+
+            // Store new one under public/profiles/username/
+            $path = $request->file('profile_image')->store(
+                'profiles/' . $user->username,
+                'public'
+            );
+
+            $user->profile_image = $path;
         }
 
         $user->save();
