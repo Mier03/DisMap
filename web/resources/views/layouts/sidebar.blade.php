@@ -1,16 +1,25 @@
 <div class="sidebar w-64 h-screen bg-[#296E5B] text-white flex flex-col justify-between fixed px-4 py-6">
     <!-- Profile Section -->
     <div class="flex items-center mb-6">
-        <div class="w-16 h-16 bg-white rounded-[8px] flex items-center justify-center overflow-hidden">
-            <img src="/images/defaultprofile.jpg" alt="Profile" class="w-full h-full object-cover">
-        </div>
-        <div class="ml-3">
-            <h2 class="text-lg font-semibold">
-                {{ Auth::user()->name ?? 'DisMap' }}
-            </h2>
-            <p class="text-sm text-white/80 capitalize">
-                {{ Auth::user()->user_type }}
-            </p>
+        <div class="flex items-center mb-6">
+            <div class="w-16 h-16 bg-white rounded-[8px] flex items-center justify-center overflow-hidden">
+                @php
+                    $user = Auth::user();
+                    $profileImage = $user->profile_image 
+                        ? asset('storage/' . $user->profile_image) 
+                        : asset('images/defaultprofile.jpg');
+                @endphp
+
+                <img src="{{ $profileImage }}" alt="Profile" class="w-full h-full object-cover">
+            </div>
+            <div class="ml-3">
+                <h2 class="text-lg font-semibold">
+                    {{ $user->name ?? 'DisMap' }}
+                </h2>
+                <p class="text-sm text-white/80 capitalize">
+                    {{ $user->user_type }}
+                </p>
+            </div>
         </div>
     </div>
 
