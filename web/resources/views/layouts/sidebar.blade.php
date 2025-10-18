@@ -1,3 +1,10 @@
+@if (session('success'))
+    <x-toast type="success" :message="session('success')" />
+@endif
+
+@if (session('error'))
+    <x-toast type="error" :message="session('error')" />
+@endif
 <div class="sidebar w-64 h-screen bg-[#296E5B] text-white flex flex-col justify-between fixed px-4 py-6">
     <!-- Profile Section -->
     <div class="flex items-center mb-6">
@@ -75,15 +82,11 @@
         @endif
 
         <!-- Logout -->
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit"
-                    class="flex items-center w-full h-12 rounded-md px-3 transition
-                    bg-white text-[#296E5B] hover:bg-[#B3FAD8]">
-                <x-gmdi-logout-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Logout</span>
-            </button>
-        </form>
+        <button type="button" onclick="openModal('logoutConfirm')"
+            class="flex items-center w-full h-12 rounded-md px-3 transition bg-white text-[#296E5B] hover:bg-[#B3FAD8]">
+            <x-gmdi-logout-o class="w-5 h-5 mr-2" />
+            <span class="text-sm font-medium">Logout</span>
+        </button>
     </div>
 
     <!-- Branding Bottom -->
@@ -94,4 +97,18 @@
             <p class="text-xs">Disease Surveillance Map</p>
         </div>
     </div>
+
+        <!-- Confirmation Modal -->
+    <x-modals.confirm-modal 
+        id="logoutConfirm"
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        confirmAction="document.getElementById('logout-form').submit()"
+    />
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+        @csrf
+    </form>
 </div>

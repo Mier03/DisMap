@@ -55,8 +55,9 @@ class ProfileController extends Controller
         }
 
         $user->save();
-        dd($request->file('profile_image'));
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+
+            return redirect()->route('profile.edit')
+        ->with('success', 'Profile updated successfully!');
     }
 
 

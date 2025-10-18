@@ -1,4 +1,11 @@
 <x-app-layout>
+    @if (session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
@@ -11,6 +18,7 @@
                         
                         {{-- Header --}}
                         <x-page-header title="Profile Information" subtitle="Manage your account information and security" />
+
 
 
                             
