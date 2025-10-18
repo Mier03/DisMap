@@ -25,12 +25,13 @@
             </div>
         </nav>
     </header>
-        @if(session('success'))
-        <script>
-            alert("{{ session('success') }}");
-        </script>
-        @endif
+    @if (session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
 
+    @if (session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
     <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center"
         style="background-image: url({{ asset('images/welcomebg.svg') }});">
 

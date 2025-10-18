@@ -33,6 +33,7 @@ class DataRequestController extends Controller
             'status' => 'pending', // Default status
         ]);
 
-        return redirect()->back()->with('success', 'Your data request has been submitted successfully!');
+            return redirect()->route('welcome')
+        ->with('success', 'Your data request has been submitted successfully!');
     }
 }

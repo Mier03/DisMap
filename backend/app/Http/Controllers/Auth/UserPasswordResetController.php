@@ -39,6 +39,7 @@ class UserPasswordResetController extends Controller
         $request->session()->regenerate();
 
         // Redirect back with success message
-        return back()->with('status', 'password-updated');
+        return back()
+        ->with('success', 'Password updated successfully!');
     }
 }

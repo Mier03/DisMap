@@ -1,4 +1,12 @@
 <x-app-layout>
+    @if (session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
+
     <x-certificate-modal />
 
     <div class="bg-g-bg flex min-h-screen w-full">
