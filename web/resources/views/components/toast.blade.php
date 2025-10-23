@@ -1,6 +1,6 @@
 @props([
     'message' => 'Operation completed.',
-    'type' => 'success',  {{-- success | error | warning | info --}}
+    // 'type' => 'success',  {{-- success | error | warning | info --}}
 ])
 
 @php
