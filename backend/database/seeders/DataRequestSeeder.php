@@ -35,7 +35,6 @@ class DataRequestSeeder extends Seeder
                 'purpose' => 'Medical conference presentation on regional health trends',
                 'requested_disease' => 'Hypertension',
                 'status' => 'approved',
-                'handled_by_admin_id' => 1, // Assuming admin user with id 1 exists
                 'created_at' => Carbon::now()->subDays(10),
                 'updated_at' => Carbon::now()->subDays(2),
             ],
@@ -45,7 +44,6 @@ class DataRequestSeeder extends Seeder
                 'purpose' => 'Community health program planning and resource allocation',
                 'requested_disease' => 'Tuberculosis',
                 'status' => 'rejected',
-                'handled_by_admin_id' => 1,
                 'created_at' => Carbon::now()->subDays(7),
                 'updated_at' => Carbon::now()->subDays(1),
             ],
