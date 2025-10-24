@@ -85,19 +85,15 @@
         const openModalButton = document.getElementById('openFilterModal');
         const activeFiltersContainer = document.getElementById('activeFiltersContainer');
 
-        // Dynamically get data from Blade props
-        // This data is passed from the controller to the view via component props
         const filterData = {
             'Disease Type': { name: 'disease_type', options: @json(collect($diseases)->map(function($d) { return ['value' => $d['id'] ?? $d->id, 'text' => $d['specification'] ?? $d->specification]; })), type: 'checkbox' },
-            // Limit initial barangays display to 10 and provide full list for 'see more'
+           
             'Barangays': { name: 'barangays', options: @json(collect($barangays)->map(function($b) { return ['value' => $b['id'] ?? $b->id, 'text' => $b['name'] ?? $b->name]; })), type: 'checkbox', limit: 10 },
             'Severity': { name: 'severity', options: [{value: 'low', text: 'Low'}, {value: 'medium', text: 'Medium'}, {value: 'high', text: 'High'}, {value: 'critical', text: 'Critical'}], type: 'radio' }
         };
 
-        // Track active filters (store option.value strings)
         let activeFiltersSet = new Set();
 
-        // Render filters dynamically
         function renderFilters() {
             let html = `
                 <div class="flex justify-between items-center mb-4">
@@ -116,30 +112,25 @@
                 const containerId = `options-${data.name}`;
                 // Handle limited display (see more)
                 const limit = data.limit || Infinity;
-                // store the limit on the container so the toggle knows how many to show
                 html += `<div><h4 class="text-sm font-medium mb-2" style="color: #296E5B">${category}</h4><div id="${containerId}" data-limit="${limit}" class="space-y-1">`;
                 const inputType = data.type;
                 const inputName = inputType === 'radio' ? data.name : `${data.name}[]`;
                 data.options.forEach((option, idx) => {
                     const shouldHide = idx >= limit;
-                    // Checked logic should use option.value (id) not text
                     const isChecked = activeFiltersSet.has(String(option.value)) ? 'checked' : '';
                     const displayText = option.text;
-                    // Use Tailwind classes to ensure consistent alignment and keep wrapped text aligned under the label
                     const extraClass = shouldHide ? 'extra-option hidden' : 'extra-option';
                     html += `<label class="flex items-start w-full gap-2 py-1 ${extraClass}"><input type="${inputType}" name="${inputName}" value="${option.value}" class="filter-input h-4 w-4 flex-shrink-0 mt-1" ${isChecked}><span class="ml-2 text-gray-900 whitespace-normal" style="color: #296E5B">${displayText}</span></label>`;
                 });
-                // If there are more options than the limit, add a toggle button
                 if (data.options.length > limit && isFinite(limit)) {
                     html += `<button type="button" class="mt-2 text-sm text-left text-gray-600 see-more-toggle" data-target="#${containerId}">See more</button>`;
                 }
                 html += `</div></div>`;
             }
-            html += `</div>`; // Close the space-y-4 div
+            html += `</div>`; 
             modalContent.innerHTML = html;
         }
 
-        // Format for display using value -> text lookup
         function formatFilter(value) {
             for (const category of Object.values(filterData)) {
                 const option = category.options.find(opt => String(opt.value) === String(value));
@@ -148,7 +139,6 @@
             return value;
         }
 
-        // Update chips display
         function updateActiveFilters() {
             if (!activeFiltersContainer) return;
 
@@ -179,7 +169,6 @@
             }
         }
 
-        // Event delegation for modal and chips
         document.addEventListener('click', function(e) {
             if (e.target.closest('#filterModal .close-modal')) {
                 modal.classList.add('hidden');
@@ -205,7 +194,6 @@
                 if (labels.length <= limit) return;
 
                 const extraLabels = labels.slice(limit);
-                // If any extra is hidden, reveal all extras; otherwise hide them
                 const anyHidden = extraLabels.some(l => l.classList.contains('hidden'));
                 if (anyHidden) {
                     extraLabels.forEach(l => l.classList.remove('hidden'));
@@ -216,8 +204,6 @@
                 }
             }
         });
-
-        // NEW: Listen for changes on filter inputs to update immediately
         document.addEventListener('change', function(e) {
             if (e.target.classList.contains('filter-input')) {
                 const input = e.target;
@@ -247,15 +233,11 @@
                 modal.classList.remove('hidden');
             });
         }
-
-        // Close on overlay click
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.classList.add('hidden');
             }
         });
-
-        // Initialize chips
         updateActiveFilters();
     });
 </script>
