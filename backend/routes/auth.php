@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Auth\UserPasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -61,4 +62,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::put('/user/password/update', [UserPasswordResetController::class, 'update'])
+    ->middleware('auth')
+    ->name('password.update.user');
 });

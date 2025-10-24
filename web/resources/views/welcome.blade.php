@@ -25,51 +25,61 @@
             </div>
         </nav>
     </header>
-        @if(session('success'))
-        <script>
-            alert("{{ session('success') }}");
-        </script>
-        @endif
+    
+    @if (session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
 
-    <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center"
-        style="background-image: url({{ asset('images/welcomebg.svg') }});">
+    @if (session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
+    
+    <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center opacity-0 transform translate-y-12 transition-all duration-800 ease-out"
+        style="background-image: url({{ asset('images/welcomebg.svg') }});"
+        id="welcome-section">
 
         <div class="relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out">
                 Disease Monitoring in Cebu City
             </h1>
-            <p class="text-lg md:text-xl text-g-dark mb-10 max-w-3xl">
+            <p class="text-lg md:text-xl text-g-dark mb-10 max-w-3xl opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-100">
                 Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
             </p>
 
             <div class="flex flex-col md:flex-row justify-center items-center gap-8 z-10">
-                <x-cards.stat-card :value="$totalCases" label="Total Cases" statCardType="welcome">
-                    <x-slot name="icon">
-                        @svg('gmdi-people-alt-o', 'h-12 w-12 text-g-dark')
-                    </x-slot>
-                </x-cards.stat-card>
-                <x-cards.stat-card :value="$totalActiveCases" label="Total Active Cases" statCardType="welcome">
-                    <x-slot name="icon">
-                        @svg('gmdi-search', 'h-12 w-12 text-g-dark')
-                    </x-slot>
-                </x-cards.stat-card>
-                <x-cards.stat-card :value="$totalRecoveredCases" label="Total Critical Cases" statCardType="welcome">
-                    <x-slot name="icon">
-                        @svg('gmdi-medical-information-o', 'h-12 w-12 text-g-dark')
-                    </x-slot>
-                </x-cards.stat-card>
+                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200 hover:-translate-y-2 transition-all duration-300">
+                    <x-cards.stat-card :value="$totalCases" label="Total Cases" statCardType="welcome">
+                        <x-slot name="icon">
+                            @svg('gmdi-people-alt-o', 'h-12 w-12 text-g-dark fill-current')
+                        </x-slot>
+                    </x-cards.stat-card>
+                </div>
+                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300 hover:-translate-y-2 transition-all duration-300">
+                    <x-cards.stat-card :value="$totalActiveCases" label="Total Active Cases" statCardType="welcome">
+                        <x-slot name="icon">
+                            @svg('gmdi-search', 'h-12 w-12 text-g-dark fill-current')
+                        </x-slot>
+                    </x-cards.stat-card>
+                </div>
+                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400 hover:-translate-y-2 transition-all duration-300">
+                    <x-cards.stat-card :value="$totalRecoveredCases" label="Total Critical Cases" statCardType="welcome">
+                        <x-slot name="icon">
+                            @svg('gmdi-medical-information-o', 'h-12 w-12 text-g-dark fill-current')
+                        </x-slot>
+                    </x-cards.stat-card>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="heatmap" class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16">
+    <section id="heatmap" class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16 opacity-0 transform translate-y-12 transition-all duration-800 ease-out">
         <div class="w-full max-w-7xl">
             {{-- Title Section --}}
             <div class="text-center mb-6">
-                <h2 class="text-3xl md:text-4xl font-bold text-g-dark mb-2">
+                <h2 class="text-3xl md:text-4xl font-bold text-g-dark mb-2 opacity-0 transform translate-y-8 transition-all duration-600 ease-out">
                     Disease Heatmap
                 </h2>
-                <p class="text-md md:text-lg text-g-dark">
+                <p class="text-md md:text-lg text-g-dark opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-100">
                     Interactive map showing disease distribution across Cebu City barangays.
                 </p>
             </div>
@@ -81,13 +91,13 @@
                     {{-- Filter Button --}}
                     <button
                         id="openFilterModal"
-                        class="flex items-center space-x-2 bg-white border border-g-dark text-g-dark px-4 py-2.5 rounded-lg shadow-sm hover:bg-g-dark hover:text-white transition shrink-0 whitespace-nowrap">
-                        @svg('gmdi-filter-alt-o', 'w-4 h-4')
+                        class="flex items-center space-x-2 bg-white border border-g-dark text-g-dark px-4 py-2.5 rounded-lg shadow-sm hover:bg-g-dark hover:text-white transition-all duration-300 shrink-0 whitespace-nowrap opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200 group">
+                        @svg('gmdi-filter-alt-o', 'w-5 h-5  text-g-dark fill-current group-hover:text-white transition-colors duration-300')
                         <span class="text-sm font-medium">Filters</span>
                     </button>
 
                     {{-- Search Bar --}}
-                    <div class="relative flex-1 min-w-0">
+                    <div class="relative flex-1 min-w-0 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300">
                         <input 
                             type="text" 
                             placeholder="Search diseases, locations, barangays..."
@@ -101,19 +111,18 @@
                 {{-- Right side: Request Data Button --}}
                 <button
                     onclick="openModal('requestDataModal')"
-                    class="border border-g-dark text-g-dark bg-white px-6 py-2.5 rounded-lg hover:bg-g-dark hover:text-white transition font-medium shrink-0 whitespace-nowrap">
+                    class="border border-g-dark text-g-dark bg-white px-6 py-2.5 rounded-lg hover:bg-g-dark hover:text-white transition-all duration-300 font-medium shrink-0 whitespace-nowrap opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400">
                     Request Data
                 </button>
             </div>
 
             {{-- Active Filters --}}
-            <div id="activeFiltersContainer" class="flex items-center space-x-3 mb-4">
+            <div id="activeFiltersContainer" class="flex items-center space-x-3 mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-500">
                 <span class="text-g-dark font-medium">Active Filters:</span>
-                <!-- Filters will appear here -->
             </div>
 
             {{-- Map Container --}}
-            <div class="w-full h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark">
+            <div class="w-full h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-600">
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62827.591820344635!2d123.84120593429692!3d10.315699291245336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995fb471b24d%3A0x8742b0c395c7a377!2sCebu%20City%2C%20Cebu!5e0!3m2!1sen!2sph!4v1630671470321!5m2!1sen!2sph"
                     width="100%"
@@ -127,8 +136,211 @@
         </div>
     </section>
 
+    <!-- Compact Team Footer Section -->
+    <footer class="bg-g-dark text-white py-8 px-6 opacity-0 transform translate-y-12 transition-all duration-800 ease-out" id="team-section">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold mb-2 opacity-0 transform translate-y-8 transition-all duration-600 ease-out">Our Team</h2>
+                <p class="text-g-light text-sm opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-100">
+                    The people behind DisMap
+                </p>
+            </div>
+            <div class="relative mb-6 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200">
+                <div class="flex justify-center items-center space-x-6">
+                    <div class="text-center team-member transition-all duration-500 transform" data-member="0">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
+                            EA
+                        </div>
+                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Elaisha Mae Arias</h3>
+                        <p class="text-g-light text-xs transition-all duration-500 team-role">UI/UX Front End</p>
+                    </div>
+                    <div class="text-center team-member transition-all duration-500 transform" data-member="1">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
+                            AC
+                        </div>
+                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Adrianne John Camus</h3>
+                        <p class="text-g-light text-xs transition-all duration-500 team-role">UI/UX Front End</p>
+                    </div>
+                    <div class="text-center team-member transition-all duration-500 transform" data-member="2">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
+                            AM
+                        </div>
+                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Angelina Mier</h3>
+                        <p class="text-g-light text-xs transition-all duration-500 team-role">Project Lead</p>
+                    </div>
+                    <div class="text-center team-member transition-all duration-500 transform" data-member="3">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
+                            RS
+                        </div>
+                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Rainelyn Sungahid</h3>
+                        <p class="text-g-light text-xs transition-all duration-500 team-role">Back End Developer</p>
+                    </div>
+                    <div class="text-center team-member transition-all duration-500 transform" data-member="4">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
+                            MS
+                        </div>
+                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Mitch Lauren Santillan</h3>
+                        <p class="text-g-light text-xs transition-all duration-500 team-role">Back End Developer</p>
+                    </div>
+                </div>
+
+                <button class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300" onclick="changeHighlight(-1)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                
+                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300" onclick="changeHighlight(1)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex justify-center gap-2 mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300">
+                <button class="w-2 h-2 rounded-full bg-white transition-all duration-300" onclick="goToHighlight(0)" id="highlight-indicator-0"></button>
+                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(1)" id="highlight-indicator-1"></button>
+                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(2)" id="highlight-indicator-2"></button>
+                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(3)" id="highlight-indicator-3"></button>
+                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(4)" id="highlight-indicator-4"></button>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="border-t border-g-light/20 pt-4 text-center opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+                    <div class="text-left">
+                    </div>
+                    <div class="text-g-light text-xs">
+                        <p>&copy; 2025 DisMap. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <x-modals.form-modals id="requestDataModal" /> 
     <x-modals.pop-up-modals :barangays="$barangays ?? []" :diseases="$diseases ?? []" />
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0', 'transform', 'translate-y-12');
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    
+                    const staggerItems = entry.target.querySelectorAll('[class*="opacity-0"][class*="translate-y-8"]');
+                    staggerItems.forEach(item => {
+                        item.classList.remove('opacity-0', 'transform', 'translate-y-8');
+                        item.classList.add('opacity-100', 'translate-y-0');
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section, footer');
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            initTeamHighlight();
+        });
+
+        function initTeamHighlight() {
+            let currentHighlight = 0;
+            const totalHighlights = 5;
+            let highlightInterval;
+
+            function showHighlight(index) {
+                currentHighlight = index;
+                
+                const teamMembers = document.querySelectorAll('.team-member');
+                teamMembers.forEach(member => {
+                    const avatar = member.querySelector('.team-avatar');
+                    const name = member.querySelector('.team-name');
+                    const role = member.querySelector('.team-role');
+                    
+                    member.classList.remove('scale-110', 'opacity-100');
+                    member.classList.add('opacity-60', 'scale-90');
+                    avatar.classList.remove('w-16', 'h-16', 'border-4', 'border-white', 'shadow-xl', 'bg-white', 'text-g-dark');
+                    name.classList.remove('text-white', 'font-bold', 'text-sm');
+                    role.classList.remove('text-white', 'text-xs');
+                });
+                
+                const currentMember = document.querySelector(`[data-member="${index}"]`);
+                if (currentMember) {
+                    const avatar = currentMember.querySelector('.team-avatar');
+                    const name = currentMember.querySelector('.team-name');
+                    const role = currentMember.querySelector('.team-role');
+                    
+                    currentMember.classList.remove('opacity-60', 'scale-90');
+                    currentMember.classList.add('scale-110', 'opacity-100');
+                    avatar.classList.add('w-16', 'h-16', 'border-4', 'border-white', 'shadow-xl', 'bg-white', 'text-g-dark');
+                    name.classList.add('text-white', 'font-bold', 'text-sm');
+                    role.classList.add('text-white', 'text-xs');
+                }
+                
+                for (let i = 0; i < totalHighlights; i++) {
+                    const indicator = document.getElementById(`highlight-indicator-${i}`);
+                    if (i === index) {
+                        indicator.classList.remove('bg-white/30', 'hover:bg-white/50');
+                        indicator.classList.add('bg-white');
+                    } else {
+                        indicator.classList.remove('bg-white');
+                        indicator.classList.add('bg-white/30', 'hover:bg-white/50');
+                    }
+                }
+            }
+
+            window.changeHighlight = function(direction) {
+                let newHighlight = currentHighlight + direction;
+                
+                if (newHighlight < 0) {
+                    newHighlight = totalHighlights - 1; 
+                } else if (newHighlight >= totalHighlights) {
+                    newHighlight = 0;
+                }
+                
+                showHighlight(newHighlight);
+                resetHighlightAutoSlide();
+            }
+
+            window.goToHighlight = function(index) {
+                showHighlight(index);
+                resetHighlightAutoSlide();
+            }
+
+            function startHighlightAutoSlide() {
+                highlightInterval = setInterval(() => {
+                    window.changeHighlight(1); 
+                }, 3000); 
+            }
+
+            function resetHighlightAutoSlide() {
+                clearInterval(highlightInterval);
+                startHighlightAutoSlide();
+            }
+
+            showHighlight(0); 
+            startHighlightAutoSlide();
+            
+            const teamSection = document.querySelector('.relative');
+            if (teamSection) {
+                teamSection.addEventListener('mouseenter', () => {
+                    clearInterval(highlightInterval);
+                });
+                
+                teamSection.addEventListener('mouseleave', () => {
+                    startHighlightAutoSlide();
+                });
+            }
+        }
+    </script>
     
 </body>
 </html>

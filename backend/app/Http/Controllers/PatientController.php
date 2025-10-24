@@ -89,7 +89,8 @@ class PatientController extends Controller
                 'date_reported' => now(),
             ]);
         }
-        return redirect()->back()->with('success', 'Patient record added successfully!');
+    return redirect()->route('admin.managepatients')
+        ->with('success', 'Patient record added successfully!');
     }
 
     /**

@@ -1,4 +1,11 @@
 <x-app-layout>
+    @if (session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
@@ -12,42 +19,57 @@
                         {{-- Header --}}
                         <x-page-header title="Profile Information" subtitle="Manage your account information and security" />
 
+
+
+                            
                         <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start relative">
+                        <!-- Profile Form -->
+                        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="w-full flex flex-col md:flex-row md:items-start">
+                            @csrf
+                            @method('PATCH')
+
                             {{-- Profile Image --}}
-                            <div class="flex-shrink-0 mr-6 mb-6 md:mb-0">
-                                <img src="/images/defaultprofile.jpg" alt="Profile"
-                                     class="w-[300px] h-[300px] rounded-full object-cover border-4 border-white shadow-lg">
+                            <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 relative">
+                                <img id="profileImage"
+                                    src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : '/images/defaultprofile.jpg' }}"
+                                    alt="Profile"
+                                    class="w-[300px] h-[300px] rounded-full object-cover border-4 border-white shadow-lg cursor-pointer hover:opacity-80 transition"
+                                    onclick="document.getElementById('profileInput').click()">
+
+                                <input type="file"
+                                    id="profileInput"
+                                    name="profile_image"
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="previewProfilePhoto(event)">
                             </div>
 
-                            {{-- Profile Form --}}
-                            <form method="POST" action="{{ route('profile.update') }}" class="w-[346px] flex flex-col">
-                                @csrf
-                                @method('PATCH')
-
+                            {{-- Profile Info Fields --}}
+                            <div class="w-[346px] flex flex-col">
                                 <div class="mb-4">
                                     <label for="name" class="block text-sm font-medium text-g-dark">Full Name</label>
                                     <input type="text" id="name" name="name"
-                                           value="{{ old('name', Auth::user()->name) }}"
-                                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
-                                           required>
+                                        value="{{ old('name', Auth::user()->name) }}"
+                                        class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
+                                        required>
                                     @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="mb-4">
                                     <label for="username" class="block text-sm font-medium text-g-dark">Username</label>
                                     <input type="text" id="username" name="username"
-                                           value="{{ old('username', Auth::user()->username) }}"
-                                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
-                                           required>
+                                        value="{{ old('username', Auth::user()->username) }}"
+                                        class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
+                                        required>
                                     @error('username') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="mb-4">
                                     <label for="email" class="block text-sm font-medium text-g-dark">Email</label>
                                     <input type="email" id="email" name="email"
-                                           value="{{ old('email', Auth::user()->email) }}"
-                                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
-                                           required>
+                                        value="{{ old('email', Auth::user()->email) }}"
+                                        class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#296E5B]"
+                                        required>
                                     @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
@@ -56,14 +78,14 @@
                                             class="bg-g-dark text-white px-6 py-2 rounded hover:bg-[#296E5B]/90 transition">
                                         Update Profile
                                     </button>
-
                                     <button type="button"
-                                            onclick="document.getElementById('passwordModal').classList.remove('hidden')"
+                                            onclick="openModal('passwordUpdateModal')"
                                             class="bg-g-dark text-white px-6 py-2 rounded hover:bg-[#296E5B]/90 transition">
                                         Change Password
                                     </button>
                                 </div>
-                            </form>
+                            </div>
+                        </form>
                         </div>
 
                         <!-- Assigned Hospitals - Horizontal Layout at Bottom -->
@@ -118,43 +140,6 @@
 
     <x-modals.form-modals id="addHospitalModal" :hospitals="$hospitals" />
 
-    {{-- Change Password Modal --}}
-    <div id="passwordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-            <h2 class="text-xl font-bold mb-4">Change Password</h2>
-            <form method="POST" action="{{ route('password.update') }}">
-                @csrf
-                @method('PATCH')
-
-                <div class="mb-4">
-                    <label for="current_password" class="block text-sm font-medium text-g-dark">Current Password</label>
-                    <input type="password" id="current_password" name="current_password" required
-                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm">
-                </div>
-
-                <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium text-g-dark">New Password</label>
-                    <input type="password" id="password" name="password" required
-                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm">
-                </div>
-
-                <div class="mb-4">
-                    <label for="password_confirmation" class="block text-sm font-medium text-g-dark">Confirm Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" required
-                           class="mt-1 block w-full border border-g-dark rounded px-3 py-2 text-sm">
-                </div>
-
-                <div class="flex justify-end space-x-3">
-                    <button type="button"
-                            onclick="document.getElementById('passwordModal').classList.add('hidden')"
-                            class="px-4 py-2 border rounded">Cancel</button>
-                    <button type="submit"
-                            class="bg-g-dark text-white px-4 py-2 rounded hover:bg-[#296E5B]/90">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
         // Hospital Modal Functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -202,5 +187,14 @@
                 }
             });
         });
+
+        function previewProfilePhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function(){
+                const output = document.getElementById('profileImage');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
     </script>
 </x-app-layout>
