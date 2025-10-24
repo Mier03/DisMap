@@ -13,16 +13,12 @@ return [
     */
 
     'paths' => [
-        // CORRECTED PATH: Use the application's base path and go up to the main root (/app)
-        // then look for the sibling 'web' folder structure.
-        realpath(__DIR__.'/../../web/resources/views'), 
-        
-        // OR, the simpler form that relies on the structure:
-        // base_path('../web/resources/views'), 
-        // We will stick to your relative path but ensure the config cache is cleared.
+        // 1. Point to the 'resources/views' inside the 'web' folder
+        //    This uses base_path() which resolves from the 'backend' folder.
         base_path('../web/resources/views'),
 
-        // Keep the original 'resources/views' inside 'backend' as a fallback
+        // 2. Keep the original 'resources/views' inside 'backend' as a fallback
+        //    This is useful for any views used by the backend itself (e.g., mail).
         resource_path('views'),
     ],
 
