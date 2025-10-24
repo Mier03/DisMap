@@ -25,14 +25,14 @@ class DatabaseSeeder extends Seeder
         }
 
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'superadmin@gmail.com'],
             [
-                'name' => 'Test User',
-                'username' => 'testuser',
+                'name' => 'Superadmin User',
+                'username' => 'superadmin',
                 'password' => Hash::make('password'),
+                'user_type' => 'Admin',
+                'is_approved' => true,
                 'birthdate' => '1990-01-01', 
-                'barangay_id' => $barangay->id, 
-                'email_verified_at' => now(), 
                 'profile_image' => 'default_profile.jpg',
             ]
         );
