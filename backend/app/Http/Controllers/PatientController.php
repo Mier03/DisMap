@@ -68,7 +68,12 @@ class PatientController extends Controller
             'patient_id' => 'required|exists:users,id',
             'hospital_id' => 'required|exists:hospitals,id',
             'disease_id' => 'required|array',
-            'disease_id.*' => 'exists:diseases,id',
+            // 'disease_id.*' => 'exists:diseases,id',
+            'disease_id.*' => 'required|string', 
+            'custom_disease_name' => 'nullable|array', 
+            'custom_disease_name.*' => 'nullable|string|max:255',
+            'custom_disease_spec' => 'nullable|array', 
+            'custom_disease_spec.*' => 'nullable|string|max:255',
             'reported_remarks' => 'required|array',
             'reported_remarks.*' => 'string|max:255',
         ]);
@@ -79,11 +84,34 @@ class PatientController extends Controller
             'hospital_id' => $request->input('hospital_id'),
         ]);
 
+        $customNames = $request->input('custom_disease_name', []);
+        $customSpecs = $request->input('custom_disease_spec', []);
+        $customIndex = 0;
+
         foreach ($request->input('disease_id') as $index => $diseaseId) {
+            $finalDiseaseId = $diseaseId;
+            if ($diseaseId === 'other_specify') {
+                $generalName = $customNames[$customIndex] ?? null;
+                $specification = $customSpecs[$customIndex] ?? null;
+
+                    if ($generalName && $specification) {
+                        $newDisease = Disease::firstOrCreate(
+                            ['specification' => $specification],
+                            ['name' => $generalName, 'specification' => $specification]
+                    );
+                    $finalDiseaseId = $newDisease->id;
+                    }
+            $customIndex++; 
+            }
+
+            if (!is_numeric($finalDiseaseId)) {
+                continue;
+            }
+
             PatientRecord::create([
                 'patient_id' => $request->input('patient_id'),
                 'reported_dh_id' => $doctorHospital->id,
-                'disease_id' => $diseaseId,
+                'disease_id' => $finalDiseaseId,
                 'status' => 'Active',
                 'reported_remarks' => $request->input('reported_remarks')[$index],
                 'date_reported' => now(),
@@ -112,7 +140,11 @@ class PatientController extends Controller
         'contact_number' => 'required|string|max:20',
         'barangay_id' => 'required|exists:barangays,id',
         'disease_id' => 'required|array',
-        'disease_id.*' => 'required|exists:diseases,id',
+        'disease_id.*' => 'required|string',
+        'custom_disease_name' => 'nullable|array', 
+        'custom_disease_name.*' => 'nullable|string|max:255',
+        'custom_disease_spec' => 'nullable|array', 
+        'custom_disease_spec.*' => 'nullable|string|max:255',
         'reported_remarks' => 'required|array',
         'reported_remarks.*' => 'required|string',
         'hospital_id' => 'required|exists:hospitals,id',
@@ -152,12 +184,37 @@ class PatientController extends Controller
             'hospital_id' => $request->input('hospital_id'),
         ]);
 
+        $customNames = $request->input('custom_disease_name', []);
+        $customSpecs = $request->input('custom_disease_spec', []);
+        $customIndex = 0;
+
         // Create a patient record for each selected disease with corresponding remarks
         foreach ($request->input('disease_id') as $index => $diseaseId) {
+            $finalDiseaseId = $diseaseId;
+
+            if ($diseaseId === 'other_specify') {
+                $generalName = $customNames[$customIndex] ?? null;
+                $specification = $customSpecs[$customIndex] ?? null;
+
+                if ($generalName && $specification) {
+                    $newDisease = Disease::firstOrCreate(
+                        ['specification' => $specification],
+                        ['name' => $generalName, 'specification' => $specification]
+               );
+                 $finalDiseaseId = $newDisease->id;
+                }
+                
+                $customIndex++;
+            }
+
+            if (!is_numeric($finalDiseaseId)) {
+                continue;
+            }
+
             PatientRecord::create([
                 'patient_id' => $user->id,
                 'reported_dh_id' => $doctorHospital->id,
-                'disease_id' => $diseaseId,
+                'disease_id' => $finalDiseaseId,
                 'status' => 'Active',
                 'reported_remarks' => $request->input('reported_remarks')[$index],
                 'date_reported' => now(),

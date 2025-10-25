@@ -11,18 +11,18 @@
     Add Patient Modal
 ========================= --}}
 @if($id=='addPatientModal')
-    <div id="addPatientModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[90vh]">
-            <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">Add Patient</h2>
-            <p class="text-g-dark text-base mt-2 ml-8">Record a new patient case</p>
-
-            <div class="px-8 py-4">
+    <x-modals.modal-popup 
+        modal-id="addPatientModal" 
+        title="Add Patient" 
+        description="Record a new patient case"
+        icon="person_add"
+    >
                 <form id="addPatientForm" action="{{ route('admin.patients.store') }}" method="POST">
                     @csrf
 
                     {{-- Phase 1: Personal Information --}}
                     <div id="phase1">
-                        <h3 class="text-2xl font-bold text-g-dark mb-4">Personal Information</h3>
+                        <h3 class="text-2xl font-bold text-g-dark my-4">Personal Information</h3>
 
                         {{-- First Name, Middle Name, Last Name --}}
                         <div class="grid grid-cols-3 gap-4 mb-4">
@@ -166,14 +166,36 @@
                             <div class="disease-entry mb-4">
                                 <div class="mb-2">
                                     <x-input-label for="disease_id_0" :value="__('Disease')" />
-                                    <x-dropdown-select id="disease_id_0" name="disease_id[]" required>
+                                    <x-dropdown-select id="disease_id_0" name="disease_id[]" required onchange="toggleCustomDiseaseInput(this, 0)">
                                         <option value="" disabled selected>Select disease...</option>
                                         @foreach($diseases as $disease)
                                             <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
                                         @endforeach
+                                        <option value="other_specify">Other (Specify)</option>
                                     </x-dropdown-select>
                                     <x-input-error :messages="$errors->get('disease_id.0')" class="mt-2" />
                                 </div>
+
+								<div id="custom_disease_container_0" class="mb-2 hidden">
+                                    <h4 class="text-md font-semibold text-g-dark mb-2">Specify New Disease</h4>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <x-input-label for="custom_disease_name_0" :value="__('General Name (e.g., Dementia)')" />
+                                            <x-text-input id="custom_disease_name_0" class="block mt-1 w-full" 
+                                                type="text" name="custom_disease_name[]" 
+                                                placeholder="Enter general disease name..." />
+                                            <x-input-error :messages="$errors->get('custom_disease_name.0')" class="mt-2" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="custom_disease_spec_0" :value="__('Specification (e.g., Alzheimer)')" />
+                                            <x-text-input id="custom_disease_spec_0" class="block mt-1 w-full" 
+                                                type="text" name="custom_disease_spec[]" 
+                                                placeholder="Enter specific disease name..." />
+                                            <x-input-error :messages="$errors->get('custom_disease_spec.0')" class="mt-2" />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="mb-2">
                                     <x-input-label for="reported_remarks_0" :value="__('Remarks')" />
                                     <textarea id="reported_remarks_0" name="reported_remarks[]" 
@@ -184,7 +206,7 @@
                             </div>
                         </div>
 
-                        <a href="#" onclick="addAnotherDisease()" class="text-g-dark hover:underline mb-4 block">Add another disease</a>
+                        <a href="#" onclick="addAnotherDisease()" class="text-g-dark hover:underline mb-4 block">+ Add another disease</a>
 
                         <div class="flex flex-col sm:flex-row gap-40 mt-10">
                             <x-secondary-button type="button" onclick="prevPhase(2)">
@@ -220,23 +242,26 @@
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                         ✕
                 </button>
-            </div>
-        </div>
-    </div>
+    </x-modal-popup>
 @endif
 @if($id=='addRecordModal' && $patient)
-    <div id="addRecordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    {{-- <div id="addRecordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[90vh]">
-            <h2 class="text-3xl font-bold text-g-dark mt-8 ml-8">Add New Record</h2>
-            <p class="text-g-dark text-base mt-2 ml-8">Record a new patient case</p>
+            <h2 class="text-3xl font-bold text-g-dark">Add New Record</h2>
+            <p class="text-g-dark text-base">Record a new patient case</p> --}}
 
-            <div class="px-8 py-4">
+    <x-modals.modal-popup 
+        modal-id="addRecordModal" 
+        title="Add New Record" 
+        description="Record a new patient case"
+        icon="assignment_add"
+    >
                 <form method="POST" action="{{ route('admin.patients.storeRecord') }}">
                     @csrf
                     <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
                     {{-- Personal Information (Read-only) --}}
-                    <h3 class="text-2xl font-bold text-g-dark mb-4">Patient Information</h3>
+                    <h3 class="text-2xl font-bold text-g-dark my-4">Patient Information</h3>
 
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div>
@@ -296,8 +321,8 @@
                     <h3 class="text-2xl font-bold text-g-dark mb-4 mt-6">Medical Information</h3>
 
                     <div class="mb-4">
-                        <x-input-label for="hospital_id" :value="__('Hospital')" />
-                        <x-dropdown-select id="hospital_id" name="hospital_id" required>
+                        <x-input-label for="hospital_id_record" :value="__('Hospital')" />
+                        <x-dropdown-select id="hospital_id_record" name="hospital_id" required>
                             <option value="" disabled selected>Select hospital...</option>
                             @if(Auth::check())
                                 @foreach(Auth::user()->approvedHospitals as $hospital)
@@ -308,21 +333,43 @@
                         <x-input-error :messages="$errors->get('hospital_id')" class="mt-2" />
                     </div>
 
-                    <div id="diseases-container">
+                    <div id="diseases-container-record">
                         <div class="disease-entry mb-4">
                             <div class="mb-2">
-                                <x-input-label for="disease_id_0" :value="__('Disease')" />
-                                <x-dropdown-select id="disease_id_0" name="disease_id[]" required>
+                                <x-input-label for="disease_id_0_record" :value="__('Disease')" />
+                                <x-dropdown-select id="disease_id_0_record" name="disease_id[]" required onchange="toggleCustomDiseaseInput(this, 0, 'record')">
                                     <option value="" disabled selected>Select disease...</option>
                                     @foreach($diseases as $disease)
                                         <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
                                     @endforeach
+                                    <option value="other_specify">Other (Specify)</option>
                                 </x-dropdown-select>
                                 <x-input-error :messages="$errors->get('disease_id.0')" class="mt-2" />
                             </div>
+
+                            <div id="custom_disease_container_0_record" class="mb-2 hidden">
+                                <h4 class="text-md font-semibold text-g-dark mb-2">Specify New Disease</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <x-input-label for="custom_disease_name_0_record" :value="__('General Name (e.g., Dementia)')" />
+                                        <x-text-input id="custom_disease_name_0_record" class="block mt-1 w-full" 
+                                            type="text" name="custom_disease_name[]" 
+                                            placeholder="Enter general disease name..." />
+                                        <x-input-error :messages="$errors->get('custom_disease_name.0')" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <x-input-label for="custom_disease_spec_0_record" :value="__('Specification (e.g., Alzheimer)')" />
+                                        <x-text-input id="custom_disease_spec_0_record" class="block mt-1 w-full" 
+                                            type="text" name="custom_disease_spec[]" 
+                                            placeholder="Enter specific disease name..." />
+                                        <x-input-error :messages="$errors->get('custom_disease_spec.0')" class="mt-2" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-2">
-                                <x-input-label for="reported_remarks_0" :value="__('Remarks')" />
-                                <textarea id="reported_remarks_0" name="reported_remarks[]"
+                                <x-input-label for="reported_remarks_0_record" :value="__('Remarks')" />
+                                <textarea id="reported_remarks_0_record" name="reported_remarks[]"
                                     class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"
                                     placeholder="Enter remarks..." required></textarea>
                                 <x-input-error :messages="$errors->get('reported_remarks.0')" class="mt-2" />
@@ -330,70 +377,122 @@
                         </div>
                     </div>
 
-                    <a href="#" onclick="addAnotherDisease()" class="text-g-dark hover:underline mb-4 block">+ Add another disease</a>
+                    <a href="#" onclick="addAnotherDisease('record')" class="text-g-dark hover:underline mb-4 block">+ Add another disease</a>
 
                     {{-- Actions --}}
                     <div class="flex justify-end gap-4 mt-6">
                         <x-secondary-button type="button" onclick="closeModal('{{ $id }}')">Cancel</x-secondary-button>
                         <x-primary-button type="submit">+ Add Record</x-primary-button>
                     </div>
-                </form>
+
                 <button type="button" onclick="closeModal('{{ $id }}')"
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
-            </div>
+
+    </x-modals.modal-popup>
+            {{-- </div>
         </div>
-    </div>
+    </div> --}}
 @endif
 </div>
 <script>
     // JavaScript for addPatientModal
 
-    let diseaseCounter = 1; // Start from 1 since initial is 0
+    let diseaseCounter = 1; 
 
-    function addAnotherDisease() {
-    const container = document.getElementById('diseases-container');
-    const entry = document.createElement('div');
-    entry.className = 'disease-entry mb-4';
+    function addAnotherDisease(suffix = '') {
+        const containerId = suffix === 'record' ? 'diseases-container-record' : 'diseases-container'; 
+        const container = document.getElementById(containerId);
+        
+        const entry = document.createElement('div');
+        entry.className = 'disease-entry mb-4';
 
-    const initialSelect = document.getElementById('disease_id_0');
-    const allOptions = Array.from(initialSelect.options);
+        // *** START MODIFICATION ***
+        // Find the original select to copy its inner options
+        const initialSelect = container.querySelector('select[name="disease_id[]"]');
+        const allOptionsHtml = initialSelect ? initialSelect.innerHTML : '';
+        // *** END MODIFICATION ***
 
-    // Get all already selected diseases
-    const selectedDiseases = Array.from(
-        document.querySelectorAll('select[name="disease_id[]"]')
-    ).map(select => select.value).filter(v => v);
+        const currentId = diseaseCounter; 
+        const selectId = `disease_id_${currentId}${suffix ? '_' + suffix : ''}`;
+        const remarksId = `reported_remarks_${currentId}${suffix ? '_' + suffix : ''}`;
+        const customContainerId = `custom_disease_container_${currentId}${suffix ? '_' + suffix : ''}`;
 
-    // Build filtered options (exclude already chosen diseases)
-    const filteredOptions = allOptions
-        .map(opt => {
-            if (opt.value === "" || !selectedDiseases.includes(opt.value)) {
-                return `<option value="${opt.value}">${opt.text}</option>`;
-            }
-            return "";
-        })
-        .join("");
-
-    const diseaseHtml = `
+        const diseaseHtml = `
         <div class="mb-2">
-            <label for="disease_id_${diseaseCounter}" class="block text-[14px] font-semibold text-g-dark">Disease</label>
-            <select id="disease_id_${diseaseCounter}" name="disease_id[]" required
+            <hr class="my-4 border-t border-gray-200">
+            <div class="flex justify-between items-center"> 
+                <label for="${selectId}" class="block text-[14px] font-semibold text-g-dark">Disease</label>
+                <a href="#" onclick="removeDiseaseEntry(this)" class="text-red-500 font-semibold hover:text-red-700 text-sm">✕</a> 
+            </div> 
+            <select id="${selectId}" name="disease_id[]" required
+                onchange="toggleCustomDiseaseInput(this, ${currentId}, '${suffix}')"
                 class="w-full h-[44px] border border-g-dark rounded px-3 mt-1 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
-                ${filteredOptions}
-            </select>
+                ${allOptionsHtml} </select>
         </div>
+        
+        <div id="${customContainerId}" class="mb-2 hidden"> 
+            <h4 class="text-md font-semibold text-g-dark mb-2">Specify New Disease</h4>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="custom_disease_name_${currentId}${suffix ? '_' + suffix : ''}" class="block text-[14px] font-semibold text-g-dark">General Name (e.g., Dementia)</label>
+                    <input id="custom_disease_name_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
+                        type="text" name="custom_disease_name[]" 
+                        placeholder="Enter general disease name..." />
+                </div>
+                <div>
+                    <label for="custom_disease_spec_${currentId}${suffix ? '_' + suffix : ''}" class="block text-[14px] font-semibold text-g-dark">Specification (e.g., Alzheimer)</label>
+                    <input id="custom_disease_spec_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
+                        type="text" name="custom_disease_spec[]" 
+                        placeholder="Enter specific disease name..." />
+                </div>
+            </div>
+        </div> 
+
         <div class="mb-2">
-            <label for="reported_remarks_${diseaseCounter}" class="block text-[14px] font-semibold text-g-dark">Remarks</label>
-            <textarea id="reported_remarks_${diseaseCounter}" name="reported_remarks[]" 
+            <label for="${remarksId}" class="block text-[14px] font-semibold text-g-dark">Remarks</label>
+            <textarea id="${remarksId}" name="reported_remarks[]" 
                 class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
                 placeholder="Enter remarks..." required></textarea>
         </div>
-    `;
+        `;
 
-    entry.innerHTML = diseaseHtml;
-    container.appendChild(entry);
-    diseaseCounter++;
-}
+        entry.innerHTML = diseaseHtml;
+        container.appendChild(entry);
+        diseaseCounter++;
+    }
 
+    function toggleCustomDiseaseInput(selectElement, index, suffix = '') {
+        const containerId = `custom_disease_container_${index}${suffix ? '_' + suffix : ''}`;
+        const inputNameId = `custom_disease_name_${index}${suffix ? '_' + suffix : ''}`;
+        const inputSpecId = `custom_disease_spec_${index}${suffix ? '_' + suffix : ''}`;
+        
+        const container = document.getElementById(containerId);
+        const inputName = document.getElementById(inputNameId);
+        const inputSpec = document.getElementById(inputSpecId);
+        
+        if (selectElement.value === 'other_specify') {
+            container.classList.remove('hidden');
+            if (inputName) inputName.setAttribute('required', 'required'); 
+            if (inputSpec) inputSpec.setAttribute('required', 'required'); 
+        } else {
+            container.classList.add('hidden');
+            if (inputName) {
+                inputName.removeAttribute('required');
+                inputName.value = ''; 
+            }
+            if (inputSpec) {
+                inputSpec.removeAttribute('required');
+                inputSpec.value = ''; 
+            }
+        }
+    }
+
+    function removeDiseaseEntry(link) {
+        const entry = link.closest('.disease-entry');
+        if (entry) {
+            entry.remove();
+        }
+    }
 
     function updateContactNumber() {
         const countryCode = document.getElementById('country_code').value;
@@ -416,18 +515,41 @@
             }
         });
 
-        // Additional validation for contact number
-        if (phase === 1) {
-            const contactNumberInput = document.getElementById('contact_number_input');
-            const contactNumberPattern = /^[0-9]{9,10}$/;
-            if (!contactNumberPattern.test(contactNumberInput.value)) {
-                isValid = false;
-                contactNumberInput.classList.add('border-red-500');
-                alert('Contact number must be 9-10 digits.');
-            } else {
-                contactNumberInput.classList.remove('border-red-500');
+        // validation for contact number
+        // if (phase === 1) {
+        //     const contactNumberInput = document.getElementById('contact_number_input');
+        //     const contactNumberPattern = /^[0-9]{9,10}$/;
+        //     if (!contactNumberPattern.test(contactNumberInput.value)) {
+        //         isValid = false;
+        //         contactNumberInput.classList.add('border-red-500');
+        //         alert('Contact number must be 9-10 digits.');
+        //     } else {
+        //         contactNumberInput.classList.remove('border-red-500');
+        //     }
+        // }
+
+        const diseaseEntries = document.querySelectorAll('.disease-entry');
+        diseaseEntries.forEach((entry, index) => {
+            const selectElement = entry.querySelector('select[name="disease_id[]"]');
+            const customInputName = entry.querySelector('input[name="custom_disease_name[]"]'); 
+            const customInputSpec = entry.querySelector('input[name="custom_disease_spec[]"]'); 
+
+            if (selectElement.value === 'other_specify') {
+                if (!customInputName || !customInputName.value.trim()) {
+                    isValid = false;
+                    customInputName.classList.add('border-red-500');
+                } else if (customInputName) {
+                    customInputName.classList.remove('border-red-500');
+                }
+
+                if (!customInputSpec || !customInputSpec.value.trim()) {
+                    isValid = false;
+                    customInputSpec.classList.add('border-red-500');
+                } else if (customInputSpec) {
+                    customInputSpec.classList.remove('border-red-500');
+                }
             }
-        }
+        });
 
         return isValid;
     }
@@ -436,10 +558,10 @@
         if (current === 1) {
             updateContactNumber();
         }
-        if (!validatePhase(current)) {
-            alert('Please fill out all required fields correctly.');
-            return;
-        }
+        // if (!validatePhase(current)) {
+        //     alert('Please fill out all required fields correctly.');
+        //     return;
+        // }
 
         document.getElementById(`phase${current}`).classList.add('hidden');
         const next = current + 1;
@@ -518,15 +640,23 @@
         medicalInfoItems.push({ label: 'Hospital:', value: hospitalText });
 
         // Diseases and Remarks
-        const diseaseEntries = document.querySelectorAll('.disease-entry');
-        diseaseEntries.forEach((entry, index) => {
-            const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
-            const remarks = entry.querySelector(`textarea[name="reported_remarks[]"]`);
-            const diseaseText = diseaseSelect?.options[diseaseSelect.selectedIndex]?.text || 'Not selected';
-            
-            medicalInfoItems.push({ label: `Disease ${index + 1}:`, value: diseaseText }); 
-            medicalInfoItems.push({ label: 'Remarks:', value: remarks.value || 'N/A' });
-        });
+    const diseaseEntries = document.querySelectorAll('#diseases-container .disease-entry');
+    diseaseEntries.forEach((entry, index) => {
+        const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
+        const remarks = entry.querySelector(`textarea[name="reported_remarks[]"]`);
+        const customInputName = entry.querySelector(`input[name="custom_disease_name[]"]`);
+        const customInputSpec = entry.querySelector(`input[name="custom_disease_spec[]"]`);
+
+        let diseaseText = 'Not selected';
+        if (diseaseSelect.value === 'other_specify' && customInputName && customInputSpec) { 
+            diseaseText = `General: <strong>${customInputName.value || 'N/A'}</strong>; Specific: <strong>${customInputSpec.value || 'N/A'}</strong>`; 
+        } else {
+            diseaseText = diseaseSelect?.options[diseaseSelect.selectedIndex]?.text || 'Not selected';
+        }
+        
+        medicalInfoItems.push({ label: `Disease ${index + 1}:`, value: diseaseText }); 
+        medicalInfoItems.push({ label: 'Remarks:', value: remarks.value || 'N/A' });
+    });
 
         const personalCardHtml = createInfoCardHtml('Personal Information', 'person', personalInfoItems);
         const medicalCardHtml = createInfoCardHtml('Medical Information', 'healing', medicalInfoItems); // Using 'healing' icon
@@ -542,30 +672,26 @@
     function resetAddPatientForm() {
         const form = document.getElementById('addPatientForm');
         form.reset();
+        
         document.getElementById('phase1').classList.remove('hidden');
         document.getElementById('phase2').classList.add('hidden');
         document.getElementById('phase3').classList.add('hidden');
-        const container = document.getElementById('diseases-container');
-        container.innerHTML = `
-            <div class="disease-entry mb-4">
-                <div class="mb-2">
-                    <label for="disease_id_0" class="block text-sm font-medium text-gray-900">Disease</label>
-                    <select id="disease_id_0" name="disease_id[]" required
-                        class="block w-full mt-1 rounded border border-g-dark bg-[#F2F2F2] px-3 py-2 text-sm text-g-dark focus:outline-none focus:ring-2 focus:ring-g-dark/50">
-                        <option value="" disabled selected>Select disease...</option>
-                        @foreach($diseases as $disease)
-                            <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label for="reported_remarks_0" class="block text-sm font-medium text-gray-900">Remarks</label>
-                    <textarea id="reported_remarks_0" name="reported_remarks[]" 
-                        class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
-                        placeholder="Enter remarks..." required></textarea>
-                </div>
-            </div>
-        `;
+        
+        const container = document.getElementById('diseases-container');        
+        
+        const initialEntry = container.querySelector('.disease-entry');
+        const dynamicEntries = container.querySelectorAll('.disease-entry:not(:first-child)');
+        
+
+        dynamicEntries.forEach(entry => entry.remove());
+
+
+        initialEntry.querySelector('select[name="disease_id[]"]').value = ""; 
+        initialEntry.querySelector('textarea[name="reported_remarks[]"]').value = ""; 
+        document.getElementById('custom_disease_container_0').classList.add('hidden'); 
+        document.getElementById('custom_disease_name_0').value = "";
+        document.getElementById('custom_disease_spec_0').value = "";
+        
         diseaseCounter = 1;
         document.getElementById('contact_number').value = '';
     }

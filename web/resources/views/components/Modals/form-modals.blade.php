@@ -60,35 +60,19 @@
         </div>
     </div>
 
-    {{-- =========================
-        Edit Patient Modal
-    ========================== --}}
-    <div id="editPatientModal" class="hidden fixed inset-0 flex bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
-            <h2 class="text-2xl font-bold text-g-dark">Edit Patient</h2>
-            <p class="text-g-dark text-base">Edit patient details here...</p>
-            <x-secondary-button type="button" onclick="closeModal('editPatientModal')">
-                Close
-            </x-secondary-button>
-        </div>
-    </div>
 
   {{-- =========================
     Export Modal
 ========================= --}}
-<div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
+    <x-modals.modal-popup 
+        modal-id="exportModal" 
+        title="Export" 
+        description="Filter and export data"
+        icon="filter_alt"
+        width="w-[500px]"
+    >  
         <form action="{{ route('admin.export') }}" method="GET" target="_blank">
             @csrf
-            <div class="flex items-center mb-2">
-                <svg class="w-[32px] h-[32px] text-g-dark fill-current"
-                    xmlns="resources/svg/filter.svg" viewBox="0 0 24 24">
-                    <path d="M3 4h18l-7 9v7l-4-2v-5z" />
-                </svg>
-                <h2 class="ml-3 text-[28px] font-bold text-g-dark">Export</h2>
-            </div>
-            <p class="text-g-dark text-[16px] mb-6 ml-1">Filter and export data</p>
-
             {{-- Date Range --}}
             <div class="px-[10px]">
                 <div class="flex justify-between items-center mb-2">
@@ -162,8 +146,7 @@
                 </x-secondary-button>
             </div>
         </form>
-    </div>
-</div>
+    </x-modals.modal-popup>
 
     {{-- =========================
         Request Data Modal
@@ -429,13 +412,14 @@
     {{-- =========================
         Patient Details Modal
     ========================= --}}
-    <div id="patientDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50"
-        data-update-route="{{ route('admin.patient_records.update_recovery', ['id' => '__RECORD_ID__']) }}">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[80vh]">
-            <div class="flex items-center mb-2">
-                <h2 class="text-[28px] font-bold text-g-dark">Patient Details</h2>
-            </div>
-            <p class="text-g-dark text-[16px] mb-6 ml-1">View or update patient record details</p>
+
+    <x-modals.modal-popup 
+        modal-id="patientDetailsModal" 
+        title="Patient Details" 
+        description="View or update patient record details"
+        icon="badge"
+        updateRoute="{{ route('admin.patient_records.update_recovery', ['id' => '__RECORD_ID__']) }}"
+    >
 
             <div class="text-g-dark mb-6" id="patientDetailsContent">
                 
@@ -454,9 +438,7 @@
                 class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                 ✕
             </button>
-        </div>
-    </div>
-</div>
+    </x-modals.modal-popup>
 
 {{-- =========================
     Change Password Modal
