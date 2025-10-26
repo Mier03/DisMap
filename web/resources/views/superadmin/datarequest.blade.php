@@ -27,7 +27,7 @@
                         @endif
 
                         <x-page-header title="Data Requests" subtitle="User data requests" 
-                        buttonText="Data Requests" buttonClick="openModal('reasonRequestModal')"/>
+                       />
 
                         {{-- Search Form --}}
                         <form method="GET" action="{{ route('superadmin.datarequest') }}">

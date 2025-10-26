@@ -5,12 +5,16 @@
 
     {{-- =========================
         Add Hospital Modal
-    ========================== --}}
-    <div id="addHospitalModal" class="hidden fixed inset-0 flex bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
-            <x-input-label class="text-xl font-bold mb-4" :value="__('Add Hospital')" />
+        ========================== --}}
+        <x-modals.modal-popup 
+        modal-id="addHospitalModal" 
+        title="Add Hospital" 
+        description="Apply to be affiliated with a hospital"
+       
+         width="w-[500px]"
+    >
 
-            <form id="hospitalForm" method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
+            <form  method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
                 @csrf
                 @if(Auth::check())
                 <!-- Select Hospital -->
@@ -57,9 +61,7 @@
                     </x-secondary-button>
                 </div>
             </form>
-        </div>
-    </div>
-
+    </x-modals.modal-popup> 
 
   {{-- =========================
     Export Modal
@@ -89,15 +91,15 @@
                 </div>
 
                 <div class="flex gap-3">
-                    <button type="button" onclick="setDateFilter('today')"
+                    <button type="button" onclick="setDateFilter('today')" data-filter-type="today"
                         class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         Today
                     </button>
-                    <button type="button" onclick="setDateFilter('week')"
+                    <button type="button" onclick="setDateFilter('week')" data-filter-type="week"
                         class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         This Week
                     </button>
-                    <button type="button" onclick="setDateFilter('month')"
+                    <button type="button" onclick="setDateFilter('month')" data-filter-type="month"
                         class="w-full h-[36px] border border-g-dark rounded text-sm font-semibold text-g-dark hover:bg-g-dark hover:text-white transition">
                         This Month
                     </button>
@@ -151,100 +153,83 @@
     {{-- =========================
         Request Data Modal
     ========================== --}}
-<div id="requestDataModal" class="hidden fixed inset-0 flex z-50 items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white rounded-lg shadow-lg w-[600px] max-h-[90vh] p-8 text-left relative flex flex-col">
-        <!-- Header Section -->
-        <div class="flex items-center mb-2">
-            <svg xmlns="resources/svg/filter.svg" class="w-[32px] h-[32px] text-g-dark fill-current"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-            </svg>
-            <h2 class="ml-3 text-[28px] font-bold text-g-dark">Data Request Form</h2>
-        </div>
-        <p class="text-g-dark text-[16px] mb-6 ml-1">Reason for data request</p>
-
-        <!-- Form Section -->
-        <div class="flex-1 overflow-y-auto pr-2">
-            <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
-                @csrf
-                <div>
-                    <x-input-label for="full_name" :value="__('Full Name')" />
-                    <x-text-input id="full_name" class="block mt-1 w-full"
-                        type="text" name="full_name" :value="old('full_name')"
-                        placeholder="Enter your full name..." />
-                    <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input id="email" class="block mt-1 w-full"
-                        type="email" name="email" :value="old('email')"
-                        placeholder="Enter your email address..." />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-                
-                {{-- Disease --}}
-                <div class="mt-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <x-input-label for="requested_disease" :value="__('Disease Type')" />
-                    </div>
-                    <x-dropdown-select id="requested_disease" name="requested_disease" class="w-full h-[40px] text-sm">
-                        <option value="" selected>Select disease...</option>
-                        @foreach($diseases as $disease)
-                            <option value="{{ $disease->specification }}">{{ $disease->specification }}</option>
-                        @endforeach
-                    </x-dropdown-select>
-                </div>
-                
-                {{-- Date Range --}}
-                <div class="mt-6">
-                    <div class="flex justify-between mb-2">
-                        <div class="w-1/2 pr-2">
-                            <x-input-label for="fromDate" :value="__('From')" />
-                        </div>
-                        <div class="w-1/2 pl-2">
-                            <x-input-label for="toDate" :value="__('To')" />
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="w-1/2">
-                            <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
-                                type="date" name="fromDate" />
-                        </div>
-                        <div class="w-1/2">
-                            <x-text-input id="toDate" class="w-full h-[40px] text-sm"
-                                type="date" name="toDate" />
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <x-input-label for="reason" :value="__('Reason for Request')" />
-                    <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
-                        class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
-                    <x-input-error :messages="$errors->get('reason')" class="mt-2" />
-                </div>
-                
-                <div class="flex justify-center gap-4 mt-8 pt-4 border-t border-gray-200">
-                    <x-primary-button type="submit">
-                        {{ __('Submit') }}
-                    </x-primary-button>
-                    <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
-                        Cancel
-                    </x-secondary-button>
-                </div>
-            </form>
-
+<x-modals.modal-popup 
+    modal-id="requestDataModal" 
+    title="Data Request Form" 
+    description="Filter and export data"
+    icon="filter_alt"
+    width="w-[600px]"
+> 
+    <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
+        @csrf
+        <div>
+            <x-input-label for="full_name" :value="__('Full Name')" />
+            <x-text-input id="full_name" class="block mt-1 w-full"
+                type="text" name="full_name" :value="old('full_name')"
+                placeholder="Enter your full name..." />
+            <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
         </div>
 
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full"
+                type="email" name="email" :value="old('email')"
+                placeholder="Enter your email address..." />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+        
+        {{-- Disease --}}
+        <div class="mt-6">
+            <div class="flex justify-between items-center mb-2">
+                <x-input-label for="requested_disease" :value="__('Disease Type')" />
+            </div>
+            <x-dropdown-select id="requested_disease" name="requested_disease" class="w-full h-[40px] text-sm">
+                <option value="" selected>Select disease...</option>
+                @foreach($diseases as $disease)
+                    <option value="{{ $disease->specification }}">{{ $disease->specification }}</option>
+                @endforeach
+            </x-dropdown-select>
+        </div>
+        
+        {{-- Date Range --}}
+        <div class="mt-6">
+            <div class="flex justify-between mb-2">
+                <div class="w-1/2 pr-2">
+                    <x-input-label for="fromDate" :value="__('From')" />
+                </div>
+                <div class="w-1/2 pl-2">
+                    <x-input-label for="toDate" :value="__('To')" />
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-1/2">
+                    <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
+                        type="date" name="fromDate" />
+                </div>
+                <div class="w-1/2">
+                    <x-text-input id="toDate" class="w-full h-[40px] text-sm"
+                        type="date" name="toDate" />
+                </div>
+            </div>
+        </div>
 
-        <button type="button" onclick="closeModal('requestDataModal')"
-            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-            ✕
-        </button>
-    </div>
-</div>
+        <div>
+            <x-input-label for="reason" :value="__('Reason for Request')" />
+            <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
+                class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+            <x-input-error :messages="$errors->get('reason')" class="mt-2" />
+        </div>
+        
+        <div class="flex justify-center gap-4 mt-8 pt-4 border-t border-gray-200">
+            <x-primary-button type="submit">
+                {{ __('Submit') }}
+            </x-primary-button>
+            <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
+                Cancel
+            </x-secondary-button>
+        </div>
+    </form>
+</x-modals.modal-popup>
 
 
     {{-- =========================
@@ -722,26 +707,38 @@
     }
 
     function setDateFilter(type) {
-        const fromInput = document.getElementById('fromDate');
-        const toInput = document.getElementById('toDate');
-        const today = new Date();
-        let fromDate, toDate = new Date();
+    const fromInput = document.getElementById('fromDate');
+    const toInput = document.getElementById('toDate');
+    const today = new Date();
+    let fromDate, toDate = new Date();
 
-        if (type === 'today') {
-            fromDate = new Date();
-        } else if (type === 'week') {
-            fromDate = new Date();
-            fromDate.setDate(today.getDate() - 7);
-        } else if (type === 'month') {
-            fromDate = new Date();
-            fromDate.setDate(today.getDate() - 30);
-        }
-
-        fromInput.value = fromDate.toISOString().split('T')[0];
-        toInput.value = today.toISOString().split('T')[0];
-
-        highlightActive(type);
+    if (type === 'today') {
+        fromDate = new Date();
+    } else if (type === 'week') {
+        fromDate = new Date();
+        fromDate.setDate(today.getDate() - 7);
+    } else if (type === 'month') {
+        fromDate = new Date();
+        fromDate.setDate(today.getDate() - 30);
     }
+
+    fromInput.value = fromDate.toISOString().split('T')[0];
+    toInput.value = today.toISOString().split('T')[0];
+
+    // ✅ Add hidden input for the controller to detect the filter type
+    let filterTypeInput = document.querySelector('input[name="filterType"]');
+    if (!filterTypeInput) {
+        filterTypeInput = document.createElement('input');
+        filterTypeInput.type = 'hidden';
+        filterTypeInput.name = 'filterType';
+        document.querySelector('form[action*="export"]').appendChild(filterTypeInput);
+    }
+    filterTypeInput.value = type;
+
+    // ✅ (optional) visually highlight the active filter button
+    highlightActive(type);
+}
+
 
     function highlightActive(type) {
         const buttons = document.querySelectorAll('#exportModal button');

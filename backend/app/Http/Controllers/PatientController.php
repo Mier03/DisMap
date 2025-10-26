@@ -365,8 +365,9 @@ public function exportPdf(Request $request)
     $toDate = $request->input('toDate');
     $hospitalId = $request->input('hospital_id');
     $diseaseId = $request->input('disease_id');
+    $filterType = $request->input('filterType'); // 👈 Add this (passed from frontend when "month" is clicked)
 
-    $user = auth()->user(); // Get the logged-in user
+    $user = auth()->user();
 
     $query = PatientRecord::with([
         'patient',
@@ -394,19 +395,43 @@ public function exportPdf(Request $request)
     if ($diseaseId) {
         $query->where('disease_id', $diseaseId);
     }
+ // ✅ Determine filters
+    $isDateFiltered = $fromDate || $toDate;
+    $isHospitalFiltered = !empty($hospitalId);
+    $isDiseaseFiltered = !empty($diseaseId);
+    $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
 
-    // ✅ If no filters applied → show only patients handled by logged-in user
-    $isFilterApplied = $fromDate || $toDate || $hospitalId || $diseaseId;
-
-    if (!$isFilterApplied ) {
+    // ✅ Show all patients if "month" filter used
+    if ($filterType !== 'month' && !$isFilterApplied) {
         $query->where(function ($q) use ($user) {
             $q->whereHas('reportedByDoctorHospital', fn($sub) =>
-                $sub->where('doctor_id',$user->id)
+                $sub->where('doctor_id', $user->id)
             )->orWhereHas('recoveredByDoctorHospital', fn($sub) =>
                 $sub->where('doctor_id', $user->id)
             );
         });
     }
+
+    // ✅ Decide which columns to ADD based on filter combinations
+    $addDiseaseColumn = false;
+    $addHospitalColumn = false;
+
+    if ($isDateFiltered && !$isHospitalFiltered && !$isDiseaseFiltered) {
+        // Only Date
+        $addDiseaseColumn = true;
+        $addHospitalColumn = true;
+    } elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
+        // Date + Hospital
+        $addDiseaseColumn = true;
+    } elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
+        // Date + Disease
+        $addHospitalColumn = true;
+    } elseif (!$isFilterApplied) {
+        // No Filter (Default)
+        $addDiseaseColumn = true;
+        $addHospitalColumn = true;
+    }
+
     $hospitalName = $hospitalId ? Hospital::find($hospitalId)?->name : null;
     $diseaseName = $diseaseId ? Disease::find($diseaseId)?->specification : null;
 
@@ -421,7 +446,9 @@ public function exportPdf(Request $request)
         'diseaseId',
         'isFilterApplied',
         'hospitalName',
-        'diseaseName'
+        'diseaseName',
+        'addDiseaseColumn',
+        'addHospitalColumn'
     ))->render();
 
     $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
@@ -449,5 +476,6 @@ public function exportPdf(Request $request)
     $mpdf->WriteHTML($html);
     return $mpdf->Output('patient-records.pdf', 'I');
 }
+
 
 }

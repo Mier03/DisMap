@@ -95,7 +95,7 @@
                                     <h4 class="text-2xl font-bold text-g-dark">Assigned Hospitals</h4>
                                     <p class="text-gray-600">Manage your hospital assignments</p>
                                 </div>
-                                <button onclick ="openModal('addHospitalModal')" id="addHospitalBtn" class="bg-gradient-to-r from-[#296E5B] to-[#1e5a48] text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:from-[#1e5a48] hover:to-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
+                                <button onclick="openModal('addHospitalModal')" id="addHospitalBtn" class="bg-gradient-to-r from-[#296E5B] to-[#1e5a48] text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:from-[#1e5a48] hover:to-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
                                     <i class="fas fa-plus"></i> Add Hospital
                                 </button>
                             </div>
