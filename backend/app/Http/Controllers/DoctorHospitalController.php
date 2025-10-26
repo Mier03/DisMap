@@ -42,7 +42,7 @@ class DoctorHospitalController extends Controller
     {
         $request->validate([
             'hospital_id' => 'required|exists:hospitals,id',
-            'certification' => 'required|file|mimes:pdf,jpg,png|max:2048',
+            'certification' => 'required|file|mimes:jpg,png|max:5120 ',
         ]);
         
         $user = auth()->user();  // <-- this defines $user

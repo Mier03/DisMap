@@ -80,7 +80,7 @@
                 <x-input-label for="certification" :value="__('Upload Certification')" />
                 <input id="certification" 
                        class="block mt-1 w-full border border-gray-300 rounded-md p-2" 
-                       type="file" name="certification" accept=".jpg,.jpeg,.png,.pdf" reqiured>
+                       type="file" name="certification" accept=".jpg,.jpeg,.png," reqiured>
                 <x-input-error :messages="$errors->get('certification')" class="mt-2" />
             </div>
 

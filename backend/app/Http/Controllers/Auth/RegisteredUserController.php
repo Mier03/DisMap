@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'certification' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'certification' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             // 'birthdate' is missing validation
             'birthdate' => ['required', 'date'],
         ]);
