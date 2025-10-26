@@ -47,13 +47,13 @@
                     <x-input-label for="certification" :value="__('Upload Certification')" />
                     <input id="certification"
                         class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2]"
-                        type="file" name="certification" accept=".jpg,.jpeg,.png,.pdf" required />
+                        type="file" name="certification" accept=".jpg,.jpeg,.png," required />
                     <x-input-error :messages="$errors->get('certification')" class="mt-2" />
                 </div>
 
 
                 <div class="flex justify-center gap-4 mt-8">
-                    <x-primary-button>
+                    <x-primary-button type="submit">
                         {{ __('Submit') }}
                     </x-primary-button>
                     <x-secondary-button type="button" onclick="closeModal('addHospitalModal')">
@@ -509,6 +509,7 @@
 </div>
 
 {{-- ========== SCRIPTS ========== --}}
+@if ($errors->any())
 <script>
     function togglePassword(id, button) {
         const input = document.getElementById(id);
@@ -763,7 +764,13 @@
     function resetDisease() {
         document.getElementById('export_disease_id').value = "";
     }
-
+    document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('addHospitalModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        });
     const addHospitalModal = document.getElementById('addHospitalModal');
     if (addHospitalModal) {
         addHospitalModal.addEventListener('click', function(e) {
@@ -1035,7 +1042,9 @@
         // if (modalId === 'declineReasonModal') {
         //     document.getElementById('decline_reason').value = '';
         // }
+        
     }
+
 
     // Close modal when clicking outside
     document.addEventListener('click', function(event) {
@@ -1048,3 +1057,4 @@
         });
     });
 </script>
+@endif

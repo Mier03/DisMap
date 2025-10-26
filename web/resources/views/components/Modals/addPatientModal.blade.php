@@ -550,7 +550,6 @@
             updateContactNumber();
         }
         if (!validatePhase(current)) {
-            alert('Please fill out all required fields correctly.');
             return;
         }
 
