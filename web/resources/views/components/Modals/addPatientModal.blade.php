@@ -37,7 +37,7 @@
                                 <x-input-label for="middle_name" :value="__('Middle Name')" />
                                 <x-text-input id="middle_name" class="block mt-1 w-full" 
                                     type="text" name="middle_name" :value="old('middle_name')" 
-                                    required placeholder="Middle Name" />
+                                    placeholder="Middle Name" />
                                 <x-input-error :messages="$errors->get('middle_name')" class="mt-2" />
                             </div>
                             <div>
@@ -516,17 +516,17 @@
         });
 
         // validation for contact number
-        // if (phase === 1) {
-        //     const contactNumberInput = document.getElementById('contact_number_input');
-        //     const contactNumberPattern = /^[0-9]{9,10}$/;
-        //     if (!contactNumberPattern.test(contactNumberInput.value)) {
-        //         isValid = false;
-        //         contactNumberInput.classList.add('border-red-500');
-        //         alert('Contact number must be 9-10 digits.');
-        //     } else {
-        //         contactNumberInput.classList.remove('border-red-500');
-        //     }
-        // }
+        if (phase === 1) {
+            const contactNumberInput = document.getElementById('contact_number_input');
+            const contactNumberPattern = /^[0-9]{9,10}$/;
+            if (!contactNumberPattern.test(contactNumberInput.value)) {
+                isValid = false;
+                contactNumberInput.classList.add('border-red-500');
+                alert('Contact number must be 9-10 digits.');
+            } else {
+                contactNumberInput.classList.remove('border-red-500');
+            }
+        }
 
         const diseaseEntries = document.querySelectorAll('.disease-entry');
         diseaseEntries.forEach((entry, index) => {
@@ -558,10 +558,10 @@
         if (current === 1) {
             updateContactNumber();
         }
-        // if (!validatePhase(current)) {
-        //     alert('Please fill out all required fields correctly.');
-        //     return;
-        // }
+        if (!validatePhase(current)) {
+            alert('Please fill out all required fields correctly.');
+            return;
+        }
 
         document.getElementById(`phase${current}`).classList.add('hidden');
         const next = current + 1;
