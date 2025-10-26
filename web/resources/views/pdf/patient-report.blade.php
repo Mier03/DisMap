@@ -143,11 +143,12 @@
                     <div class="report-title">Patient Records Report</div>
                 </div>
             <div class="report-meta">
-                @if($fromDate || $toDate)
-                <div class="meta-item">
-                    <span class="meta-label">Date Range:</span>
-                    <span class="meta-value">{{ $fromDate ?? '—' }} to {{ $toDate ?? '—' }}</span>
-                </div>
+              @if($fromDate && $toDate)
+                    <div class="meta-item">
+                        <span class="meta-label">Date Range:</span>
+                        <span class="meta-value">{{ \Carbon\Carbon::parse($fromDate)->format('F j, Y') }} - {{ \Carbon\Carbon::parse($toDate)->format('F j, Y') }}
+</span>
+                    </div>
                 @endif
                 
                 @if($isFilterApplied)
@@ -176,11 +177,13 @@
         <div class="report-body">
             <table>
                 <thead>
-                    <tr>
+                     <tr>
                         <th>Patient Name</th>
-                        @if(!$isFilterApplied)
-                        <th>Disease</th>
-                        <th>Hospital</th>
+                        @if($addDiseaseColumn)
+                            <th>Disease</th>
+                        @endif
+                        @if($addHospitalColumn)
+                            <th>Hospital</th>
                         @endif
                         <th>Reported By</th>
                         <th>Recovered By</th>
@@ -193,23 +196,33 @@
                     @forelse($patientRecords as $record)
                         <tr>
                             <td>{{ $record->patient->name ?? 'N/A' }}</td>
-                            @if(!$isFilterApplied)
+                            @if($addDiseaseColumn)
                                 <td>{{ $record->disease->specification ?? 'N/A' }}</td>
+                            @endif
+                            @if($addHospitalColumn)
                                 <td>{{ $record->reportedByDoctorHospital->hospital->name ?? 'N/A' }}</td>
                             @endif
-                            <td>{{ $record->reportedByDoctorHospital->doctor->name ?? 'N/A' }}</td>
-                            <td>{{ $record->recoveredByDoctorHospital->doctor->name ?? '—' }}</td>
+                            <td>
+                                {{ optional($record->reportedByDoctorHospital?->doctor)->name ? 'Doc. ' . $record->reportedByDoctorHospital->doctor->name : 'N/A' }}
+                            </td>
+                            <td>
+                                {{ optional($record->recoveredByDoctorHospital?->doctor)->name ? 'Doc. ' . $record->recoveredByDoctorHospital->doctor->name : '—' }}
+                            </td>
                             <td>
                                 <span class="status {{ $record->status === 'recovered' ? 'status-recovered' : 'status-active' }}">
                                     {{ ucfirst($record->status) }}
                                 </span>
                             </td>
-                            <td>{{ $record->date_reported }}</td>
-                            <td>{{ $record->date_recovered ?? 'N/A' }}</td>
+                            <td>
+                                {{ \Carbon\Carbon::parse($record->date_reported)->format('F j, Y') }}
+                            </td>
+                            <td>
+                                {{ $record->date_recovered ? \Carbon\Carbon::parse($record->date_recovered)->format('F j, Y') : 'N/A' }}
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="{{ !$isFilterApplied ? 8 : 6 }}">
+                            <td colspan="{{ 6 + ($addDiseaseColumn ? 1 : 0) + ($addHospitalColumn ? 1 : 0) }}">
                                 <div class="empty-state">
                                     <i>📄</i>
                                     <p>No records found matching your criteria</p>
