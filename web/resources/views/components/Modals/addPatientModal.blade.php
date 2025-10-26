@@ -11,9 +11,9 @@
     Add Patient Modal
 ========================= --}}
 @if($id=='addPatientModal')
-    <x-modals.modal-popup 
-        modal-id="addPatientModal" 
-        title="Add Patient" 
+    <x-modals.modal-popup
+        modal-id="addPatientModal"
+        title="Add Patient"
         description="Record a new patient case"
         icon="person_add"
     >
@@ -28,22 +28,22 @@
                         <div class="grid grid-cols-3 gap-4 mb-4">
                             <div>
                                 <x-input-label for="first_name" :value="__('First Name')" />
-                                <x-text-input id="first_name" class="block mt-1 w-full" 
-                                    type="text" name="first_name" :value="old('first_name')" 
+                                <x-text-input id="first_name" class="block mt-1 w-full"
+                                    type="text" name="first_name" :value="old('first_name')"
                                     required placeholder="First Name" />
                                 <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="middle_name" :value="__('Middle Name')" />
-                                <x-text-input id="middle_name" class="block mt-1 w-full" 
-                                    type="text" name="middle_name" :value="old('middle_name')" 
+                                <x-text-input id="middle_name" class="block mt-1 w-full"
+                                    type="text" name="middle_name" :value="old('middle_name')"
                                     placeholder="Middle Name" />
                                 <x-input-error :messages="$errors->get('middle_name')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="last_name" :value="__('Last Name')" />
-                                <x-text-input id="last_name" class="block mt-1 w-full" 
-                                    type="text" name="last_name" :value="old('last_name')" 
+                                <x-text-input id="last_name" class="block mt-1 w-full"
+                                    type="text" name="last_name" :value="old('last_name')"
                                     required placeholder="Last Name" />
                                 <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
                             </div>
@@ -53,10 +53,9 @@
                         <div class="grid grid-cols-3 gap-4 mb-4">
                             <div>
                                 <x-input-label for="birthdate" :value="__('Date of Birth')" />
-                                <x-text-input id="birthdate" class="block mt-1 w-full" 
-                                    type="date" name="birthdate" :value="old('birthdate')" 
+                                <x-text-input id="birthdate" class="block mt-1 w-full"
+                                    type="date" name="birthdate" :value="old('birthdate')"
                                     required />
-                                <x-input-error :messages="$errors->get('birthdate')" class="mt-2" />
                             </div>
                             <div>
                                 <x-input-label for="sex" :value="__('Sex')" />
@@ -77,15 +76,14 @@
                                     <option value="American">American</option>
                                     <option value="Other">Other</option>
                                 </x-dropdown-select>
-                                <x-input-error :messages="$errors->get('ethnicity')" class="mt-2" />
                             </div>
                         </div>
 
                         {{-- Street Address --}}
                         <div class="mb-4">
                             <x-input-label for="street_address" :value="__('Street Address')" />
-                            <x-text-input id="street_address" class="block mt-1 w-full" 
-                                type="text" name="street_address" :value="old('street_address')" 
+                            <x-text-input id="street_address" class="block mt-1 w-full"
+                                type="text" name="street_address" :value="old('street_address')"
                                 required placeholder="Enter street address..." />
                             <x-input-error :messages="$errors->get('street_address')" class="mt-2" />
                         </div>
@@ -112,11 +110,11 @@
                                         <option value="+63" selected>PH +63</option>
                                     </select>
                                 </div>
-                                <x-text-input id="contact_number_input" class="block mt-1 flex-1" 
-                                    type="tel" :value="old('contact_number_input')" 
-                                    required placeholder="XXXXXXXXXX" 
-                                    pattern="[0-9]{9,10}" 
-                                    onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" 
+                                <x-text-input id="contact_number_input" class="block mt-1 flex-1"
+                                    type="tel" :value="old('contact_number_input')"
+                                    required placeholder="XXXXXXXXXX"
+                                    pattern="[0-9]{9,10}"
+                                    onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                                     oninput="updateContactNumber()" />
                                 <input type="hidden" id="contact_number" name="contact_number" :value="old('contact_number')" />
                             </div>
@@ -126,8 +124,8 @@
                         {{-- Email --}}
                         <div class="mb-4">
                             <x-input-label for="email" :value="__('Email')" />
-                            <x-text-input id="email" class="block mt-1 w-full" 
-                                type="email" name="email" :value="old('email')" 
+                            <x-text-input id="email" class="block mt-1 w-full"
+                                type="email" name="email" :value="old('email')"
                                 required placeholder="Enter valid email address..." />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
@@ -139,7 +137,7 @@
                             <x-primary-button type="button" onclick="nextPhase(1)">
                                 Next
                             </x-primary-button>
-                            
+
                         </div>
                     </div>
 
@@ -176,20 +174,20 @@
                                     <x-input-error :messages="$errors->get('disease_id.0')" class="mt-2" />
                                 </div>
 
-								<div id="custom_disease_container_0" class="mb-2 hidden">
+                                <div id="custom_disease_container_0" class="mb-2 hidden">
                                     <h4 class="text-md font-semibold text-g-dark mb-2">Specify New Disease</h4>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <x-input-label for="custom_disease_name_0" :value="__('General Name (e.g., Dementia)')" />
-                                            <x-text-input id="custom_disease_name_0" class="block mt-1 w-full" 
-                                                type="text" name="custom_disease_name[]" 
+                                            <x-text-input id="custom_disease_name_0" class="block mt-1 w-full"
+                                                type="text" name="custom_disease_name[]"
                                                 placeholder="Enter general disease name..." />
                                             <x-input-error :messages="$errors->get('custom_disease_name.0')" class="mt-2" />
                                         </div>
                                         <div>
                                             <x-input-label for="custom_disease_spec_0" :value="__('Specification (e.g., Alzheimer)')" />
-                                            <x-text-input id="custom_disease_spec_0" class="block mt-1 w-full" 
-                                                type="text" name="custom_disease_spec[]" 
+                                            <x-text-input id="custom_disease_spec_0" class="block mt-1 w-full"
+                                                type="text" name="custom_disease_spec[]"
                                                 placeholder="Enter specific disease name..." />
                                             <x-input-error :messages="$errors->get('custom_disease_spec.0')" class="mt-2" />
                                         </div>
@@ -198,14 +196,15 @@
 
                                 <div class="mb-2">
                                     <x-input-label for="reported_remarks_0" :value="__('Remarks')" />
-                                    <textarea id="reported_remarks_0" name="reported_remarks[]" 
-                                        class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
+                                    <textarea id="reported_remarks_0" name="reported_remarks[]"
+                                        class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"
                                         placeholder="Enter remarks..." required></textarea>
                                     <x-input-error :messages="$errors->get('reported_remarks.0')" class="mt-2" />
                                 </div>
                             </div>
                         </div>
 
+                        <hr class="my-4 border-t border-gray-200">
                         <a href="#" onclick="addAnotherDisease()" class="text-g-dark hover:underline mb-4 block">+ Add another disease</a>
 
                         <div class="flex flex-col sm:flex-row gap-40 mt-10">
@@ -215,7 +214,7 @@
                             <x-primary-button type="button" onclick="nextPhase(2)">
                                 Next
                             </x-primary-button>
-                            
+
                         </div>
                     </div>
 
@@ -234,7 +233,7 @@
                             <x-primary-button type="submit">
                                 + Add Patient
                             </x-primary-button>
-                            
+
                         </div>
                     </div>
                 </form>
@@ -242,17 +241,14 @@
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                         ✕
                 </button>
-    </x-modal-popup>
+    </x-modals.modal-popup>
 @endif
 @if($id=='addRecordModal' && $patient)
-    {{-- <div id="addRecordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[600px] p-8 text-left relative overflow-y-auto max-h-[90vh]">
-            <h2 class="text-3xl font-bold text-g-dark">Add New Record</h2>
-            <p class="text-g-dark text-base">Record a new patient case</p> --}}
+    {{-- The existing patient information (read-only) blocks are fine. --}}
 
-    <x-modals.modal-popup 
-        modal-id="addRecordModal" 
-        title="Add New Record" 
+    <x-modals.modal-popup
+        modal-id="addRecordModal"
+        title="Add New Record"
         description="Record a new patient case"
         icon="assignment_add"
     >
@@ -271,15 +267,15 @@
                         </div>
                     <div>
                             <x-input-label :value="__('Date of Birth')" />
-                            <input type="text" 
-                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($patient->birthdate)->age }} years old)" 
+                            <input type="text"
+                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($patient->birthdate)->age }} years old)"
                                 readonly
                                 class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
                         </div>
                         <div>
                             <x-input-label :value="__('Age')" />
-                            <input type="text" 
-                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->age }}" 
+                            <input type="text"
+                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->age }}"
                                 readonly
                                 class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
                         </div>
@@ -352,17 +348,15 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <x-input-label for="custom_disease_name_0_record" :value="__('General Name (e.g., Dementia)')" />
-                                        <x-text-input id="custom_disease_name_0_record" class="block mt-1 w-full" 
-                                            type="text" name="custom_disease_name[]" 
+                                        <x-text-input id="custom_disease_name_0_record" class="block mt-1 w-full"
+                                            type="text" name="custom_disease_name[]"
                                             placeholder="Enter general disease name..." />
-                                        <x-input-error :messages="$errors->get('custom_disease_name.0')" class="mt-2" />
                                     </div>
                                     <div>
                                         <x-input-label for="custom_disease_spec_0_record" :value="__('Specification (e.g., Alzheimer)')" />
-                                        <x-text-input id="custom_disease_spec_0_record" class="block mt-1 w-full" 
-                                            type="text" name="custom_disease_spec[]" 
+                                        <x-text-input id="custom_disease_spec_0_record" class="block mt-1 w-full"
+                                            type="text" name="custom_disease_spec[]"
                                             placeholder="Enter specific disease name..." />
-                                        <x-input-error :messages="$errors->get('custom_disease_spec.0')" class="mt-2" />
                                     </div>
                                 </div>
                             </div>
@@ -389,30 +383,25 @@
                     class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
 
     </x-modals.modal-popup>
-            {{-- </div>
-        </div>
-    </div> --}}
 @endif
 </div>
 <script>
     // JavaScript for addPatientModal
 
-    let diseaseCounter = 1; 
+    let diseaseCounter = 1;
 
     function addAnotherDisease(suffix = '') {
-        const containerId = suffix === 'record' ? 'diseases-container-record' : 'diseases-container'; 
+        const containerId = suffix === 'record' ? 'diseases-container-record' : 'diseases-container';
         const container = document.getElementById(containerId);
-        
+
         const entry = document.createElement('div');
         entry.className = 'disease-entry mb-4';
 
-        // *** START MODIFICATION ***
         // Find the original select to copy its inner options
         const initialSelect = container.querySelector('select[name="disease_id[]"]');
         const allOptionsHtml = initialSelect ? initialSelect.innerHTML : '';
-        // *** END MODIFICATION ***
 
-        const currentId = diseaseCounter; 
+        const currentId = diseaseCounter;
         const selectId = `disease_id_${currentId}${suffix ? '_' + suffix : ''}`;
         const remarksId = `reported_remarks_${currentId}${suffix ? '_' + suffix : ''}`;
         const customContainerId = `custom_disease_container_${currentId}${suffix ? '_' + suffix : ''}`;
@@ -420,38 +409,38 @@
         const diseaseHtml = `
         <div class="mb-2">
             <hr class="my-4 border-t border-gray-200">
-            <div class="flex justify-between items-center"> 
+            <div class="flex justify-between items-center">
                 <label for="${selectId}" class="block text-[14px] font-semibold text-g-dark">Disease</label>
-                <a href="#" onclick="removeDiseaseEntry(this)" class="text-red-500 font-semibold hover:text-red-700 text-sm">✕</a> 
-            </div> 
+                <a href="#" onclick="removeDiseaseEntry(this)" class="text-red-500 font-semibold hover:text-red-700 text-sm">✕</a>
+            </div>
             <select id="${selectId}" name="disease_id[]" required
                 onchange="toggleCustomDiseaseInput(this, ${currentId}, '${suffix}')"
                 class="w-full h-[44px] border border-g-dark rounded px-3 mt-1 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50">
                 ${allOptionsHtml} </select>
         </div>
-        
-        <div id="${customContainerId}" class="mb-2 hidden"> 
+
+        <div id="${customContainerId}" class="mb-2 hidden">
             <h4 class="text-md font-semibold text-g-dark mb-2">Specify New Disease</h4>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="custom_disease_name_${currentId}${suffix ? '_' + suffix : ''}" class="block text-[14px] font-semibold text-g-dark">General Name (e.g., Dementia)</label>
-                    <input id="custom_disease_name_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
-                        type="text" name="custom_disease_name[]" 
+                    <input id="custom_disease_name_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50"
+                        type="text" name="custom_disease_name[]"
                         placeholder="Enter general disease name..." />
                 </div>
                 <div>
                     <label for="custom_disease_spec_${currentId}${suffix ? '_' + suffix : ''}" class="block text-[14px] font-semibold text-g-dark">Specification (e.g., Alzheimer)</label>
-                    <input id="custom_disease_spec_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
-                        type="text" name="custom_disease_spec[]" 
+                    <input id="custom_disease_spec_${currentId}${suffix ? '_' + suffix : ''}" class="block mt-1 w-full border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] focus:outline-none focus:ring-2 focus:ring-g-dark/50"
+                        type="text" name="custom_disease_spec[]"
                         placeholder="Enter specific disease name..." />
                 </div>
             </div>
-        </div> 
+        </div>
 
         <div class="mb-2">
             <label for="${remarksId}" class="block text-[14px] font-semibold text-g-dark">Remarks</label>
-            <textarea id="${remarksId}" name="reported_remarks[]" 
-                class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50" 
+            <textarea id="${remarksId}" name="reported_remarks[]"
+                class="w-full h-[100px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"
                 placeholder="Enter remarks..." required></textarea>
         </div>
         `;
@@ -465,24 +454,24 @@
         const containerId = `custom_disease_container_${index}${suffix ? '_' + suffix : ''}`;
         const inputNameId = `custom_disease_name_${index}${suffix ? '_' + suffix : ''}`;
         const inputSpecId = `custom_disease_spec_${index}${suffix ? '_' + suffix : ''}`;
-        
+
         const container = document.getElementById(containerId);
         const inputName = document.getElementById(inputNameId);
         const inputSpec = document.getElementById(inputSpecId);
-        
+
         if (selectElement.value === 'other_specify') {
             container.classList.remove('hidden');
-            if (inputName) inputName.setAttribute('required', 'required'); 
-            if (inputSpec) inputSpec.setAttribute('required', 'required'); 
+            if (inputName) inputName.setAttribute('required', 'required');
+            if (inputSpec) inputSpec.setAttribute('required', 'required');
         } else {
             container.classList.add('hidden');
             if (inputName) {
                 inputName.removeAttribute('required');
-                inputName.value = ''; 
+                inputName.value = '';
             }
             if (inputSpec) {
                 inputSpec.removeAttribute('required');
-                inputSpec.value = ''; 
+                inputSpec.value = '';
             }
         }
     }
@@ -522,29 +511,31 @@
             if (!contactNumberPattern.test(contactNumberInput.value)) {
                 isValid = false;
                 contactNumberInput.classList.add('border-red-500');
-                alert('Contact number must be 9-10 digits.');
+                // ALERT removed for non-blocking UI
             } else {
                 contactNumberInput.classList.remove('border-red-500');
             }
         }
 
-        const diseaseEntries = document.querySelectorAll('.disease-entry');
+        // Validate disease inputs in Phase 2
+        const diseaseEntries = document.querySelectorAll('#diseases-container .disease-entry');
+
         diseaseEntries.forEach((entry, index) => {
             const selectElement = entry.querySelector('select[name="disease_id[]"]');
-            const customInputName = entry.querySelector('input[name="custom_disease_name[]"]'); 
-            const customInputSpec = entry.querySelector('input[name="custom_disease_spec[]"]'); 
+            const customInputName = entry.querySelector('input[name="custom_disease_name[]"]');
+            const customInputSpec = entry.querySelector('input[name="custom_disease_spec[]"]');
 
-            if (selectElement.value === 'other_specify') {
+            if (selectElement && selectElement.value === 'other_specify') {
                 if (!customInputName || !customInputName.value.trim()) {
                     isValid = false;
-                    customInputName.classList.add('border-red-500');
+                    if(customInputName) customInputName.classList.add('border-red-500');
                 } else if (customInputName) {
                     customInputName.classList.remove('border-red-500');
                 }
 
                 if (!customInputSpec || !customInputSpec.value.trim()) {
                     isValid = false;
-                    customInputSpec.classList.add('border-red-500');
+                    if(customInputSpec) customInputSpec.classList.add('border-red-500');
                 } else if (customInputSpec) {
                     customInputSpec.classList.remove('border-red-500');
                 }
@@ -584,7 +575,7 @@
 
         function createInfoCardHtml(title, icon, items) {
             let content = '';
-            
+
             items.forEach((item, index) => {
                 const borderClass = index < items.length - 1 ? 'border-b border-g-light/50' : '';
                 let valueHtml = '';
@@ -630,7 +621,7 @@
             { label: 'Contact Number:', value: document.getElementById('contact_number').value },
             { label: 'Email:', value: document.getElementById('email').value },
         ];
-        
+
         // B. Medical Information Card Data
         const medicalInfoItems = [];
 
@@ -640,23 +631,23 @@
         medicalInfoItems.push({ label: 'Hospital:', value: hospitalText });
 
         // Diseases and Remarks
-    const diseaseEntries = document.querySelectorAll('#diseases-container .disease-entry');
-    diseaseEntries.forEach((entry, index) => {
-        const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
-        const remarks = entry.querySelector(`textarea[name="reported_remarks[]"]`);
-        const customInputName = entry.querySelector(`input[name="custom_disease_name[]"]`);
-        const customInputSpec = entry.querySelector(`input[name="custom_disease_spec[]"]`);
+        const diseaseEntries = document.querySelectorAll('#diseases-container .disease-entry');
+        diseaseEntries.forEach((entry, index) => {
+            const diseaseSelect = entry.querySelector(`select[name="disease_id[]"]`);
+            const remarks = entry.querySelector(`textarea[name="reported_remarks[]"]`);
+            const customInputName = entry.querySelector(`input[name="custom_disease_name[]"]`);
+            const customInputSpec = entry.querySelector(`input[name="custom_disease_spec[]"]`);
 
-        let diseaseText = 'Not selected';
-        if (diseaseSelect.value === 'other_specify' && customInputName && customInputSpec) { 
-            diseaseText = `General: <strong>${customInputName.value || 'N/A'}</strong>; Specific: <strong>${customInputSpec.value || 'N/A'}</strong>`; 
-        } else {
-            diseaseText = diseaseSelect?.options[diseaseSelect.selectedIndex]?.text || 'Not selected';
-        }
-        
-        medicalInfoItems.push({ label: `Disease ${index + 1}:`, value: diseaseText }); 
-        medicalInfoItems.push({ label: 'Remarks:', value: remarks.value || 'N/A' });
-    });
+            let diseaseText = 'Not selected';
+            if (diseaseSelect.value === 'other_specify' && customInputName && customInputSpec) {
+                diseaseText = `General: <strong>${customInputName.value || 'N/A'}</strong>; Specific: <strong>${customInputSpec.value || 'N/A'}</strong>`;
+            } else {
+                diseaseText = diseaseSelect?.options[diseaseSelect.selectedIndex]?.text || 'Not selected';
+            }
+
+            medicalInfoItems.push({ label: `Disease ${index + 1}:`, value: diseaseText });
+            medicalInfoItems.push({ label: 'Remarks:', value: remarks.value || 'N/A' });
+        });
 
         const personalCardHtml = createInfoCardHtml('Personal Information', 'person', personalInfoItems);
         const medicalCardHtml = createInfoCardHtml('Medical Information', 'healing', medicalInfoItems); // Using 'healing' icon
@@ -665,33 +656,45 @@
         cardsContainer.className = 'grid grid-cols-1 md:grid-cols-1 gap-6 mb-6';
 
         cardsContainer.innerHTML = personalCardHtml + medicalCardHtml;
-        
+
         summary.appendChild(cardsContainer);
     }
 
     function resetAddPatientForm() {
         const form = document.getElementById('addPatientForm');
         form.reset();
-        
+
         document.getElementById('phase1').classList.remove('hidden');
         document.getElementById('phase2').classList.add('hidden');
         document.getElementById('phase3').classList.add('hidden');
-        
-        const container = document.getElementById('diseases-container');        
-        
+
+        const container = document.getElementById('diseases-container');
+
         const initialEntry = container.querySelector('.disease-entry');
         const dynamicEntries = container.querySelectorAll('.disease-entry:not(:first-child)');
-        
 
         dynamicEntries.forEach(entry => entry.remove());
 
+        // Reset the base elements of the first entry (assuming index 0)
+        const select = initialEntry.querySelector('select[name="disease_id[]"]');
+        const remarks = initialEntry.querySelector('textarea[name="reported_remarks[]"]');
+        const customContainer = document.getElementById('custom_disease_container_0');
+        const customName = document.getElementById('custom_disease_name_0');
+        const customSpec = document.getElementById('custom_disease_spec_0');
 
-        initialEntry.querySelector('select[name="disease_id[]"]').value = ""; 
-        initialEntry.querySelector('textarea[name="reported_remarks[]"]').value = ""; 
-        document.getElementById('custom_disease_container_0').classList.add('hidden'); 
-        document.getElementById('custom_disease_name_0').value = "";
-        document.getElementById('custom_disease_spec_0').value = "";
-        
+
+        if (select) select.value = "";
+        if (remarks) remarks.value = "";
+        if (customContainer) customContainer.classList.add('hidden');
+        if (customName) {
+            customName.value = "";
+            customName.removeAttribute('required');
+        }
+        if (customSpec) {
+            customSpec.value = "";
+            customSpec.removeAttribute('required');
+        }
+
         diseaseCounter = 1;
         document.getElementById('contact_number').value = '';
     }

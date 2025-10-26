@@ -61,24 +61,22 @@ class PatientController extends Controller
         ]);
     }
 
-     public function storeRecord(Request $request)
+    public function storeRecord(Request $request)
     {
-            // Validate input
+        // Validate input
         $validated = $request->validate([
             'patient_id' => 'required|exists:users,id',
             'hospital_id' => 'required|exists:hospitals,id',
             'disease_id' => 'required|array',
-            // 'disease_id.*' => 'exists:diseases,id',
-            'disease_id.*' => 'required|string', 
-            'custom_disease_name' => 'nullable|array', 
+            'disease_id.*' => 'required|string',
+            'custom_disease_name' => 'nullable|array',
             'custom_disease_name.*' => 'nullable|string|max:255',
-            'custom_disease_spec' => 'nullable|array', 
+            'custom_disease_spec' => 'nullable|array',
             'custom_disease_spec.*' => 'nullable|string|max:255',
             'reported_remarks' => 'required|array',
             'reported_remarks.*' => 'string|max:255',
         ]);
 
-        
         $doctorHospital = DoctorHospital::firstOrCreate([
             'doctor_id' => Auth::id(),
             'hospital_id' => $request->input('hospital_id'),
@@ -86,22 +84,23 @@ class PatientController extends Controller
 
         $customNames = $request->input('custom_disease_name', []);
         $customSpecs = $request->input('custom_disease_spec', []);
-        $customIndex = 0;
 
         foreach ($request->input('disease_id') as $index => $diseaseId) {
             $finalDiseaseId = $diseaseId;
-            if ($diseaseId === 'other_specify') {
-                $generalName = $customNames[$customIndex] ?? null;
-                $specification = $customSpecs[$customIndex] ?? null;
 
-                    if ($generalName && $specification) {
-                        $newDisease = Disease::firstOrCreate(
-                            ['specification' => $specification],
-                            ['name' => $generalName, 'specification' => $specification]
+            if ($diseaseId === 'other_specify') {
+                $generalName = !empty($customNames[$index]) ? $customNames[$index] : null;
+                $specification = !empty($customSpecs[$index]) ? $customSpecs[$index] : null;
+
+                if ($generalName && $specification) {
+                    $newDisease = Disease::firstOrCreate(
+                        ['specification' => $specification],
+                        ['name' => $generalName, 'specification' => $specification]
                     );
                     $finalDiseaseId = $newDisease->id;
-                    }
-            $customIndex++; 
+                } else {
+                    continue;
+                }
             }
 
             if (!is_numeric($finalDiseaseId)) {
@@ -117,8 +116,9 @@ class PatientController extends Controller
                 'date_reported' => now(),
             ]);
         }
-    return redirect()->route('admin.managepatients')
-        ->with('success', 'Patient record added successfully!');
+
+        return redirect()->route('admin.managepatients')
+            ->with('success', 'Patient record added successfully!');
     }
 
     /**
@@ -128,102 +128,104 @@ class PatientController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'first_name' => 'required|string|max:255',
-        'middle_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'birthdate' => 'required|date',
-        'sex' => 'required|in:Male,Female,Other',
-        'ethnicity' => 'required|string|max:255',
-        'street_address' => 'required|string|max:255',
-        'contact_number' => 'required|string|max:20',
-        'barangay_id' => 'required|exists:barangays,id',
-        'disease_id' => 'required|array',
-        'disease_id.*' => 'required|string',
-        'custom_disease_name' => 'nullable|array', 
-        'custom_disease_name.*' => 'nullable|string|max:255',
-        'custom_disease_spec' => 'nullable|array', 
-        'custom_disease_spec.*' => 'nullable|string|max:255',
-        'reported_remarks' => 'required|array',
-        'reported_remarks.*' => 'required|string',
-        'hospital_id' => 'required|exists:hospitals,id',
-        'email' => 'required|email|unique:users,email',
-    ]);
-
-    DB::transaction(function () use ($request) {
-        $username = strtolower(
-            str_replace(' ', '', $request->input('first_name')) .
-            '.' .
-            str_replace(' ', '', $request->input('last_name')) .
-            rand(1000, 9999)
-        );
-        $fullName = $request->input('first_name') . ' ' . $request->input('middle_name') . ' ' . $request->input('last_name');
-
-        // Create the user
-        $user = User::create([
-            'name' => $fullName,
-            'username' => $username,
-            'email' => $request->input('email'),
-            'password' => Hash::make('12345678'),
-            'birthdate' => $request->input('birthdate'),
-            'sex' => $request->input('sex'),
-            'ethnicity' => $request->input('ethnicity'),
-            'street_address' => $request->input('street_address'),
-            'contact_number' => $request->input('contact_number'),
-            'barangay_id' => $request->input('barangay_id'),
-            'user_type' => 'patient',
-            'is_approved' => true,
-            'profile_image' => 'images/profiles/default.png',
-            'status' => 'Active',
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birthdate' => 'required|date',
+            'sex' => 'required|in:Male,Female,Other',
+            'ethnicity' => 'required|string|max:255',
+            'street_address' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:20',
+            'barangay_id' => 'required|exists:barangays,id',
+            'disease_id' => 'required|array',
+            'disease_id.*' => 'required|string',
+            'custom_disease_name' => 'nullable|array',
+            'custom_disease_name.*' => 'nullable|string|max:255',
+            'custom_disease_spec' => 'nullable|array',
+            'custom_disease_spec.*' => 'nullable|string|max:255',
+            'reported_remarks' => 'required|array',
+            'reported_remarks.*' => 'required|string',
+            'hospital_id' => 'required|exists:hospitals,id',
+            'email' => 'required|email|unique:users,email',
         ]);
 
-        // Create doctor-hospital relationship
-        $doctorHospital = DoctorHospital::firstOrCreate([
-            'doctor_id' => Auth::id(),
-            'hospital_id' => $request->input('hospital_id'),
-        ]);
+        DB::transaction(function () use ($request) {
+            $username = strtolower(
+                str_replace(' ', '', $request->input('first_name')) .
+                '.' .
+                str_replace(' ', '', $request->input('last_name')) .
+                rand(1000, 9999)
+            );
+            $fullName = $request->input('first_name') . ' ' . $request->input('middle_name') . ' ' . $request->input('last_name');
 
-        $customNames = $request->input('custom_disease_name', []);
-        $customSpecs = $request->input('custom_disease_spec', []);
-        $customIndex = 0;
-
-        // Create a patient record for each selected disease with corresponding remarks
-        foreach ($request->input('disease_id') as $index => $diseaseId) {
-            $finalDiseaseId = $diseaseId;
-
-            if ($diseaseId === 'other_specify') {
-                $generalName = $customNames[$customIndex] ?? null;
-                $specification = $customSpecs[$customIndex] ?? null;
-
-                if ($generalName && $specification) {
-                    $newDisease = Disease::firstOrCreate(
-                        ['specification' => $specification],
-                        ['name' => $generalName, 'specification' => $specification]
-               );
-                 $finalDiseaseId = $newDisease->id;
-                }
-                
-                $customIndex++;
-            }
-
-            if (!is_numeric($finalDiseaseId)) {
-                continue;
-            }
-
-            PatientRecord::create([
-                'patient_id' => $user->id,
-                'reported_dh_id' => $doctorHospital->id,
-                'disease_id' => $finalDiseaseId,
+            // Create the user
+            $user = User::create([
+                'name' => $fullName,
+                'username' => $username,
+                'email' => $request->input('email'),
+                'password' => Hash::make('12345678'),
+                'birthdate' => $request->input('birthdate'),
+                'sex' => $request->input('sex'),
+                'ethnicity' => $request->input('ethnicity'),
+                'street_address' => $request->input('street_address'),
+                'contact_number' => $request->input('contact_number'),
+                'barangay_id' => $request->input('barangay_id'),
+                'user_type' => 'patient',
+                'is_approved' => true,
+                'profile_image' => 'images/profiles/default.png',
                 'status' => 'Active',
-                'reported_remarks' => $request->input('reported_remarks')[$index],
-                'date_reported' => now(),
             ]);
-        }
-    });
 
-    return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
-}
+            // Create doctor-hospital relationship
+            $doctorHospital = DoctorHospital::firstOrCreate([
+                'doctor_id' => Auth::id(),
+                'hospital_id' => $request->input('hospital_id'),
+            ]);
+
+            $customNames = $request->input('custom_disease_name', []);
+            $customSpecs = $request->input('custom_disease_spec', []);
+
+            // Create a patient record for each selected disease with corresponding remarks
+            foreach ($request->input('disease_id') as $index => $diseaseId) {
+                $finalDiseaseId = $diseaseId;
+
+                if ($diseaseId === 'other_specify') {
+                    // Find the corresponding custom disease entry
+                    $generalName = !empty($customNames[$index]) ? $customNames[$index] : null;
+                    $specification = !empty($customSpecs[$index]) ? $customSpecs[$index] : null;
+
+                    if ($generalName && $specification) {
+                        $newDisease = Disease::firstOrCreate(
+                            ['specification' => $specification],
+                            ['name' => $generalName, 'specification' => $specification]
+                        );
+                        $finalDiseaseId = $newDisease->id;
+                    } else {
+                        // Skip if custom disease fields are not filled
+                        continue;
+                    }
+                }
+
+                // Only proceed if we have a valid numeric disease ID
+                if (!is_numeric($finalDiseaseId)) {
+                    continue;
+                }
+
+                PatientRecord::create([
+                    'patient_id' => $user->id,
+                    'reported_dh_id' => $doctorHospital->id,
+                    'disease_id' => $finalDiseaseId,
+                    'status' => 'Active',
+                    'reported_remarks' => $request->input('reported_remarks')[$index],
+                    'date_reported' => now(),
+                ]);
+            }
+        });
+
+        return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
+    }
 
     /**
      * Display the specified patient's details and medical history.
