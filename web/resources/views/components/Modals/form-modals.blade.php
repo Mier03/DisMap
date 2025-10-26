@@ -157,7 +157,6 @@
     modal-id="requestDataModal" 
     title="Data Request Form" 
     description="Filter and export data"
-    icon="filter_alt"
     width="w-[600px]"
 > 
     <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
