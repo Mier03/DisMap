@@ -440,14 +440,14 @@
         <p class="text-g-dark text-[16px] mb-6 ml-1">Update your account password</p>
 
         {{-- Flash Message (Success) --}}
-        @if (session('status') === 'password-updated')
+        <!-- @if (session('status') === 'password-updated')
             <div class="p-3 mb-4 text-green-800 bg-green-100 rounded-lg text-sm">
                 Password updated successfully.
             </div>
-        @endif
+        @endif -->
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
+        <form id="passwordUpdateForm" method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
             @csrf
             @method('PUT')
 
@@ -765,11 +765,13 @@
         document.getElementById('export_disease_id').value = "";
     }
     document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('addHospitalModal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+        @if (isset($errors) && $errors->updatePassword->any())
+            const pwdModal = document.getElementById('passwordUpdateModal');
+            if (pwdModal) {
+                pwdModal.classList.remove('hidden');
+                pwdModal.classList.add('flex');
             }
+        @endif
         });
     const addHospitalModal = document.getElementById('addHospitalModal');
     if (addHospitalModal) {
@@ -1058,3 +1060,25 @@
     });
 </script>
 @endif
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('passwordUpdateForm');
+        const newPasswordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('password_confirmation');
+        const errorMessage = document.createElement('p');
+
+        errorMessage.classList.add('text-red-600', 'text-sm', 'mt-1');
+        confirmPasswordInput.parentNode.appendChild(errorMessage);
+
+        form.addEventListener('submit', function (e) {
+            // Clear previous error message
+            errorMessage.textContent = '';
+
+            // Check if passwords match
+            if (newPasswordInput.value !== confirmPasswordInput.value) {
+                e.preventDefault(); // Prevent form submission
+                errorMessage.textContent = 'Your New and Confirm Password do not match.';
+            }
+        });
+    });
+</script>
