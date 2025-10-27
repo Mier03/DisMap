@@ -13,6 +13,13 @@ class UserPasswordResetController extends Controller
     /**
      * Handle user password change.
      */
+
+    public function checkCurrent(Request $request)
+    {
+        $valid = Hash::check($request->current_password, Auth::user()->password);
+        return response()->json(['valid' => $valid]);
+    }
+
     public function update(Request $request): RedirectResponse
     {
         // Validate all fields
@@ -25,20 +32,11 @@ class UserPasswordResetController extends Controller
 
         // Verify the old password
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()
-                ->with('toast', [
-                    'type' => 'error',
-                    'message' => 'Your current password is incorrect.'
-            ]);
+            return back()->withErrors([
+                'current_password' => 'The current password is incorrect.',
+          ]);
         }
 
-        if ($request->password !== $request->password_confirmation) {
-            return back()
-                ->with('toast', [
-                    'type' => 'error',
-                    'message' => 'New password and confirmation do not match.'
-                ]);
-        }
 
         // Update the password
         $user->update([
@@ -49,9 +47,7 @@ class UserPasswordResetController extends Controller
         $request->session()->regenerate();
 
         // Redirect back with success message
-        return back()->with('toast', [
-            'type' => 'success',
-            'message' => 'Password updated successfully!'
-        ]);
+        return back()
+        ->with('success', 'Password updated successfully!');
     }
 }
