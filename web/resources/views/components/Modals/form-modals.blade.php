@@ -447,7 +447,7 @@
         @endif -->
 
         {{-- Form --}}
-        <form id="passwordUpdateForm" method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
+        <form id="passwordForm" method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
             @csrf
             @method('PUT')
 
@@ -455,12 +455,13 @@
             <div class="relative">
                 <x-input-label for="current_password" :value="__('Current Password')" />
                 <x-text-input id="current_password" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="current_password" required />
+                            type="password" name="current_password" required />
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('current_password', this)">
                     <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
                 </button>
+                <p id="currentPasswordError" class="text-red-500 text-xs mt-2 hidden">Current password is incorrect.</p>
                 <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
             </div>
 
@@ -468,33 +469,30 @@
             <div class="relative">
                 <x-input-label for="password" :value="__('New Password')" />
                 <x-text-input id="password" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="password" required />
+                            type="password" name="password" required />
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('password', this)">
                     <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
                 </button>
-                <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
             </div>
 
             {{-- Confirm Password --}}
             <div class="relative">
                 <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                 <x-text-input id="password_confirmation" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="password_confirmation" required />
+                            type="password" name="password_confirmation" required />
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('password_confirmation', this)">
                     <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
                 </button>
-                <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+                <p id="confirmPasswordError" class="text-red-500 text-xs mt-2 hidden">Passwords do not match.</p>
             </div>
 
             {{-- Buttons --}}
             <div class="flex justify-center gap-4 mt-8">
-                <x-primary-button type="submit">
-                    {{ __('Update') }}
-                </x-primary-button>
+                <x-primary-button type="submit">{{ __('Update') }}</x-primary-button>
                 <x-secondary-button type="button" onclick="closeModal('passwordUpdateModal')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
@@ -502,10 +500,50 @@
         </form>
 
         <button type="button" onclick="closeModal('passwordUpdateModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-            ✕
-        </button>
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
     </div>
+    <script>
+    document.getElementById('passwordForm').addEventListener('submit', async function (e) {
+        e.preventDefault(); // stop form from submitting immediately
+
+        const current = document.getElementById('current_password').value.trim();
+        const newPass = document.getElementById('password').value.trim();
+        const confirmPass = document.getElementById('password_confirmation').value.trim();
+
+        let valid = true;
+
+        // Reset messages
+        document.getElementById('confirmPasswordError').classList.add('hidden');
+        document.getElementById('currentPasswordError').classList.add('hidden');
+
+        // 1️⃣ Check if new password matches confirm
+        if (newPass !== confirmPass) {
+            document.getElementById('confirmPasswordError').classList.remove('hidden');
+            valid = false;
+        }
+
+        // 2️⃣ Check current password validity via AJAX
+        if (valid) {
+            const response = await fetch("{{ route('password.check.current') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ current_password: current }),
+            });
+
+            const data = await response.json();
+            if (!data.valid) {
+                document.getElementById('currentPasswordError').classList.remove('hidden');
+                valid = false;
+            }
+        }
+
+        // 3️⃣ Submit form if everything passes
+        if (valid) this.submit();
+    });
+    </script>
 </div>
 
 {{-- ========== SCRIPTS ========== --}}
@@ -1060,25 +1098,4 @@
     });
 </script>
 @endif
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('passwordUpdateForm');
-        const newPasswordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('password_confirmation');
-        const errorMessage = document.createElement('p');
 
-        errorMessage.classList.add('text-red-600', 'text-sm', 'mt-1');
-        confirmPasswordInput.parentNode.appendChild(errorMessage);
-
-        form.addEventListener('submit', function (e) {
-            // Clear previous error message
-            errorMessage.textContent = '';
-
-            // Check if passwords match
-            if (newPasswordInput.value !== confirmPasswordInput.value) {
-                e.preventDefault(); // Prevent form submission
-                errorMessage.textContent = 'Your New and Confirm Password do not match.';
-            }
-        });
-    });
-</script>

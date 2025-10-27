@@ -10,6 +10,7 @@ use App\Http\Controllers\DoctorHospitalController;
 use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\WelcomeController; // Add this line
 use App\Http\Controllers\DataRequestController;
+use App\Http\Controllers\Auth\UserPasswordResetController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,8 @@ Route::middleware('auth')
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+Route::post('/password/check-current', [UserPasswordResetController::class, 'checkCurrent'])
+    ->name('password.check.current');
 
 
 // Admin routes
