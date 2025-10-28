@@ -12,7 +12,7 @@
                     <div class="p-6 bg-inherit text-gray-900">
 
                         {{-- Flash Messages --}}
-                        @if(session('success'))
+                        {{-- @if(session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                             {{ session('success') }}
                         </div>
@@ -22,7 +22,7 @@
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                             {{ session('error') }}
                         </div>
-                        @endif
+                        @endif --}}
 
                         <x-page-header title="Manage Admins" subtitle="Administrator data and pending approvals" />
 

@@ -174,7 +174,7 @@
                     <div id="edit-form" class="mt-6 pt-4 border-t border-g-light">
                         <h3 class="text-lg font-semibold text-g-dark mb-4">Edit Admin Information</h3>
 
-                        @if(session('success'))
+                        {{-- @if(session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                             {{ session('success') }}
                         </div>
@@ -184,7 +184,7 @@
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                             {{ session('error') }}
                         </div>
-                        @endif
+                        @endif --}}
 
                         <form method="POST" action="{{ route('superadmin.update_admin', $admin->id) }}">
                             @csrf
