@@ -27,15 +27,17 @@ class UserPasswordResetController extends Controller
             'current_password' => ['required', 'string'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
-
+    /** @var \App\Models\User $user */
+    
         $user = Auth::user();
 
         // Verify the old password
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors([
                 'current_password' => 'The current password is incorrect.',
-            ]);
+          ]);
         }
+
 
         // Update the password
         $user->update([
