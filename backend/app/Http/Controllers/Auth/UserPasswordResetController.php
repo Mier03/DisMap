@@ -34,9 +34,8 @@ class UserPasswordResetController extends Controller
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors([
                 'current_password' => 'The current password is incorrect.',
-          ]);
+            ]);
         }
-
 
         // Update the password
         $user->update([

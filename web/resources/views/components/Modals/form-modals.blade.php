@@ -434,14 +434,14 @@
         icon="lock"
     >
         {{-- Flash Message (Success) --}}
-        <!-- @if (session('status') === 'password-updated')
+        @if (session('status') === 'password-updated')
             <div class="p-3 mb-4 text-green-800 bg-green-100 rounded-lg text-sm">
                 Password updated successfully.
             </div>
-        @endif -->
+        @endif
 
         {{-- Form --}}
-        <form id="passwordForm" method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
+        <form method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
             @csrf
             @method('PUT')
              {{-- Current Password --}}
@@ -838,13 +838,11 @@
         document.getElementById('export_disease_id').value = "";
     }
     document.addEventListener('DOMContentLoaded', function() {
-        @if (isset($errors) && $errors->updatePassword->any())
-            const pwdModal = document.getElementById('passwordUpdateModal');
-            if (pwdModal) {
-                pwdModal.classList.remove('hidden');
-                pwdModal.classList.add('flex');
+            const modal = document.getElementById('addHospitalModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
-        @endif
         });
     const addHospitalModal = document.getElementById('addHospitalModal');
     if (addHospitalModal) {
@@ -1133,4 +1131,3 @@
     });
 </script>
 @endif
-

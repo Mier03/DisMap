@@ -6,7 +6,6 @@
     @if (session('error'))
         <x-toast type="error" :message="session('error')" />
     @endif
-
     <div class="bg-g-bg flex min-h-screen w-full">
         {{-- Sidebar --}}
         @include('layouts.sidebar')
