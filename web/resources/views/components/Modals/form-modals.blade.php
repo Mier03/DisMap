@@ -609,6 +609,7 @@
             modal.classList.add('flex');
         }
     }
+   
 
     function closeModal(id) {
         const modal = document.getElementById(id);
@@ -837,15 +838,6 @@
     function resetDisease() {
         document.getElementById('export_disease_id').value = "";
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        @if (isset($errors) && $errors->updatePassword->any())
-            const pwdModal = document.getElementById('passwordUpdateModal');
-            if (pwdModal) {
-                pwdModal.classList.remove('hidden');
-                pwdModal.classList.add('flex');
-            }
-        @endif
-        });
     const addHospitalModal = document.getElementById('addHospitalModal');
     if (addHospitalModal) {
         addHospitalModal.addEventListener('click', function(e) {
@@ -1130,6 +1122,17 @@
                 closeModal(modalId);
             }
         });
+    });
+</script>
+@endif
+@if (isset($errors) && $errors->updatePassword->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pwdModal = document.getElementById('passwordUpdateModal');
+        if (pwdModal) {
+            pwdModal.classList.remove('hidden');
+            pwdModal.classList.add('flex');
+        }
     });
 </script>
 @endif
