@@ -427,18 +427,12 @@
 {{-- =========================
     Change Password Modal
 ========================= --}}
-<div id="passwordUpdateModal" class="hidden fixed inset-0 flex bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg w-[500px] p-8 text-left relative">
-        <div class="flex items-center mb-2">
-            <svg class="w-[32px] h-[32px] text-g-dark fill-current"
-                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 11c0 1.104-.896 2-2 2s-2-.896-2-2 2-5 2-5 2 3.896 2 5zm0 0c0 1.104-.896 2-2 2s-2-.896-2-2m-2 0c0-1.104.896-2 2-2s2 .896 2 2" />
-            </svg>
-            <h2 class="ml-3 text-[28px] font-bold text-g-dark">Change Password</h2>
-        </div>
-        <p class="text-g-dark text-[16px] mb-6 ml-1">Update your account password</p>
-
+    <x-modals.modal-popup 
+        modal-id="passwordUpdateModal" 
+        title="Change Password" 
+        description="Update your account password"
+        icon="lock"
+    >
         {{-- Flash Message (Success) --}}
         @if (session('status') === 'password-updated')
             <div class="p-3 mb-4 text-green-800 bg-green-100 rounded-lg text-sm">
@@ -450,17 +444,26 @@
         <form method="POST" action="{{ route('password.update.user') }}" class="space-y-5">
             @csrf
             @method('PUT')
-
-            {{-- Current Password --}}
+             {{-- Current Password --}}
             <div class="relative">
                 <x-input-label for="current_password" :value="__('Current Password')" />
                 <x-text-input id="current_password" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="current_password" required />
+                            type="password" name="current_password" required />
+
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('current_password', this)">
-                    <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
+                    <span class="eye-show hidden">
+                        @svg('gmdi-eye-show', 'h-5 w-5')
+                    </span>
+                    <span class="eye-hide">
+                        @svg('gmdi-eye-hide', 'h-5 w-5')
+                    </span>
                 </button>
+
+                <p id="currentPasswordError" class="text-red-500 text-xs mt-2 hidden">
+                    Current password is incorrect.
+                </p>
                 <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
             </div>
 
@@ -468,33 +471,42 @@
             <div class="relative">
                 <x-input-label for="password" :value="__('New Password')" />
                 <x-text-input id="password" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="password" required />
+                            type="password" name="password" required />
+
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('password', this)">
-                    <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
+                    <span class="eye-show hidden">
+                        @svg('gmdi-eye-show', 'h-5 w-5')
+                    </span>
+                    <span class="eye-hide">
+                        @svg('gmdi-eye-hide', 'h-5 w-5')
+                    </span>
                 </button>
-                <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
             </div>
 
             {{-- Confirm Password --}}
             <div class="relative">
                 <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                 <x-text-input id="password_confirmation" class="block mt-1 w-full h-[40px] text-sm pr-10"
-                              type="password" name="password_confirmation" required />
+                            type="password" name="password_confirmation" required />
+
                 <button type="button"
                         class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700"
                         onclick="togglePassword('password_confirmation', this)">
-                    <img src="{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}" class="w-5 h-5" alt="Hide">
+                    <span class="eye-show hidden">
+                        @svg('gmdi-eye-show', 'h-5 w-5')
+                    </span>
+                    <span class="eye-hide">
+                        @svg('gmdi-eye-hide', 'h-5 w-5')
+                    </span>
                 </button>
-                <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+                <p id="confirmPasswordError" class="text-red-500 text-xs mt-2 hidden">Passwords do not match.</p>
             </div>
 
             {{-- Buttons --}}
             <div class="flex justify-center gap-4 mt-8">
-                <x-primary-button type="submit">
-                    {{ __('Update') }}
-                </x-primary-button>
+                <x-primary-button type="submit">{{ __('Update') }}</x-primary-button>
                 <x-secondary-button type="button" onclick="closeModal('passwordUpdateModal')">
                     {{ __('Cancel') }}
                 </x-secondary-button>
@@ -502,29 +514,90 @@
         </form>
 
         <button type="button" onclick="closeModal('passwordUpdateModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-            ✕
-        </button>
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
+       </x-modals.modal-popup>
     </div>
+    <script>
+    document.getElementById('passwordForm').addEventListener('submit', async function (e) {
+        e.preventDefault(); // stop form from submitting immediately
+
+        const current = document.getElementById('current_password').value.trim();
+        const newPass = document.getElementById('password').value.trim();
+        const confirmPass = document.getElementById('password_confirmation').value.trim();
+
+        let valid = true;
+
+        // Reset messages
+        document.getElementById('confirmPasswordError').classList.add('hidden');
+        document.getElementById('currentPasswordError').classList.add('hidden');
+
+        // 1️⃣ Check if new password matches confirm
+        if (newPass !== confirmPass) {
+            document.getElementById('confirmPasswordError').classList.remove('hidden');
+            valid = false;
+        }
+
+        // 2️⃣ Check current password validity via AJAX
+        if (valid) {
+            const response = await fetch("{{ route('password.check.current') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ current_password: current }),
+            });
+
+            const data = await response.json();
+            if (!data.valid) {
+                document.getElementById('currentPasswordError').classList.remove('hidden');
+                valid = false;
+            }
+        }
+
+        // 3️⃣ Submit form if everything passes
+        if (valid) this.submit();
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+    window.togglePassword = function (id, button) {
+        const input = document.getElementById(id);
+        const eyeShow = button.querySelector('.eye-show');
+        const eyeHide = button.querySelector('.eye-hide');
+
+        if (!input || !eyeShow || !eyeHide) return;
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeShow.classList.remove('hidden');
+            eyeHide.classList.add('hidden');
+        } else {
+            input.type = 'password';
+            eyeShow.classList.add('hidden');
+            eyeHide.classList.remove('hidden');
+        }
+    };
+});
+    </script>
 </div>
 
 {{-- ========== SCRIPTS ========== --}}
 @if ($errors->any())
 <script>
-    function togglePassword(id, button) {
-        const input = document.getElementById(id);
-        const img = button.querySelector('img');
-        const hideIcon = "{{ asset('backend/resources/svg/gmdi-eye-hide.svg') }}";
-        const showIcon = "{{ asset('backend/resources/svg/gmdi-eye-show.svg') }}";
+   function togglePassword(id, button) {
+    const input = document.getElementById(id);
+    const eyeShow = button.querySelector('.eye-show');
+    const eyeHide = button.querySelector('.eye-hide');
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            img.src = showIcon;
-        } else {
-            input.type = 'password';
-            img.src = hideIcon;
-        }
+    if (input.type === 'password') {
+        input.type = 'text';
+        eyeShow.classList.remove('hidden');
+        eyeHide.classList.add('hidden');
+    } else {
+        input.type = 'password';
+        eyeShow.classList.add('hidden');
+        eyeHide.classList.remove('hidden');
     }
+}
     // Pass hospitals data from the controller
     const hospitals = @json($hospitals);
     console.log('Hospitals:', hospitals);

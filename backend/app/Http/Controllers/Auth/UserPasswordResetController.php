@@ -13,6 +13,13 @@ class UserPasswordResetController extends Controller
     /**
      * Handle user password change.
      */
+
+    public function checkCurrent(Request $request)
+    {
+        $valid = Hash::check($request->current_password, Auth::user()->password);
+        return response()->json(['valid' => $valid]);
+    }
+
     public function update(Request $request): RedirectResponse
     {
         // Validate all fields
