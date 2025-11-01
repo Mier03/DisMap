@@ -1,6 +1,6 @@
 @props(['hospital', 'canRemove' => false])
 
-<div class="bg-white rounded-lg shadow border p-4 flex-shrink-0 w-64 border-l-4 border-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all relative">
+<div class="bg-white rounded-lg shadow border p-4 flex-shrink-0 w-64 border-l-4 border-[#296E5B] hover:translate-y-[-2px] hover:shadow-lg transition-all">
     
     <div class="flex items-center gap-3 mb-3">
         <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">

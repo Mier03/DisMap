@@ -174,7 +174,7 @@ class PatientController extends Controller
                 'barangay_id' => $request->input('barangay_id'),
                 'user_type' => 'patient',
                 'is_approved' => true,
-                'profile_image' => 'images/profiles/default.png',
+                'profile_image' => 'images/profiles/defaultprofile.jpg',
                 'status' => 'Active',
             ]);
 
