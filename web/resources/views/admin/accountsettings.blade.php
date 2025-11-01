@@ -23,16 +23,18 @@
 
 
                             
-                        <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start relative">
+                        <div class="bg-white border border-g-dark rounded-lg p-6 flex flex-col md:flex-row md:items-start ">
                         <!-- Profile Form -->
                         <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="w-full flex flex-col md:flex-row md:items-start">
                             @csrf
                             @method('PATCH')
 
                             {{-- Profile Image --}}
-                            <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 relative">
+                            <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 ">
                                 <img id="profileImage"
-                                    src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : '/images/defaultprofile.jpg' }}"
+                                   src="{{ Auth::user()->profile_image 
+                                    ? asset('storage/' . Auth::user()->profile_image) 
+                                    : asset('images/defaultprofile.jpg') }}"
                                     alt="Profile"
                                     class="w-[300px] h-[300px] rounded-full object-cover border-4 border-white shadow-lg cursor-pointer hover:opacity-80 transition"
                                     onclick="document.getElementById('profileInput').click()">

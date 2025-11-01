@@ -11,6 +11,7 @@ use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\WelcomeController; // Add this line
 use App\Http\Controllers\DataRequestController;
 use App\Http\Controllers\Auth\UserPasswordResetController;
+use App\Http\Controllers\HeatmapController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -105,6 +106,6 @@ Route::prefix('superadmin')
         });
     });
 
-
+Route::get('/heatmap', [HeatmapController::class, 'index']);
 
 require __DIR__ . '/auth.php';
