@@ -28,8 +28,14 @@ class CustomTextField extends StatelessWidget {
         const SizedBox(height: 6),
         TextField(
           controller: controller,
+          style: const TextStyle(
+            color: Colors.black87, // Ensure text is visible in light mode
+          ),
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: const TextStyle(
+              color: Colors.grey, // Hint text color
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: const BorderSide(

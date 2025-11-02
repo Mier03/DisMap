@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../components/header.dart';
 import '../components/footer.dart';
 import 'records_page.dart';
-import 'settings_page.dart';
 
 class ProfileTheme {
   final Color backgroundColor;
@@ -48,15 +47,28 @@ class ProfileTheme {
 }
 
 class ProfilePage extends StatefulWidget {
-  final bool isDarkMode;
-  const ProfilePage({super.key, this.isDarkMode = false});
+  final bool initialDarkMode;
+  final ValueChanged<bool>? onDarkModeChanged;
+  
+  const ProfilePage({
+    super.key, 
+    this.initialDarkMode = false, 
+    this.onDarkModeChanged
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final int _selectedIndex = -1;
+  final int _selectedIndex = 1;
+  late bool _isDarkMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkMode = widget.initialDarkMode;
+  }
 
   void _onItemTapped(int index) {
     if (index == _selectedIndex) return;
@@ -64,25 +76,33 @@ class _ProfilePageState extends State<ProfilePage> {
     if (index == 0) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => RecordsPage(isDarkMode: widget.isDarkMode)),
-      );
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => SettingsPage(initialIsDarkMode: widget.isDarkMode)),
+        MaterialPageRoute(builder: (_) => RecordsPage(
+          initialDarkMode: _isDarkMode,
+          onDarkModeChanged: widget.onDarkModeChanged,
+        )),
       );
     }
   }
 
+  void _onDarkModeChanged(bool newValue) {
+    setState(() {
+      _isDarkMode = newValue;
+    });
+    // Notify parent about the dark mode change
+    widget.onDarkModeChanged?.call(newValue);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ProfileTheme theme = widget.isDarkMode ? ProfileTheme.dark : ProfileTheme.light;
+    final ProfileTheme theme = _isDarkMode ? ProfileTheme.dark : ProfileTheme.light;
 
     return Scaffold(
       backgroundColor: theme.backgroundColor,
-      appBar: const AppHeader(
-        title: "Disease Mapper",
-        showProfile: false,
+      appBar: AppHeader(
+        title: "Profile",
+        showProfile: true,
+        isDarkMode: _isDarkMode,
+        onDarkModeChanged: _onDarkModeChanged,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -160,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: Footer(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        isDarkMode: widget.isDarkMode,
+        isDarkMode: _isDarkMode,
       ),
     );
   }

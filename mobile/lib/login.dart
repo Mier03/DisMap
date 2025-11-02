@@ -22,13 +22,11 @@ class _LoginPageState extends State<LoginPage> {
     final password = passwordController.text.trim();
 
     if (username == "test" && password == "test123") {
-      // Navigate to records_page.dart
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RecordsPage()),
       );
     } else {
-      // Show error snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Invalid username or password"),
@@ -41,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -80,7 +79,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20),
 
-               // In your login.dart, update the GestureDetector for "Forgot Password?"
                 GestureDetector(
                   onTap: () {
                     Navigator.push(

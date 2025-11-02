@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../pages/profile_page.dart'; 
+import 'logout.dart'; 
 
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback? onProfileTap;
   final bool showProfile;
+  final bool isDarkMode;
+  final ValueChanged<bool>? onDarkModeChanged;
 
   const AppHeader({
     super.key,
     required this.title,
-    this.onProfileTap,
     this.showProfile = true,
+    this.isDarkMode = false,
+    this.onDarkModeChanged,
   });
+
+  void _handleLogout(BuildContext context) {
+    LogoutDialog.show(
+      context: context,
+      isDarkMode: isDarkMode,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,24 +45,29 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      actions: showProfile
-          ? [
-              IconButton(
-                icon: const Icon(Icons.account_circle, color: Colors.white),
-                onPressed: () {
-                  // call the provided callback if given; otherwise navigate safely
-                  if (onProfileTap != null) {
-                    onProfileTap!.call();
-                  } else {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ProfilePage()),
-                    );
-                  }
-                },
-              ),
-            ]
-          : null,
+      actions: [
+        // Dark mode toggle
+        if (onDarkModeChanged != null) ...[
+          IconButton(
+            icon: Icon(
+              isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              onDarkModeChanged!(!isDarkMode);
+            },
+          ),
+        ],
+        // Profile icon (now functions as logout)
+        if (showProfile) ...[
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: Colors.white),
+            onPressed: () {
+              _handleLogout(context);
+            },
+          ),
+        ],
+      ],
     );
   }
 
