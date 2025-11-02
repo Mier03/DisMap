@@ -36,8 +36,14 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         TextField(
           controller: widget.controller,
           obscureText: _obscureText,
+          style: const TextStyle(
+            color: Colors.black87, // Ensure text is visible in light mode
+          ),
           decoration: InputDecoration(
             hintText: widget.hintText,
+            hintStyle: const TextStyle(
+              color: Colors.grey, // Hint text color
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: const BorderSide(

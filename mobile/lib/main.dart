@@ -22,6 +22,13 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF296E5B),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
       home: const SplashScreen(),
     );
   }
@@ -142,6 +149,13 @@ class _LoadingDotsState extends State<LoadingDots> {
 
   @override
   Widget build(BuildContext context) {
-    return Text("." * dotCount);
+    return Text(
+      "." * dotCount,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+    );
   }
 }

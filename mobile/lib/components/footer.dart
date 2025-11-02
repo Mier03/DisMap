@@ -39,8 +39,8 @@ class Footer extends StatelessWidget {
           label: "Records",
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: "Settings",
+          icon: Icon(Icons.person),
+          label: "Profile",
         ),
       ],
     );
