@@ -6,12 +6,11 @@
     {{-- =========================
         Add Hospital Modal
         ========================== --}}
-        <x-modals.modal-popup 
+    <x-modals.modal-popup 
         modal-id="addHospitalModal" 
         title="Add Hospital" 
         description="Apply to be affiliated with a hospital"
-       
-         width="w-[500px]"
+        width="w-[500px]"
     >
 
             <form  method="POST" action="{{ route('admin.doctor_hospitals.store') }}" enctype="multipart/form-data">
@@ -153,82 +152,81 @@
     {{-- =========================
         Request Data Modal
     ========================== --}}
-<x-modals.modal-popup 
-    modal-id="requestDataModal" 
-    title="Data Request Form" 
-    description="Filter and export data"
-    width="w-[600px]"
-> 
-    <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
-        @csrf
-        <div>
-            <x-input-label for="full_name" :value="__('Full Name')" />
-            <x-text-input id="full_name" class="block mt-1 w-full"
-                type="text" name="full_name" :value="old('full_name')"
-                placeholder="Enter your full name..." />
-            <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
-        </div>
+    <x-modals.modal-popup 
+        modal-id="requestDataModal" 
+        title="Data Request Form" 
+        description="Filter and export data"
+    > 
+        <form action="{{ route('data-request.store') }}" method="POST" class="space-y-5">
+            @csrf
+            <div>
+                <x-input-label for="full_name" :value="__('Full Name')" />
+                <x-text-input id="full_name" class="block mt-1 w-full"
+                    type="text" name="full_name" :value="old('full_name')"
+                    placeholder="Enter your full name..." />
+                <x-input-error :messages="$errors->get('full_name')" class="mt-2" />
+            </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full"
-                type="email" name="email" :value="old('email')"
-                placeholder="Enter your email address..." />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-        
-        {{-- Disease --}}
-        <div class="mt-6">
-            <div class="flex justify-between items-center mb-2">
-                <x-input-label for="requested_disease" :value="__('Disease Type')" />
+            <div>
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input id="email" class="block mt-1 w-full"
+                    type="email" name="email" :value="old('email')"
+                    placeholder="Enter your email address..." />
+                <x-input-error :messages="$errors->get('email')" class="mt-2" />
             </div>
-            <x-dropdown-select id="requested_disease" name="requested_disease" class="w-full h-[40px] text-sm">
-                <option value="" selected>Select disease...</option>
-                @foreach($diseases as $disease)
-                    <option value="{{ $disease->specification }}">{{ $disease->specification }}</option>
-                @endforeach
-            </x-dropdown-select>
-        </div>
-        
-        {{-- Date Range --}}
-        <div class="mt-6">
-            <div class="flex justify-between mb-2">
-                <div class="w-1/2 pr-2">
-                    <x-input-label for="fromDate" :value="__('From')" />
+            
+            {{-- Disease --}}
+            <div class="mt-6">
+                <div class="flex justify-between items-center mb-2">
+                    <x-input-label for="requested_disease" :value="__('Disease Type')" />
                 </div>
-                <div class="w-1/2 pl-2">
-                    <x-input-label for="toDate" :value="__('To')" />
+                <x-dropdown-select id="requested_disease" name="requested_disease" class="w-full h-[40px] text-sm">
+                    <option value="" selected>Select disease...</option>
+                    @foreach($diseases as $disease)
+                        <option value="{{ $disease->specification }}">{{ $disease->specification }}</option>
+                    @endforeach
+                </x-dropdown-select>
+            </div>
+            
+            {{-- Date Range --}}
+            <div class="mt-6">
+                <div class="flex justify-between mb-2">
+                    <div class="w-1/2 pr-2">
+                        <x-input-label for="fromDate" :value="__('From')" />
+                    </div>
+                    <div class="w-1/2 pl-2">
+                        <x-input-label for="toDate" :value="__('To')" />
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-1/2">
+                        <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
+                            type="date" name="fromDate" />
+                    </div>
+                    <div class="w-1/2">
+                        <x-text-input id="toDate" class="w-full h-[40px] text-sm"
+                            type="date" name="toDate" />
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-3">
-                <div class="w-1/2">
-                    <x-text-input id="fromDate" class="w-full h-[40px] text-sm"
-                        type="date" name="fromDate" />
-                </div>
-                <div class="w-1/2">
-                    <x-text-input id="toDate" class="w-full h-[40px] text-sm"
-                        type="date" name="toDate" />
-                </div>
-            </div>
-        </div>
 
-        <div>
-            <x-input-label for="reason" :value="__('Reason for Request')" />
-            <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
-                class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
-            <x-input-error :messages="$errors->get('reason')" class="mt-2" />
-        </div>
-        
-        <div class="flex justify-center gap-4 mt-8 pt-4 border-t border-gray-200">
-            <x-primary-button type="submit">
-                {{ __('Submit') }}
-            </x-primary-button>
-            <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
-                Cancel
-            </x-secondary-button>
-        </div>
-    </form>
-</x-modals.modal-popup>
+            <div>
+                <x-input-label for="reason" :value="__('Reason for Request')" />
+                <textarea id="reason" name="reason" placeholder="Reason for requesting data..."
+                    class="w-full h-[218px] border border-g-dark rounded px-3 py-2 text-sm text-g-dark bg-[#F2F2F2] resize-none focus:outline-none focus:ring-2 focus:ring-g-dark/50"></textarea>
+                <x-input-error :messages="$errors->get('reason')" class="mt-2" />
+            </div>
+            
+            <div class="flex justify-center gap-4 mt-8 pt-4 border-t border-gray-200">
+                <x-primary-button type="submit">
+                    {{ __('Submit') }}
+                </x-primary-button>
+                <x-secondary-button type="button" onclick="closeModal('requestDataModal')">
+                    Cancel
+                </x-secondary-button>
+            </div>
+        </form>
+    </x-modals.modal-popup>
 
 
     {{-- =========================
@@ -285,17 +283,16 @@
             </button>
         </div>
     </div> -->
-    <div id="reasonRequestModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[550px] p-6 text-left relative">
-            <div class="flex items-center mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-g-dark fill-current" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
-                </svg>
-                <h2 class="ml-2 text-xl font-bold text-g-dark">Request Details</h2>
-            </div>
-            <p class="text-g-dark text-sm mb-4 ml-1">Data request information</p>
 
+    {{-- =========================
+        Request Details Modal - SuperAdmin Side --}}
+
+    <x-modals.modal-popup 
+        modal-id="reasonRequestModal" 
+        title="Request Details" 
+        description="Data request information"
+        icon="file_open"
+    > 
             <div class="space-y-3">
                 {{-- Name & Email in one row --}}
                 <div class="grid grid-cols-2 gap-3">
@@ -355,13 +352,7 @@
                     </x-secondary-button>
                 </div>
             </div>
-
-            <button type="button" onclick="closeModal('reasonRequestModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                ✕
-            </button>
-        </div>
-    </div>
+    </x-modals.modal-popup>
 
     {{-- Decline Reason Modal --}}
     <!-- <div id="declineReasonModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
@@ -417,11 +408,6 @@
                     Close
                 </x-secondary-button>
             </div>
-
-            <button type="button" onclick="closeModal('patientDetailsModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                ✕
-            </button>
     </x-modals.modal-popup>
 
 {{-- =========================
@@ -432,6 +418,7 @@
         title="Change Password" 
         description="Update your account password"
         icon="lock"
+        width="w-[500px]"
     >
         {{-- Flash Message (Success) --}}
         <!-- @if (session('status') === 'password-updated')
@@ -512,12 +499,12 @@
                 </x-secondary-button>
             </div>
         </form>
+    </x-modals.modal-popup>
+</div>
 
-        <button type="button" onclick="closeModal('passwordUpdateModal')"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
-       </x-modals.modal-popup>
-    </div>
-    <script>
+{{-- ========== SCRIPTS ========== --}}
+<script>
+    //Change Password Modal
     document.getElementById('passwordForm').addEventListener('submit', async function (e) {
         e.preventDefault(); // stop form from submitting immediately
 
@@ -577,27 +564,7 @@
         }
     };
 });
-    </script>
-</div>
 
-{{-- ========== SCRIPTS ========== --}}
-@if ($errors->any())
-<script>
-   function togglePassword(id, button) {
-    const input = document.getElementById(id);
-    const eyeShow = button.querySelector('.eye-show');
-    const eyeHide = button.querySelector('.eye-hide');
-
-    if (input.type === 'password') {
-        input.type = 'text';
-        eyeShow.classList.remove('hidden');
-        eyeHide.classList.add('hidden');
-    } else {
-        input.type = 'password';
-        eyeShow.classList.add('hidden');
-        eyeHide.classList.remove('hidden');
-    }
-}
     // Pass hospitals data from the controller
     const hospitals = @json($hospitals);
     console.log('Hospitals:', hospitals);
@@ -625,6 +592,7 @@
         }
     }
 
+    //Patient Details Modal
     async function showDetails(recordId) {
         const modal = document.getElementById('patientDetailsModal');
         if (!modal) {
@@ -780,6 +748,7 @@
         }
     }
 
+    // Export Modal
     function setDateFilter(type) {
     const fromInput = document.getElementById('fromDate');
     const toInput = document.getElementById('toDate');
@@ -1124,7 +1093,6 @@
         });
     });
 </script>
-@endif
 @if (isset($errors) && $errors->updatePassword->any())
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -227,24 +227,18 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-40 mt-10">
-                            <x-secondary-button type="button" onclick="prevPhase(3)">
-                                Back
-                            </x-secondary-button>
                             <x-primary-button type="submit">
                                 + Add Patient
                             </x-primary-button>
-
+                            <x-secondary-button type="button" onclick="prevPhase(3)">
+                                Back
+                            </x-secondary-button>
                         </div>
                     </div>
                 </form>
-                <button type="button" onclick="closeModal('{{$id}}')"
-                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                        ✕
-                </button>
     </x-modals.modal-popup>
 @endif
 @if($id=='addRecordModal' && $patient)
-    {{-- The existing patient information (read-only) blocks are fine. --}}
 
     <x-modals.modal-popup
         modal-id="addRecordModal"
@@ -375,12 +369,9 @@
 
                     {{-- Actions --}}
                     <div class="flex justify-end gap-4 mt-6">
-                        <x-secondary-button type="button" onclick="closeModal('{{ $id }}')">Cancel</x-secondary-button>
                         <x-primary-button type="submit">+ Add Record</x-primary-button>
+                        <x-secondary-button type="button" onclick="closeModal('{{ $id }}')">Cancel</x-secondary-button>
                     </div>
-
-                <button type="button" onclick="closeModal('{{ $id }}')"
-                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">✕</button>
 
     </x-modals.modal-popup>
 @endif
