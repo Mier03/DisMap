@@ -13,7 +13,11 @@ class Barangay extends Model
 
     protected $fillable = [
         'name',
+        'latitude',
+        'longitude',
     ];
+
+    public $timestamps = true;
 
     public function users()
     {

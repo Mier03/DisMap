@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Barangay;
 
 class BarangayTableSeeder extends Seeder
 {
@@ -93,14 +94,15 @@ class BarangayTableSeeder extends Seeder
             ['name' => 'Toong', 'latitude' => 10.2898, 'longitude' => 123.8749],
         ];
 
+        
         foreach ($barangays as $barangay) {
-            DB::table('barangays')->insert([
-                'name' => $barangay['name'],
-                'latitude' => $barangay['latitude'],
-                'longitude' => $barangay['longitude'],
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+            Barangay::updateOrCreate(
+                ['name' => $barangay['name']], 
+                [
+                    'latitude'  => $barangay['latitude'],
+                    'longitude' => $barangay['longitude'],
+                ]
+            );
         }
     }
 }
