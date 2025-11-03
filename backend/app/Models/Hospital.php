@@ -14,8 +14,9 @@ class Hospital extends Model
     protected $fillable = [
         'name',
         'type',
+        'address',
     ];
-
+    
     /**
      * Get the doctors associated with the hospital.
      */
