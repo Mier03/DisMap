@@ -2,11 +2,9 @@
 
 namespace App\Mail;
 
+use App\Models\DataRequest;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class DataRequestApproved extends Mailable 
@@ -14,42 +12,34 @@ class DataRequestApproved extends Mailable
     use Queueable, SerializesModels;
 
     public $dataRequest;
-    public $user;
+    public $pdfPath;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($dataRequest, $user)
+    public function __construct(DataRequest $dataRequest, $pdfPath = null)
     {
         $this->dataRequest = $dataRequest;
-        $this->user = $user;
+        $this->pdfPath = $pdfPath;
     }
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Data Request Approved - Disease Surveillance System',
-        );
-    }
+        $email = $this->subject('Your Data Request Has Been Approved - Disease Surveillance System')
+            ->markdown('emails.data-request-approved')
+            ->with([
+                'dataRequest' => $this->dataRequest,
+                'hasAttachment' => !is_null($this->pdfPath),
+            ]);
 
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'emails.data-request-approved',
-        );
-    }
+        // Attach PDF if available
+        if ($this->pdfPath && file_exists($this->pdfPath)) {
+            $email->attach($this->pdfPath, [
+                'as' => "data-request-report-{$this->dataRequest->id}.pdf",
+                'mime' => 'application/pdf',
+            ]);
+        }
 
-    /**
-     * Get the attachments for the message.
-     */
-    public function attachments(): array
-    {
-        return [];
+        return $email;
     }
 }
