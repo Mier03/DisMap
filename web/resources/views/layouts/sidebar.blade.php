@@ -5,7 +5,8 @@
 @if (session('error'))
     <x-toast type="error" :message="session('error')" />
 @endif
-<div class="sidebar w-64 h-screen bg-[#296E5B] text-white flex flex-col justify-between fixed px-4 py-6">
+
+<div class="sidebar w-64 h-screen bg-g-dark text-white flex flex-col justify-between fixed px-4 py-6">
     <!-- Profile Section -->
     <div class="flex items-center mb-6">
         <div class="flex items-center mb-6">
@@ -32,73 +33,130 @@
 
     <!-- Menu Panels -->
     <div class="flex flex-col space-y-3">
-     <!-- Shared Dashboard -->
+        <!-- Shared Dashboard -->
         <a href="{{ route('dashboard') }}"
-           class="flex items-center w-full h-12 rounded-md px-3 transition
-           {{ Request::routeIs('dashboard') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-            <x-gmdi-dashboard-o class="w-5 h-5 mr-2"/>
-            <span class="text-sm font-medium">Dashboard</span>
+           class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+           {{ Request::routeIs('dashboard') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+            @if(Request::routeIs('dashboard'))
+            <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+            @endif
+            <div class="relative z-10 flex items-center w-full">
+                <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                    <x-gmdi-dashboard-o class="w-5 h-5 mr-2" />
+                </div>
+                <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('dashboard') ? '• ' : '' }}Dashboard</span>
+            </div>
         </a>
-         <!-- Shared Disease Records -->
+        
+        <!-- Shared Disease Records -->
         <a href="{{ route('diseaserecords') }}"
-           class="flex items-center w-full h-12 rounded-md px-3 transition
-           {{ Request::routeIs('diseaserecords') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-            <x-gmdi-description-o class="w-5 h-5 mr-2"/>
-            <span class="text-sm font-medium">Disease Records</span>
+           class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+           {{ Request::routeIs('diseaserecords') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+            <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+            @if(Request::routeIs('diseaserecords'))
+            <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+            @endif
+            <div class="relative z-10 flex items-center w-full">
+                <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                    <x-gmdi-description-o class="w-5 h-5 mr-2" />
+                </div>
+                <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('diseaserecords') ? '• ' : '' }}Disease Records</span>
+            </div>
         </a>
 
         @if(Auth::user()->user_type === 'Admin')
             <!-- Superadmin Links -->
-
             <a href="{{ route('superadmin.datarequest') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-               {{ Request::routeIs('superadmin.datarequest') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-folder-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Data Requests</span>
+               class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+               {{ Request::routeIs('superadmin.datarequest') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+                @if(Request::routeIs('superadmin.datarequest'))
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+                @endif
+                <div class="relative z-10 flex items-center w-full">
+                    <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                        <x-gmdi-folder-o class="w-5 h-5 mr-2" />
+                    </div>
+                    <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('superadmin.datarequest') ? '• ' : '' }}Data Requests</span>
+                </div>
             </a>
             
             <a href="{{ route('superadmin.verify_admins') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-               {{ Request::routeIs('superadmin.verify_admins') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-admin-panel-settings-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Manage Admins</span>
+               class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+               {{ Request::routeIs('superadmin.verify_admins') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+                @if(Request::routeIs('superadmin.verify_admins'))
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+                @endif
+                <div class="relative z-10 flex items-center w-full">
+                    <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                        <x-gmdi-admin-panel-settings-o class="w-5 h-5 mr-2" />
+                    </div>
+                    <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('superadmin.verify_admins') ? '• ' : '' }}Manage Admins</span>
+                </div>
             </a>
 
         @else
             <!-- Admin (Doctor) Links -->
             <a href="{{ route('admin.managepatients') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-               {{ Request::routeIs('admin.managepatients') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-people-alt-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Manage Patients</span>
+               class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+               {{ Request::routeIs('admin.managepatients') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+                @if(Request::routeIs('admin.managepatients'))
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+                @endif
+                <div class="relative z-10 flex items-center w-full">
+                    <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                        <x-gmdi-people-alt-o class="w-5 h-5 mr-2" />
+                    </div>
+                    <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('admin.managepatients') ? '• ' : '' }}Manage Patients</span>
+                </div>
             </a>
 
             <a href="{{ route('admin.accountsettings') }}"
-               class="flex items-center w-full h-12 rounded-md px-3 transition
-                {{ Request::routeIs('admin.accountsettings') ? 'bg-[#B3FAD8] text-[#296E5B]' : 'bg-white text-[#296E5B] hover:bg-[#B3FAD8]' }}">
-                <x-gmdi-settings-o class="w-5 h-5 mr-2"/>
-                <span class="text-sm font-medium">Account Settings</span>
+               class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative
+                {{ Request::routeIs('admin.accountsettings') ? 'bg-[#B3FAD8] text-g-dark shadow-lg' : 'bg-white text-g-dark' }}">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+                @if(Request::routeIs('admin.accountsettings'))
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-g-dark rounded-r-md"></div>
+                @endif
+                <div class="relative z-10 flex items-center w-full">
+                    <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                        <x-gmdi-settings-o class="w-5 h-5 mr-2" />
+                    </div>
+                    <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">{{ Request::routeIs('admin.accountsettings') ? '• ' : '' }}Account Settings</span>
+                </div>
             </a>
         @endif
 
         <!-- Logout -->
         <button type="button" onclick="openModal('logoutConfirm')"
-            class="flex items-center w-full h-12 rounded-md px-3 transition bg-white text-[#296E5B] hover:bg-[#B3FAD8]">
-            <x-gmdi-logout-o class="w-5 h-5 mr-2" />
-            <span class="text-sm font-medium">Logout</span>
+            class="group flex items-center w-full h-12 rounded-md px-3 transition-all duration-500 ease-out overflow-hidden relative bg-white text-g-dark">
+            <!-- Animated background that slides from left -->
+            <div class="absolute inset-0 bg-gradient-to-r from-[#B3FAD8] to-[#9AE8C8] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-md"></div>
+            <!-- Content -->
+            <div class="relative z-10 flex items-center w-full">
+                <div class="shrink-0 [&>svg]:fill-g-dark [&>svg]:text-g-dark transition-transform duration-300 group-hover:scale-110">
+                    <x-gmdi-logout-o class="w-5 h-5 mr-2" />
+                </div>
+                <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">Logout</span>
+            </div>
         </button>
     </div>
 
     <!-- Branding Bottom -->
-    <div class="flex items-center mt-8 ml-2">
-        <x-gmdi-public-o class="w-6 h-6 mr-2"/>
+    <div class="flex items-center mt-8 ml-2 transition-all duration-300 ease-in-out hover:scale-[1.02] group/brand">
+        <div class="shrink-0 [&>svg]:fill-white [&>svg]:text-white transition-transform duration-300 group-hover/brand:scale-110">
+            <x-gmdi-public-o class="w-6 h-6 mr-2" />
+        </div>
         <div>
-            <h3 class="text-sm font-semibold">DisMap</h3>
-            <p class="text-xs">Disease Surveillance Map</p>
+            <h3 class="text-sm font-semibold transition-all duration-300 group-hover/brand:translate-x-1">DisMap</h3>
+            <p class="text-xs transition-all duration-300 group-hover/brand:translate-x-1">Disease Surveillance Map</p>
         </div>
     </div>
 
-        <!-- Confirmation Modal -->
+    <!-- Confirmation Modal -->
     <x-modals.confirm-modal 
         id="logoutConfirm"
         title="Confirm Logout"
