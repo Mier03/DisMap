@@ -61,6 +61,7 @@ class PatientController extends Controller
         ]);
     }
 
+    //ADD PATIENT RECORD
     public function storeRecord(Request $request)
     {
         // Validate input
@@ -117,7 +118,7 @@ class PatientController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.managepatients')
+        return redirect()->route('admin.view_patients', ['id' => $request->input('patient_id')])
             ->with('success', 'Patient record added successfully!');
     }
 
@@ -127,6 +128,7 @@ class PatientController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
+    //Add patient
     public function store(Request $request)
     {
         $request->validate([
@@ -224,7 +226,7 @@ class PatientController extends Controller
             }
         });
 
-        return redirect()->route('admin.managepatients')->with('success', 'Patient record added successfully!');
+        return redirect()->route('admin.managepatients')->with('success', 'Patient added successfully!');
     }
 
     /**
@@ -264,6 +266,25 @@ class PatientController extends Controller
             return response()->json(['error' => 'Record not found'], 404);
         }
     }
+
+    public function checkEmail(Request $request)
+    {
+        $exists = User::where('email', $request->email)
+            ->where('user_type', 'Patient')
+            ->exists();
+
+        if ($exists) {
+            $message = 'This email is already taken!';
+            $type = 'error';
+            $toastHtml = view('components.toast', compact('message', 'type'))->render();
+
+            return response()->json(['toast' => $toastHtml, 'exists' => true]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
+
 
     public function viewPatient($id, Request $request) 
     {

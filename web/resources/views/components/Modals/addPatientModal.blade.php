@@ -63,7 +63,6 @@
                                     <option value="" disabled selected>Select sex...</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
                                 </x-dropdown-select>
                                 <x-input-error :messages="$errors->get('sex')" class="mt-2" />
                             </div>
@@ -227,12 +226,12 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-40 mt-10">
-                            <x-primary-button type="submit">
-                                + Add Patient
-                            </x-primary-button>
                             <x-secondary-button type="button" onclick="prevPhase(3)">
                                 Back
                             </x-secondary-button>
+                            <x-primary-button type="submit">
+                                + Add Patient
+                            </x-primary-button>
                         </div>
                     </div>
                 </form>
@@ -250,66 +249,7 @@
                     @csrf
                     <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
-                    {{-- Personal Information (Read-only) --}}
-                    <h3 class="text-2xl font-bold text-g-dark my-4">Patient Information</h3>
-
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <x-input-label :value="__('Full Name')" />
-                            <input type="text" value="{{ $patient->name }}" readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-                    <div>
-                            <x-input-label :value="__('Date of Birth')" />
-                            <input type="text"
-                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }} ({{ \Carbon\Carbon::parse($patient->birthdate)->age }} years old)"
-                                readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-                        <div>
-                            <x-input-label :value="__('Age')" />
-                            <input type="text"
-                                value="{{ \Carbon\Carbon::parse($patient->birthdate)->age }}"
-                                readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                    <div>
-                            <x-input-label :value="__('Sex')" />
-                            <input type="text" value="{{ $patient->sex }}" readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-                        <div>
-                            <x-input-label :value="__('Ethnicity')" />
-                            <input type="text" value="{{ $patient->ethnicity }}" readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-                        <div class="mb-4">
-                            <x-input-label :value="__('Contact Number')" />
-                            <input type="text" value="{{ $patient->contact_number }}" readonly
-                                class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                        </div>
-
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div class="mb-4">
-                                <x-input-label :value="__('Barangay')" />
-                                <input type="text" value="{{ $patient->barangay->name ?? '' }}" readonly
-                                    class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                            </div>
-                            <div class="mb-4">
-                                <x-input-label :value="__('Street Address')" />
-                                <input type="text" value="{{ $patient->street_address }}" readonly
-                                    class="block mt-1 w-full border border-gray-300 rounded bg-gray-100 text-gray-700 px-3 py-2"/>
-                            </div>
-                    </div>
-
                     {{-- Medical Information --}}
-                    <h3 class="text-2xl font-bold text-g-dark mb-4 mt-6">Medical Information</h3>
-
                     <div class="mb-4">
                         <x-input-label for="hospital_id_record" :value="__('Hospital')" />
                         <x-dropdown-select id="hospital_id_record" name="hospital_id" required>
@@ -481,7 +421,7 @@
         contactNumberField.value = countryCode + contactNumberInput;
     }
 
-    function validatePhase(phase) {
+    async function validatePhase(phase) {
         const phaseDiv = document.getElementById(`phase${phase}`);
         const requiredInputs = phaseDiv.querySelectorAll('[required]');
         let isValid = true;
@@ -495,18 +435,58 @@
             }
         });
 
-        // validation for contact number
         if (phase === 1) {
+            // validation for contact number
             const contactNumberInput = document.getElementById('contact_number_input');
-            const contactNumberPattern = /^[0-9]{9,10}$/;
+            const contactNumberPattern = /^9\d{9}$/; // starts with 9 + 9 more digits = total 10
             if (!contactNumberPattern.test(contactNumberInput.value)) {
                 isValid = false;
                 contactNumberInput.classList.add('border-red-500');
-                // ALERT removed for non-blocking UI
             } else {
                 contactNumberInput.classList.remove('border-red-500');
             }
+
+            // Email uniqueness validation
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            const emailFormatPattern = /^\S+@\S+\.\S+$/;
+
+            if (email) {
+                if (!emailFormatPattern.test(email)) {
+                    isValid = false;
+                    emailInput.classList.add('border-red-500');
+                } else {
+                    emailInput.classList.remove('border-red-500');
+
+                    // Email uniqueness validation 
+                    try {
+                        const response = await fetch("{{ route('admin.check.email') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ email })
+                        });
+        
+                        const data = await response.json();
+                        document.body.insertAdjacentHTML('beforeend', data.toast);
+                        if (window.Alpine) Alpine.initTree(document.body.lastElementChild);
+
+                        if (data.exists) {
+                            isValid = false; 
+                            emailInput.classList.add('border-red-500');
+                        } else {
+                            emailInput.classList.remove('border-red-500'); 
+                        }
+                    } catch (err) {
+                        console.error('Error checking email:', err);
+                        isValid = false;
+                    }
+                }
+            }
         }
+
 
         // Validate disease inputs in Phase 2
         const diseaseEntries = document.querySelectorAll('#diseases-container .disease-entry');
@@ -536,11 +516,13 @@
         return isValid;
     }
 
-    function nextPhase(current) {
+    async function nextPhase(current) {
         if (current === 1) {
             updateContactNumber();
         }
-        if (!validatePhase(current)) {
+        const isValid = await validatePhase(current); 
+    
+        if (!isValid) { 
             return;
         }
 
