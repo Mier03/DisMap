@@ -67,14 +67,16 @@ Route::post('/password/check-current', [UserPasswordResetController::class, 'che
                 Route::patch('/patients/{patient}', 'update')->name('patients.update');
                 Route::delete('/patients/{patient}', 'destroy')->name('patients.destroy');
                 Route::get('/managepatients/{id}', 'viewPatient')->name('view_patients');
-                  Route::post('/patients/store-record','storeRecord')->name('patients.storeRecord');
-                   Route::get('/export/patients/pdf', 'exportPdf')->name('export');
+                Route::post('/patients/store-record','storeRecord')->name('patients.storeRecord');
+                Route::get('/export/patients/pdf', 'exportPdf')->name('export');
             });
              Route::post('/patients/store-record', [PatientController::class, 'storeRecord'])
                 ->name('patients.storeRecord');
             // Patient management routes
             Route::post('patient-records/{id}/recovery', [PatientController::class, 'updateRecovery'])->name('patient_records.update_recovery');
             Route::get('/patient-records/{id}', [PatientController::class, 'show']);
+            Route::post('/check-email', [PatientController::class, 'checkEmail'])->name('check.email');
+
         });
 
 // Superadmin routes
