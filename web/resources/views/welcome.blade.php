@@ -72,7 +72,7 @@
         </div>
     </section>
 
-    <section id="heatmap" class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16 opacity-0 transform translate-y-12 transition-all duration-800 ease-out">
+    <section class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16 opacity-0 transform translate-y-12 transition-all duration-800 ease-out">
         <div class="w-full max-w-7xl">
             {{-- Title Section --}}
             <div class="text-center mb-6">
@@ -98,13 +98,15 @@
 
                     {{-- Search Bar --}}
                     <div class="relative flex-1 min-w-0 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300">
-                        <input 
-                            type="text" 
-                            placeholder="Search diseases, locations, barangays..."
-                            class="w-full rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-g-dark text-gray-700 border border-g-dark">
+                        <form method="GET" action="{{ route('welcome') }}">
+                                        <input type="text" name="term" placeholder="Search diseases, locations..."
+                                            value="{{ request('term') }}"
+                                            class="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#19664E]" style="border: 1px solid #E9FBF0;">
+                                    </form>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                             @svg('gmdi-search', 'w-5 h-5 text-gray-400')
                         </div>
+                        
                     </div>
                 </div>
 
@@ -117,13 +119,19 @@
             </div>
 
             {{-- Active Filters --}}
-            <div id="activeFiltersContainer" class="flex items-center space-x-3 mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-500">
-                <span class="text-g-dark font-medium">Active Filters:</span>
-            </div>
+              <div id="activeFiltersContainer" class="mt-3 flex flex-wrap items-center gap-2">
+                                <span class="text-[#19664E] font-medium">Active Filters:</span>
 
-            {{-- Map Container --}}
-            <div class="w-full h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-600">
-                <iframe
+                                <div class="server-filters flex flex-wrap items-center gap-2">
+                                    {!! $activeFilters !!}
+                                </div>
+                                {{-- JS-added filters will appear here --}}
+                            </div>
+
+                {{-- Map Container --}}
+                 <div class="w-full h-[60vh] md:h-[75vh] rounded-lg overflow-hidden shadow-lg border border-g-dark mt-6 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-600">
+                <div id="heatmap" class="h-full w-full"></div> 
+             <!-- <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62827.591820344635!2d123.84120593429692!3d10.315699291245336!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9995fb471b24d%3A0x8742b0c395c7a377!2sCebu%20City%2C%20Cebu!5e0!3m2!1sen!2sph!4v1630671470321!5m2!1sen!2sph"
                     width="100%"
                     height="100%"
@@ -131,7 +139,7 @@
                     allowfullscreen=""
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
+                ></iframe> -->
             </div>
         </div>
     </section>
@@ -219,8 +227,12 @@
     </footer>
 
     <x-modals.form-modals id="requestDataModal" /> 
-    <x-modals.pop-up-modals :barangays="$barangays ?? []" :diseases="$diseases ?? []" />
+     <x-modals.filterModal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('welcome')"/>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    
     <script>
         const observerOptions = {
             threshold: 0.1,
@@ -341,6 +353,12 @@
             }
         }
     </script>
-    
+
+     <script>
+        // Pass PHP data to JavaScript
+        const filterResults = @json($filterResults);
+    </script>
+
+    @vite(['resources/js/heatmap.js'])
 </body>
 </html>
