@@ -14,24 +14,36 @@
 
                         {{-- Filters + Search --}}
                         <div class="mb-4">
-                            <div class="flex items-center space-x-4">
-                                <button
-                                    id="openFilterModal"
-                                    class="flex items-center space-x-2 bg-white border border-[#D0EEDF] text-[#19664E] px-3 py-2 rounded-lg shadow-sm hover:bg-[#19664E] hover:text-white transition">
-                                    <x-gmdi-filter-alt-o class="w-4 h-4" />
-                                    <span class="text-sm">Filters</span>
-                                </button>
+                            <div class="flex items-start space-x-4">
+                                {{-- Filter Button --}}
+                                <div class="flex-shrink-0">
+                                    <button
+                                        id="openFilterModal"
+                                        class="group flex items-center h-[42px] rounded-lg px-4 transition-all duration-300 ease-out bg-white text-g-dark border border-g-dark hover:shadow-md hover:scale-[1.02] active:scale-[0.98]">
+                                        <div class="flex items-center">
+                                           <div class="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 mr-2 [&_svg]:text-g-dark [&_svg]:fill-g-dark">
+                                            <x-gmdi-filter-alt-o class="w-4 h-4" />
+                                        </div>
+                                            <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">Filters</span>
+                                        </div>
+                                    </button>
+                                </div>
 
-                                <div class="relative flex-1 max-w-[1050px]">
+                               
+                                {{-- Search Bar --}}
+                                <div class="flex-1 max-w-[1050px]">
                                     <form method="GET" action="{{ route('dashboard') }}">
-                                        <input type="text" name="term" placeholder="Search diseases, locations..."
+                                        <x-search-bar 
+                                            placeholder="Search diseases, locations..."
                                             value="{{ request('term') }}"
-                                            class="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#19664E]" style="border: 1px solid #E9FBF0;">
+                                            id="search-input"
+                                            name="term"
+                                        />
                                     </form>
                                 </div>
                             </div>
 
-                          <div id="activeFiltersContainer" class="mt-3 flex flex-wrap items-center gap-2">
+                            <div id="activeFiltersContainer" class="mt-3 flex flex-wrap items-center gap-2">
                                 <span class="text-[#19664E] font-medium">Active Filters:</span>
 
                                 <div class="server-filters flex flex-wrap items-center gap-2">
@@ -65,8 +77,6 @@
             </div>
         </div>
     </div>
-
-    
 
     {{-- Filter Modal Component (Assumed to contain the filter logic) --}}
     <x-modals.filterModal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('dashboard')"/>
