@@ -13,15 +13,6 @@
         <p class="text-g-dark font-semibold text-xl mb-6">{{ $message }}</p>
 
         <div class="flex justify-center gap-4">
-            <!-- Cancel button with border -->
-            <button
-                type="button"
-                class="bg-white text-g-dark font-semibold px-4 py-2 rounded-lg hover:bg-gray-400"
-                onclick="closeModal('{{ $id }}')"
-            >
-                {{ $cancelText }}
-            </button>
-
             <!-- Primary button: conditional onclick handled outside attribute -->
             @if($confirmAction)
                 <button
@@ -40,6 +31,15 @@
                     {{ $confirmText }}
                 </button>
             @endif
+
+            <!-- Cancel button with border -->
+            <button
+                type="button"
+                class="bg-white text-g-dark border border-gray-400 font-semibold px-4 py-2 rounded-lg hover:bg-gray-200"
+                onclick="closeModal('{{ $id }}')"
+            >
+                {{ $cancelText }}
+            </button>
         </div>
     </div>
 </div>
