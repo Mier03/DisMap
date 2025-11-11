@@ -34,43 +34,50 @@
         <x-toast type="error" :message="session('error')" />
     @endif
     
-    <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center opacity-0 transform translate-y-12 transition-all duration-800 ease-out"
+  <section class="min-h-screen flex flex-col items-center justify-center w-full px-6 pt-24 text-center bg-cover bg-center"
         style="background-image: url({{ asset('images/welcomebg.svg') }});"
         id="welcome-section">
 
         <div class="relative z-10">
-            <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out">
+            <h1 class="text-4xl md:text-5xl font-bold text-g-dark mb-4 opacity-0 transform translate-y-8 transition-all duration-700 ease-out [animation-fill-mode:both]"
+                data-animate="fadeUp">
                 Disease Monitoring in Cebu City
             </h1>
-            <p class="text-lg md:text-xl text-g-dark mb-10 max-w-3xl opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-100">
+            <p class="text-lg md:text-xl text-g-dark mb-10 max-w-3xl opacity-0 transform translate-y-8 transition-all duration-700 ease-out delay-200 [animation-fill-mode:both]"
+                data-animate="fadeUp">
                 Real-time disease surveillance and heatmap visualization for effective public health monitoring across all barangays in Cebu City.
             </p>
 
             <div class="flex flex-col md:flex-row justify-center items-center gap-8 z-10">
-                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200 hover:-translate-y-2 transition-all duration-300">
+                <div class="opacity-0 transform translate-y-8 transition-all duration-700 ease-out delay-300 [animation-fill-mode:both] hover:scale-105 hover:-translate-y-3 transition-all duration-500 ease-out group"
+                    data-animate="fadeUp">
                     <x-cards.stat-card :value="$totalCases" label="Total Cases" statCardType="welcome">
                         <x-slot name="icon">
-                            @svg('gmdi-people-alt-o', 'h-12 w-12 text-g-dark fill-current')
+                            @svg('gmdi-people-alt-o', 'h-12 w-12 text-g-dark fill-current transition-transform duration-500 group-hover:scale-110')
                         </x-slot>
                     </x-cards.stat-card>
                 </div>
-                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300 hover:-translate-y-2 transition-all duration-300">
+                <div class="opacity-0 transform translate-y-8 transition-all duration-700 ease-out delay-400 [animation-fill-mode:both] hover:scale-105 hover:-translate-y-3 transition-all duration-500 ease-out group"
+                    data-animate="fadeUp">
                     <x-cards.stat-card :value="$totalActiveCases" label="Total Active Cases" statCardType="welcome">
                         <x-slot name="icon">
-                            @svg('gmdi-search', 'h-12 w-12 text-g-dark fill-current')
+                            @svg('gmdi-search', 'h-12 w-12 text-g-dark fill-current transition-transform duration-500 group-hover:scale-110')
                         </x-slot>
                     </x-cards.stat-card>
                 </div>
-                <div class="opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400 hover:-translate-y-2 transition-all duration-300">
+                <div class="opacity-0 transform translate-y-8 transition-all duration-700 ease-out delay-500 [animation-fill-mode:both] hover:scale-105 hover:-translate-y-3 transition-all duration-500 ease-out group"
+                    data-animate="fadeUp">
                     <x-cards.stat-card :value="$totalRecoveredCases" label="Total Critical Cases" statCardType="welcome">
                         <x-slot name="icon">
-                            @svg('gmdi-medical-information-o', 'h-12 w-12 text-g-dark fill-current')
+                            @svg('gmdi-medical-information-o', 'h-12 w-12 text-g-dark fill-current transition-transform duration-500 group-hover:scale-110')
                         </x-slot>
                     </x-cards.stat-card>
                 </div>
             </div>
         </div>
     </section>
+
+        <!-- Disease Heatmap Section -->
 
     <section class="min-h-screen w-full bg-g-bg flex flex-col items-center justify-center px-4 md:px-8 py-16 opacity-0 transform translate-y-12 transition-all duration-800 ease-out">
         <div class="w-full max-w-7xl">
@@ -89,19 +96,25 @@
                 {{-- Left side: Filters + Search --}}
                 <div class="flex items-center gap-3 flex-1 min-w-0">
                     {{-- Filter Button --}}
-                    <button
-                        id="openFilterModal"
-                        class="flex items-center space-x-2 bg-white border border-g-dark text-g-dark px-4 py-2.5 rounded-lg shadow-sm hover:bg-g-dark hover:text-white transition-all duration-300 shrink-0 whitespace-nowrap opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200 group">
-                        @svg('gmdi-filter-alt-o', 'w-5 h-5  text-g-dark fill-current group-hover:text-white transition-colors duration-300')
-                        <span class="text-sm font-medium">Filters</span>
-                    </button>
+                   <div class="flex-shrink-0">
+                                    <button
+                                        id="openFilterModal"
+                                        class="group flex items-center h-[42px] rounded-lg px-4 transition-all duration-300 ease-out bg-white text-g-dark border border-g-dark hover:shadow-md hover:scale-[1.02] active:scale-[0.98]">
+                                        <div class="flex items-center">
+                                           <div class="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 mr-2 [&_svg]:text-g-dark [&_svg]:fill-g-dark">
+                                            <x-gmdi-filter-alt-o class="w-4 h-4" />
+                                        </div>
+                                            <span class="text-sm font-medium transition-all duration-300 group-hover:font-semibold">Filters</span>
+                                        </div>
+                                    </button>
+                                </div>
 
                     {{-- Search Bar --}}
                     <div class="relative flex-1 min-w-0 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300">
                         <form method="GET" action="{{ route('welcome') }}">
                                         <input type="text" name="term" placeholder="Search diseases, locations..."
                                             value="{{ request('term') }}"
-                                            class="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#19664E]" style="border: 1px solid #E9FBF0;">
+                                            class="w-full rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-[#19664E]" style="border: 2.5px solid [#19664E];">
                                     </form>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-3">
                             @svg('gmdi-search', 'w-5 h-5 text-gray-400')
@@ -111,11 +124,13 @@
                 </div>
 
                 {{-- Right side: Request Data Button --}}
-                <button
-                    onclick="openModal('requestDataModal')"
-                    class="border border-g-dark text-g-dark bg-white px-6 py-2.5 rounded-lg hover:bg-g-dark hover:text-white transition-all duration-300 font-medium shrink-0 whitespace-nowrap opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400">
-                    Request Data
-                </button>
+               <div class="flex-shrink-0">
+                    <button
+                        onclick="openModal('requestDataModal')"
+                        class="flex items-center h-[42px] rounded-lg px-4 transition-all duration-300 ease-out bg-white text-g-dark border border-g-dark hover:shadow-md hover:scale-[1.02] active:scale-[0.98]">
+                        <span class="text-sm font-medium">Request Data</span>
+                    </button>
+                </div>          
             </div>
 
             {{-- Active Filters --}}
