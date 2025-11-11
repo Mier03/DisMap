@@ -8,6 +8,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css', // Should be relative to 'web'
                 'resources/js/app.js',  // Should be relative to 'web'
+                'resources/js/heatmap.js', // Should be relative to 'web'
             ],
 
             // ⚠️ CRITICAL PATH FIX ⚠️

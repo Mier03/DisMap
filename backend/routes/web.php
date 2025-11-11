@@ -11,20 +11,18 @@ use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\WelcomeController; // Add this line
 use App\Http\Controllers\DataRequestController;
 use App\Http\Controllers\Auth\UserPasswordResetController;
-use App\Http\Controllers\HeatmapController;
 
 use Illuminate\Support\Facades\Route;
 
 // This is the updated route for your welcome page
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
+// Public JSON endpoint for heatmap data (used by welcome and dashboard filter modal)
+Route::get('/heatmap', [WelcomeController::class, 'getHeatmapData'])->name('heatmap');
+
 // PUBLIC ROUTE - Data request form (accessible without auth)
 Route::post('/data-requests', [SuperAdminController::class, 'storeDataRequest'])->name('data-requests.store');
 Route::post('/data-request/store', [DataRequestController::class, 'store'])->name('data-request.store');
-// Route::post('/request-data', [RequestDataController::class, 'store'])->name('request-data.store');
-
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -108,6 +106,6 @@ Route::prefix('superadmin')
         });
     });
 
-Route::get('/heatmap', [HeatmapController::class, 'index']);
+
 
 require __DIR__ . '/auth.php';

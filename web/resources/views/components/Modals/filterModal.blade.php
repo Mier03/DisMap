@@ -17,7 +17,7 @@
 <div id="filterModal" 
 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" 
      style="z-index: 9999">
-    <form method="get" action="{{ route('dashboard') }}">
+    <form method="get" action="{{ $action ?? url()->current() }}">
         @csrf
          <div id="modalContent" class="bg-white rounded-lg p-6 w-[332px] max-h-[582px] overflow-y-auto z-index-100"></div>
     </form>

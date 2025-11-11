@@ -10,6 +10,7 @@
         modal-id="addHospitalModal" 
         title="Add Hospital" 
         description="Apply to be affiliated with a hospital"
+        icon="apartment"
         width="w-[500px]"
     >
 
