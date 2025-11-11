@@ -2,10 +2,11 @@
     <div class="bg-g-bg flex min-h-screen w-full">
         @include('layouts.sidebar')
 
-        <div class="ml-64 flex-1 py-8 px-6">
-            <div class="max-w-4xl mx-auto">
+        <div class="ml-64 flex-1 py-12 px-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="p-6 bg-inherit text-gray-900">
                 <!-- Header with back button on the right -->
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center">
                     <x-page-header title="Admin Details" subtitle="Administrator information and certification" />
 
                     <a href="{{ route('superadmin.verify_admins') }}"
@@ -15,95 +16,88 @@
                     </a>
                 </div>
 
-                <div class="bg-white border border-g-dark/20 rounded-lg p-6 shadow-sm">
-                    <!-- Admin Information Cards -->
+                <div>
+                    @php
+                        $certificationPath = $admin->hospitals->first()->pivot->certification ?? null;
+                    @endphp
+
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <!-- Personal Information Card -->
-                        <div class="bg-g-bg border border-g-light rounded-lg p-4">
-                            <div class="flex items-center mb-3">
-                                <span class="material-icons text-g-dark mr-2">person</span>
-                                <h3 class="text-lg font-semibold text-g-dark">Personal Information</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Name:</span>
-                                    <span class="text-gray-800" id="admin-name">{{ $admin->name }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Email:</span>
-                                    <span class="text-gray-800" id="admin-email">{{ $admin->email }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Username:</span>
-                                    <span class="text-gray-800" id="admin-username">{{ $admin->username }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2">
-                                    <span class="text-sm font-medium text-gray-600">Hospital:</span>
-                                    <span class="text-gray-800" id="admin-hospital">{{ $admin->hospitals->first()->name ?? 'N/A' }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Patient Information Cards -->
+                    <x-cards.info_cards
+                        title="Personal Information"
+                        icon="person"
+                        :items="[
+                            [
+                                'label' => 'Name:',
+                                'value' => $admin->name
+                            ],
+                            [
+                                'label' => 'Email:',
+                                'value' => $admin->email
+                            ],
+                            [
+                                'label' => 'Username:',
+                                'value' => $admin->username
+                            ],
+                            [
+                                'label' => 'Hospital:',
+                                'value' => $admin->hospitals->first()->name ?? 'N/A'
+                            ],
+                        ]"
+                    />
 
-                        <!-- Status Information Card -->
-                        <div class="bg-g-bg border border-g-light rounded-lg p-4">
-                            <div class="flex items-center mb-3">
-                                <span class="material-icons text-g-dark mr-2">verified_user</span>
-                                <h3 class="text-lg font-semibold text-g-dark">Status & Certification</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <!-- Approval Status (for pending/approved) -->
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Approval Status:</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $admin->is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                        {{ $admin->is_approved ? 'Approved' : 'Pending Approval' }}
-                                    </span>
-                                </div>
-
-                                <!-- Active/Inactive Status (only for approved admins) -->
-                                @if($admin->is_approved)
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">Account Status:</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium {{ $admin->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ ucfirst($admin->status ?? 'Inactive') }}
-                                    </span>
-                                </div>
-                                @endif
-                                <div class="flex justify-between items-center py-2 border-b border-g-light/50">
-                                    <span class="text-sm font-medium text-gray-600">User Type:</span>
-                                    <span class="text-gray-800 capitalize">{{ $admin->user_type }}</span>
-                                </div>
-                                <div class="flex justify-between items-center py-2">
-                                    <span class="text-sm font-medium text-gray-600">Certification:</span>
-                                    <span class="text-gray-800">{{ $admin->certification ? 'Provided' : 'Not provided' }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Account Information Card -->
+                    <x-cards.info_cards
+                        title="Status & Certification"
+                        icon="verified_user"
+                        :items="[
+                            [
+                                'label' => 'Approval Status:',
+                                'badge' => [
+                                    'text' => $admin->is_approved ? 'Approved' : 'Pending Approval',
+                                    'class' => $admin->is_approved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                ]
+                            ],
+                            [
+                                'label' => 'Account Status:',
+                                'badge' => [
+                                    'text' => ucfirst($admin->status ?? 'Inactive'),
+                                    'class' => $admin->status === 'Inactive' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                ]
+                            ],
+                            [
+                                'label' => 'User Type:',
+                                'value' => $admin->user_type
+                            ],
+                            [
+                                'label' => 'Certification:',
+                                'value' => !empty($certificationPath) ? 'Provided' : 'Not provided'
+                            ],
+                        ]"
+                    />
                     </div>
-
+                    @if($certificationPath)
                     <!-- Certification Document Section -->
-                    @if($admin->certification)
-                    <div class="bg-g-bg border border-g-light rounded-lg p-4 mb-6">
-                        <div class="flex items-center mb-4">
-                            <span class="material-icons text-g-dark mr-2">description</span>
-                            <h3 class="text-lg font-semibold text-g-dark">Certification Document</h3>
-                        </div>
-
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="bg-white border border-g-dark rounded-lg p-4 mb-6 shadow-md transition duration-300 hover:shadow-xl">
                             <div class="flex items-center justify-between mb-3">
-                                <span class="text-sm text-gray-600">Certificate File:</span>
-                                <a href="{{ asset('storage/'.$admin->certification) }}" target="_blank"
-                                    class="flex items-center bg-g-dark text-white px-3 py-2 rounded hover:bg-g-dark/80 transition">
-                                    <span class="material-icons mr-1 text-sm">visibility</span>
-                                    View Certificate
+                                <div class="flex items-center mb-1">
+                                    <span class="material-icons text-g-dark mr-2">description</span>
+                                    <h3 class="text-lg font-semibold text-g-dark">Certification Document</h3>
+                                </div>
+                                <a href="{{ asset('storage/'.$certificationPath) }}" target="_blank" class="no-underline">
+                                    <x-primary-button >
+                                        <span class="material-icons mr-2">visibility</span>
+                                        View Certificate
+                                    </x-primary-button>
                                 </a>
                             </div>
                             <div class="bg-gray-50 p-3 rounded border">
                                 <p class="text-sm text-gray-700 break-words font-mono">
-                                    {{ $admin->certification }}
+                                    {{ $certificationPath }}
                                 </p>
                             </div>
                         </div>
-                    </div>
                     @endif
 
                     <!-- Check if we're in edit mode based on request parameter -->
@@ -112,7 +106,7 @@
                     @endphp
 
                     <!-- Action Buttons -->
-                    <div class="flex space-x-4 pt-4 border-t border-g-light">
+                    <div class="flex space-x-4">
                         @if(!$admin->is_approved)
                         <!-- For Pending Admins: Approve and Reject -->
                         <form method="POST" action="{{ route('superadmin.approve_admin', $admin->id) }}" class="flex-1">
@@ -140,7 +134,7 @@
                             class="flex-1 no-underline">
                             <x-primary-button class="w-full justify-center bg-g-dark hover:bg-g-dark/90">
                                 <span class="material-icons mr-2">edit</span>
-                                Edit Admin
+                                Edit Admin  
                             </x-primary-button>
                         </a>
 
@@ -171,7 +165,7 @@
 
                     <!-- Edit Form-->
                     @if($isEditMode)
-                    <div id="edit-form" class="mt-6 pt-4 border-t border-g-light">
+                    <div id="edit-form" class="bg-white border border-g-dark rounded-lg p-4 mt-6 shadow-md transition duration-300 hover:shadow-xl">
                         <h3 class="text-lg font-semibold text-g-dark mb-4">Edit Admin Information</h3>
 
                         {{-- @if(session('success'))
@@ -213,7 +207,6 @@
                             </div>
 
                             <!-- Status Field (only show for approved admins) -->
-                            <!-- Status Field (only show for approved admins) -->
                             @if($admin->is_approved)
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Account Status *</label>
@@ -243,6 +236,7 @@
                                 <button type="submit" class="bg-g-dark text-white px-4 py-2 rounded hover:bg-g-dark/90 transition">
                                     Save Changes
                                 </button>
+                                
                                 <!-- <a href="{{ route('superadmin.view_admin', ['id' => $admin->id]) }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition text-center flex items-center">
                                     Cancel
                                 </a> -->
@@ -251,9 +245,12 @@
                     </div>
                     @endif
                 </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    
 
     <x-certificate-modal />
 </x-app-layout>

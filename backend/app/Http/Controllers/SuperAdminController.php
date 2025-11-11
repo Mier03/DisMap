@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Mail\DataRequestApproved;
 use App\Mail\DataRequestRejected;
 use Illuminate\Support\Facades\Mail;
+use App\Services\DataRequestPdfService;
 
 class SuperAdminController extends Controller
 {
@@ -401,21 +402,26 @@ class SuperAdminController extends Controller
             ]);
 
             DB::transaction(function () use ($dataRequest, $validated, $request) {
-                $dataRequest->update([
-                    'status' => $validated['status'],
-                    // 'decline_reason' => $validated['decline_reason'] ?? null,
-                    'processed_at' => now(),
-                ]);
+            $dataRequest->update([
+                'status' => $validated['status'],
+                'processed_at' => now(),
+            ]);
 
-                // Log email attempt
             Log::info("Attempting to send email for data request {$dataRequest->id} to {$dataRequest->email}");
 
-                // Send email notification
             if ($validated['status'] === 'approved') {
-                Mail::to($dataRequest->email)->send(new DataRequestApproved($dataRequest, $dataRequest));
-                Log::info("Approval email sent to {$dataRequest->email}");
+                $pdfService = new DataRequestPdfService();
+                $pdfPath = $pdfService->generateDataRequestPdf($dataRequest);
+
+                // Use full namespace
+                Mail::to($dataRequest->email)->send(new \App\Mail\DataRequestApproved($dataRequest, $pdfPath));
+                Log::info("Approval email with PDF sent to {$dataRequest->email}");
+                
+                if (file_exists($pdfPath)) {
+                    unlink($pdfPath);
+                }
             } elseif ($validated['status'] === 'rejected') {
-                Mail::to($dataRequest->email)->send(new DataRequestRejected($dataRequest, $dataRequest));
+                Mail::to($dataRequest->email)->send(new \App\Mail\DataRequestRejected($dataRequest));
                 Log::info("Rejection email sent to {$dataRequest->email}");
             }
             });

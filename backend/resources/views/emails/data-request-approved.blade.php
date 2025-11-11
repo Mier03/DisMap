@@ -4,48 +4,189 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Data Request Approved</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #296E5B; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-        .content { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none; }
-        .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
-        .details-box { background: white; padding: 15px; border-left: 4px solid #296E5B; margin: 15px 0; border-radius: 4px; }
+    <style type="text/css">
+        body { 
+            font-family: Arial, Helvetica, sans-serif; 
+            line-height: 1.6; 
+            color: #333333; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f5f5f5;
+        }
+        .container-dr { 
+            max-width: 600px; 
+            width: 100%; 
+            margin: 20px auto 0 auto; 
+            padding: 0; 
+        }
+        .header-dr { 
+            background-color: #296E5B; 
+            color: #ffffff; 
+            padding: 25px 20px; 
+            text-align: center; 
+        }
+        .content-dr { 
+            background-color: #ffffff; 
+            padding: 20px; 
+            border: 1px solid #dddddd;
+            border-top: none;
+        }
+        .footer { 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 12px; 
+            color: #666666; 
+            background-color: #f9f9f9;
+        }
+        .details-box { 
+            background-color: #ffffff; 
+            padding: 15px; 
+            border-left: 4px solid #296E5B; 
+            margin: 15px 0; 
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555555;
+            padding: 5px 0;
+            vertical-align: top;
+            width: 140px;
+        }
+        .info-value {
+            padding: 5px 0;
+            vertical-align: top;
+        }
+        .attachment-note {
+            background-color: #e8f4fd;
+            border: 1px solid #b6d7ff;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .header-dr h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        p {
+            margin: 0 0 15px 0;
+        }
+        .last-paragraph {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Data Request Approved</h1>
-        </div>
-        <div class="content">
-            <p>Dear {{ $dataRequest->name }},</p>
-            
-            <p>We are pleased to inform you that your data request has been approved.</p>
-            
-            <div class="details-box">
-                <p><strong>Request Details:</strong></p>
-                <p><strong>Requested Data:</strong> {{ $dataRequest->requested_disease ?? 'N/A' }}</p>
-                <p><strong>Date Range:</strong> 
-                    @if($dataRequest->from_date && $dataRequest->to_date)
-                        {{ \Carbon\Carbon::parse($dataRequest->from_date)->format('F j, Y') }} to {{ \Carbon\Carbon::parse($dataRequest->to_date)->format('F j, Y') }}
-                    @else
-                        All available data
-                    @endif
-                </p>
-                <p><strong>Purpose:</strong> {{ $dataRequest->purpose ?? 'N/A' }}</p>
-                <p><strong>Date Approved:</strong> {{ now()->format('F j, Y') }}</p>
-            </div>
-            
-            <p>You can now access the requested data through our system.</p>
-            
-            <p>Thank you for your interest in our disease surveillance data.</p>
-            
-            <p>Best regards,<br>Disease Surveillance System Administrator</p>
-        </div>
-        <div class="footer">
-            <p>This is an automated message. Please do not reply to this email.</p>
-        </div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table class="container-dr" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td>
+                            <!-- Header -->
+                            <table class="header-dr" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <h1 style="margin: 0; font-size: 24px; font-weight: bold; color: #ffffff;">Data Request Approved</h1>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Content -->
+                            <table class="content-dr" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <p>Dear <strong>{{ $dataRequest->name }}</strong>,</p>
+
+                                        <p>We are pleased to inform you that your data request has been approved by the Disease Surveillance System administration.</p>
+
+                                        <!-- Details Box -->
+                                        <table class="details-box" width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin-top: 0; color: #296E5B; font-weight: bold; margin-bottom: 15px;">Request Details:</p>
+                                                    
+                                                    <table class="info-table" cellpadding="0" cellspacing="0">
+                                                        <tr>
+                                                            <td class="info-label">Requester:</td>
+                                                            <td class="info-value">{{ $dataRequest->name }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Email:</td>
+                                                            <td class="info-value">{{ $dataRequest->email }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Requested Disease:</td>
+                                                            <td class="info-value">{{ $dataRequest->requested_disease }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Date Range:</td>
+                                                            <td class="info-value">
+                                                                {{ $dataRequest->from_date !== 'Not specified' ? \Carbon\Carbon::parse($dataRequest->from_date)->format('F j, Y') : 'Any' }} 
+                                                                to 
+                                                                {{ $dataRequest->to_date !== 'Not specified' ? \Carbon\Carbon::parse($dataRequest->to_date)->format('F j, Y') : 'Any' }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Purpose:</td>
+                                                            <td class="info-value">{{ $dataRequest->purpose }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Date Requested:</td>
+                                                            <td class="info-value">{{ $dataRequest->created_at->format('F j, Y') }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="info-label">Date Approved:</td>
+                                                            <td class="info-value">{{ now()->format('F j, Y') }}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        @if($hasAttachment)
+                                        <!-- Attachment Note -->
+                                        <table class="attachment-note" width="100%" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <p><strong>📎 Your requested data is attached as a PDF file.</strong></p>
+                                                    <p>The PDF will automatically open when clicked in most email clients and web browsers.</p>
+                                                    <p><em>Please note that this data is provided for the purpose you specified: <strong>"{{ $dataRequest->purpose }}"</strong></em></p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        @endif
+
+                                        <p><strong>Important:</strong> This data is confidential and should be handled according to data privacy regulations. Please ensure proper data handling and disposal when it is no longer needed.</p>
+
+                                        <p>If you have any questions or need further assistance, please contact the system administrator.</p>
+
+                                        <p>Thank you for your interest in disease surveillance data.</p>
+
+                                        <p class="last-paragraph">Best regards,<br>
+                                        <strong>Disease Surveillance System Team</strong></p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Footer -->
+                            <table class="footer" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td>
+                                        <p>This is an automated message. Please do not reply to this email.</p>
+                                        <p>Disease Surveillance System © {{ date('Y') }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
