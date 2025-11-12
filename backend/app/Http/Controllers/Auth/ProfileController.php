@@ -42,7 +42,7 @@ class ProfileController extends Controller
 
                 if ($request->hasFile('profile_image')) {
             // Delete old image (if not default)
-            if ($user->profile_image && $user->profile_image !== 'images/profiles/default.png') {
+            if ($user->profile_image && $user->profile_image !== 'images/profiles/defaultprofile.jpg') {
                 Storage::disk('public')->delete($user->profile_image);
             }
 

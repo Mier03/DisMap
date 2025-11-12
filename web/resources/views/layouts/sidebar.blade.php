@@ -13,11 +13,18 @@
             <div class="w-16 h-16 bg-white rounded-[8px] flex items-center justify-center overflow-hidden">
                 @php
                     $user = Auth::user();
-                    $profileImage = $user->profile_image 
-                        ? asset('storage/' . $user->profile_image) 
-                        : asset('images/defaultprofile.jpg');
+                    $dbImagePath = $user->profile_image;
+                    $defaultImagePath = 'images/profiles/defaultprofile.jpg'; 
+                    
+                    if ($dbImagePath === $defaultImagePath) {
+                        $profileImage = asset($defaultImagePath);
+                    } elseif ($dbImagePath) {
+                        $profileImage = asset('storage/' . $dbImagePath);
+                    } else {
+                        $profileImage = asset($defaultImagePath);
+                    }
                 @endphp
-
+                
                 <img src="{{ $profileImage }}" alt="Profile" class="w-full h-full object-cover">
             </div>
             <div class="ml-3">
