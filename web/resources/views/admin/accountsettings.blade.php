@@ -119,7 +119,7 @@
                                             <x-cards :hospital="$hospital" can-remove="true" />
 
                                             @if (true) {{-- $canRemove is always true here --}}
-                                                <x-modal-popup
+                                                <x-cards.addhospital-cards
                                                     id="removeModal-{{ $hospital->id }}"
                                                     title="Remove Hospital"
                                                     message="Are you sure you want to remove {{ $hospital->name }} from your assignments?"
@@ -127,7 +127,7 @@
                                                     cancelText="Cancel"
                                                     :action="route('admin.hospitals.unassign', $hospital->id)"
                                                     method="DELETE">
-                                                </x-modal-popup>
+                                                </x-cards.addhospital-cards>
                                             @endif
                                         @endforeach
                                     
