@@ -29,12 +29,19 @@
                             @csrf
                             @method('PATCH')
 
+                            @php
+                                $profileImagePath = Auth::user()->profile_image;
+                                $defaultImagePath = 'images/profiles/defaultprofile.jpg'; // Match the DB value exactly
+                            @endphp
+
                             {{-- Profile Image --}}
                             <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 ">
                                 <img id="profileImage"
-                                   src="{{ Auth::user()->profile_image 
-                                    ? asset('storage/' . Auth::user()->profile_image) 
-                                    : asset('images/defaultprofile.jpg') }}"
+                                   src="{{ 
+                                        $profileImagePath === $defaultImagePath
+                                        ? asset($defaultImagePath)
+                                        : asset('storage/' . $profileImagePath) 
+                                    }}"
                                     alt="Profile"
                                     class="w-[300px] h-[300px] rounded-full object-cover border-4 border-white shadow-lg cursor-pointer hover:opacity-80 transition"
                                     onclick="document.getElementById('profileInput').click()">

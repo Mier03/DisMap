@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
             'public'
         );
         // default profile image path
-        $profileImagePath = 'images/profiles/default.png';
+        $profileImagePath = 'images/profiles/defaultprofile.jpg';
 
         // If user uploaded a custom profile image, store it in their folder
         if ($request->hasFile('profile_image')) {
