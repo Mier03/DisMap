@@ -13,9 +13,9 @@
     "src": "resources/js/app.js",
     "isEntry": true
   },
-   "resources/js/heatmap.js": {
-    "file": "assets/app-WEWETEST.js",
-    "name": "app",
+  "resources/js/heatmap.js": {
+    "file": "assets/heatmap-BjHWNQ06.js",
+    "name": "heatmap",
     "src": "resources/js/heatmap.js",
     "isEntry": true
   }
