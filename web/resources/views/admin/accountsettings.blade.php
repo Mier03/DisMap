@@ -38,7 +38,7 @@
                             <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 ">
                                 <img id="profileImage"
                                    src="{{ 
-                                        $profileImagePath === $defaultImagePath
+                                        $profileImagePath === $defaultImagePath || !file_exists(asset('storage/' . $profileImagePath))
                                         ? asset($defaultImagePath)
                                         : asset('storage/' . $profileImagePath) 
                                     }}"
