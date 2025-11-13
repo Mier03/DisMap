@@ -17,15 +17,15 @@
                     $defaultImagePath = 'images/profiles/defaultprofile.jpg'; 
                     
                     if ($dbImagePath === $defaultImagePath) {
-                        $profileImage = asset($defaultImagePath);
-                    } elseif ($dbImagePath) {
-                        $profileImage = asset('storage/' . $dbImagePath);
+                        $profileImage = $defaultImagePath;
                     } else {
-                        $profileImage = asset($defaultImagePath);
+                        $profileImage = 'storage/' . $dbImagePath;
                     }
 
                     // if file not exists in storage, use default
-                    if (!file_exists($profileImage)) {
+                    if (file_exists(public_path($profileImage))) {
+                        $profileImage = asset($profileImage);
+                    } else {
                         $profileImage = asset($defaultImagePath);
                     }
                 @endphp

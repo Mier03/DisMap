@@ -32,16 +32,20 @@
                             @php
                                 $profileImagePath = Auth::user()->profile_image;
                                 $defaultImagePath = 'images/profiles/defaultprofile.jpg'; // Match the DB value exactly
+
+                                if ($profileImagePath === $defaultImagePath) {
+                                    $profileImagePath = $defaultImagePath;
+                                } else {
+                                    $profileImagePath = 'storage/'. $profileImagePath;
+                                }
+
+                                $profileImagePath = file_exists(public_path($profileImagePath)) ? asset($profileImagePath) : asset($defaultImagePath);
                             @endphp
 
                             {{-- Profile Image --}}
                             <div class="flex-shrink-0 mr-6 mb-6 md:mb-0 ">
                                 <img id="profileImage"
-                                   src="{{ 
-                                        $profileImagePath === $defaultImagePath || !file_exists(asset('storage/' . $profileImagePath))
-                                        ? asset($defaultImagePath)
-                                        : asset('storage/' . $profileImagePath) 
-                                    }}"
+                                   src="{{ $profileImagePath }}"
                                     alt="Profile"
                                     class="w-[300px] h-[300px] rounded-full object-cover border-4 border-white shadow-lg cursor-pointer hover:opacity-80 transition"
                                     onclick="document.getElementById('profileInput').click()">
