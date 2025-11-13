@@ -23,6 +23,11 @@
                     } else {
                         $profileImage = asset($defaultImagePath);
                     }
+
+                    // if file not exists in storage, use default
+                    if (!file_exists($profileImage)) {
+                        $profileImage = asset($defaultImagePath);
+                    }
                 @endphp
                 
                 <img src="{{ $profileImage }}" alt="Profile" class="w-full h-full object-cover">
