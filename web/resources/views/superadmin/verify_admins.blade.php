@@ -59,7 +59,7 @@
 
                         {{-- Modals for Pending Approvals --}}
                         @foreach($pendingAdmins as $admin)
-                        <x-modals.modal-popup
+                        <x-modals.pop-up-modals
                             id="approveModal-{{ $admin->id }}"
                             title="Approve User"
                             message="Do you want to approve {{ $admin->name }}?"
@@ -68,7 +68,7 @@
                             :action="route('superadmin.approve_admin', $admin->id)"
                             method="POST" />
 
-                        <x-modals.modal-popup
+                        <x-modals.pop-up-modals
                             id="rejectModal-{{ $admin->id }}"
                             title="Reject User"
                             message="Do you want to reject {{ $admin->name }}?"
