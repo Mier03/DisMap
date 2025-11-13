@@ -79,7 +79,7 @@
     </div>
 
     {{-- Filter Modal Component (Assumed to contain the filter logic) --}}
-    <x-modals.filterModal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('dashboard')"/>
+    <x-modals.filter-modal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('dashboard')"/>
     
     {{-- Include Leaflet JS and Heatmap Plugin --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

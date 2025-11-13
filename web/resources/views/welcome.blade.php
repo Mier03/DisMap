@@ -242,7 +242,7 @@
     </footer>
 
     <x-modals.form-modals id="requestDataModal" /> 
-     <x-modals.filterModal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('welcome')"/>
+     <x-modals.filter-modal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('welcome')"/>
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
