@@ -30,7 +30,7 @@
                     }
                 @endphp
                 
-                <img src="{{ $profileImage }}" alt="Profile" class="w-full h-full object-cover">
+                <img src="{{ $profileImage }}" alt="Profile-{{ $dbImagePath }}" class="w-full h-full object-cover">
             </div>
             <div class="ml-3">
                 <h2 class="text-lg font-semibold">
