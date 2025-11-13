@@ -96,7 +96,7 @@
 
                         {{-- Data Request Modals --}}
                         @foreach($dataRequests as $request)
-                        <modals.modal-popup
+                        <x-modals.modal-popup
                             id="approveModal-{{ $request->id }}"
                             title="Approve Data Request"
                             message="Do you want to approve the data request from {{ $request->name }}?"
@@ -107,9 +107,9 @@
                             @slot('formFields')
                                 <input type="hidden" name="status" value="approved">
                             @endslot
-                        </modals.modal-popup>
+                        </x-modals.modal-popup>
 
-                        <modals.modal-popup
+                        <x-modals.modal-popup
                             id="rejectModal-{{ $request->id }}"
                             title="Reject Data Request"
                             message="Do you want to reject the data request from {{ $request->name }}?"
@@ -120,12 +120,12 @@
                             @slot('formFields')
                                 <input type="hidden" name="status" value="rejected">
                             @endslot
-                        </modals.modal-popup>
+                        </x-modals.modal-popup>
                         @endforeach
 
                         {{-- Hospital Request Modals --}}
                         @foreach($pendingHospitals as $hospital)
-                        <modals.modal-popup
+                        <x-modals.modal-popup
                             id="approveModal-{{ $hospital->id }}"
                             title="Approve Hospital Request"
                             message="Do you want to approve the hospital request for {{ $hospital->doctor->name ?? 'N/A' }} at {{ $hospital->hospital->name ?? 'N/A' }}?"
@@ -134,7 +134,7 @@
                             :action="route('superadmin.approve_hospital', $hospital->id)"
                             method="POST" />
 
-                        <modals.modal-popup
+                        <x-modals.modal-popup
                             id="rejectModal-{{ $hospital->id }}"
                             title="Reject Hospital Request"
                             message="Do you want to reject the hospital request for {{ $hospital->doctor->name ?? 'N/A' }} at {{ $hospital->hospital->name ?? 'N/A' }}?"
