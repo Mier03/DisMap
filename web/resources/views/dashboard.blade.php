@@ -44,7 +44,7 @@
                             </div>
 
                             <div id="activeFiltersContainer" class="mt-3 flex flex-wrap items-center gap-2">
-                                <span class="text-[#19664E] font-medium">Active Filters:</span>
+                                <span class="text-[#19664E] font-medium js-active-filter-span">Active Filters:</span>
 
                                 <div class="server-filters flex flex-wrap items-center gap-2">
                                     {!! $activeFilters !!}

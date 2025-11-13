@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const serverFiltersContainer = activeFiltersContainer.querySelector('.server-filters');
 
     // ✅ Keep the header label
-    const label = activeFiltersContainer.querySelector('span.text-[#19664E], span.text-g-dark');
+    const label = activeFiltersContainer.querySelector('span.js-active-filter-span, span.text-g-dark');
 
     // ✅ Clear only the *dynamic* filters (not the backend ones)
     activeFiltersContainer.innerHTML = '';
