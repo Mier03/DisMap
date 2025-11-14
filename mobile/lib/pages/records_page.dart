@@ -3,6 +3,10 @@ import '../components/header.dart';
 import '../components/footer.dart';
 import '../components/info_card.dart';
 import 'profile_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../api_config.dart';
 
 class RecordsPage extends StatefulWidget {
   final bool initialDarkMode;
@@ -21,11 +25,13 @@ class RecordsPage extends StatefulWidget {
 class _RecordsPageState extends State<RecordsPage> {
   final int _selectedIndex = 0;
   late bool _isDarkMode;
+  late Future<List<Map<String, dynamic>>> _recordsFuture;
 
   @override
   void initState() {
     super.initState();
     _isDarkMode = widget.initialDarkMode;
+    _recordsFuture = fetchRecords(); // fetch API on init
   }
 
   void _onItemTapped(int index) {
@@ -48,6 +54,30 @@ class _RecordsPageState extends State<RecordsPage> {
     });
     // Notify parent about the dark mode change
     widget.onDarkModeChanged?.call(newValue);
+  }
+
+  // ✅ Fetch records directly as JSON maps
+  Future<List<Map<String, dynamic>>> fetchRecords() async {
+    final url = Uri.parse('${ApiConfig.baseUrl}records');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('api_token') ?? '';
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+  final Map<String, dynamic> recordsResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      final List data = recordsResponse['records'];
+      return List<Map<String, dynamic>>.from(data);
+    } else {
+      throw Exception('Failed to load records');
+    }
   }
 
   @override
@@ -78,26 +108,43 @@ class _RecordsPageState extends State<RecordsPage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView(
-                children: [
-                  InfoCard(
-                    date: "August 30, 2028",
-                    diagnosis: "Dengue",
-                    doctor: "Jane Smith, MD",
-                    hospital: "Cebu Doctors Hospital",
-                    status: "Active",
-                    isDarkMode: _isDarkMode, 
-                  ),
-                  const SizedBox(height: 12),
-                  InfoCard(
-                    date: "August 30, 2028",
-                    diagnosis: "Malaria",
-                    doctor: "Jane Smith, MD",
-                    hospital: "Cebu Doctors Hospital",
-                    status: "Recovered",
-                    isDarkMode: _isDarkMode, 
-                  ),
-                ],
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: _recordsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text(
+                      'Error: ${snapshot.error}',
+                      style: TextStyle(color: textColor),
+                    ));
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                        child: Text(
+                      'No records found',
+                      style: TextStyle(color: textColor),
+                    ));
+                  }
+
+                  final records = snapshot.data!;
+                  return ListView.separated(
+                    itemCount: records.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final r = records[index];
+
+                      return InfoCard(
+                        date: r['date_reported'],
+                        diagnosis: r['disease_name'],
+                        doctor: r['doctor_name'] ?? '',
+                        hospital: r['hospital_name'],
+                        status: r['status'],
+                        isDarkMode: _isDarkMode,
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],

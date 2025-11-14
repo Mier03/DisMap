@@ -5,6 +5,10 @@ import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
 import 'pages/records_page.dart';
 import 'forgetpassword.dart'; 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../api_config.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,24 +21,45 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _handleLogin() {
-    final username = usernameController.text.trim();
-    final password = passwordController.text.trim();
+Future<void> _handleLogin() async {
+  final username = usernameController.text.trim();
+  final password = passwordController.text.trim();
 
-    if (username == "test" && password == "test123") {
+  final url = Uri.parse('${ApiConfig.baseUrl}login');
+
+  final response = await http.post(
+    url,
+    headers: {
+      'Accept': 'application/json',
+    },
+    body: {
+      'email': username,
+      'password': password,
+    },
+  );
+
+    final Map<String, dynamic> loginResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      // Save token in SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('api_token', loginResponse['token']);
+ 
+
+
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const RecordsPage()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid username or password"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+      context,
+      MaterialPageRoute(builder: (_) => const RecordsPage()),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:Text(loginResponse['message']),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
