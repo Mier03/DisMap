@@ -26,6 +26,9 @@ class PatientRecord extends Model
         'date_recovered',
     ];
 
+     // ✅ Tell Laravel to include it in JSON automatically
+    protected $appends = ['doctor_name', 'hospital_name', 'disease_name'];
+
 
     /**
      * Get the patient that owns the record.
@@ -59,5 +62,28 @@ class PatientRecord extends Model
     public function recoveredByDoctorHospital()
     {
         return $this->belongsTo(DoctorHospital::class, 'recovered_dh_id');
+    }
+
+    public function getDoctorNameAttribute()
+    {
+        if($this->status != 'Recovered') {
+            return $this->reportedByDoctorHospital->doctor->name;
+        } else {
+            return $this->recoveredByDoctorHospital->doctor->name;
+        }
+    }
+
+    public function getHospitalNameAttribute()
+    {
+        if($this->status != 'Recovered') {
+            return $this->reportedByDoctorHospital->hospital->name;
+        } else {
+            return $this->recoveredByDoctorHospital->hospital->name;
+        }
+    }
+
+    public function getDiseaseNameAttribute()
+    {
+        return $this->disease->specification;
     }
 }
