@@ -225,7 +225,6 @@
                         <tr>
                             <td colspan="{{ 6 + ($addDiseaseColumn ? 1 : 0) + ($addHospitalColumn ? 1 : 0) }}">
                                 <div class="empty-state">
-                                    <i>📄</i>
                                     <p>No records found matching your criteria</p>
                                 </div>
                             </td>
