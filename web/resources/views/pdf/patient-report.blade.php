@@ -32,7 +32,8 @@
         }
         
         .report-header {
-            background: linear-gradient(135deg, #296E5B 0%, #1e4d3f 100%);
+            /* background: linear-gradient(135deg, #296E5B 0%, #1e4d3f 100%); */
+              background: #296E5B;
             color: white;
             padding: 25px 30px;
         }

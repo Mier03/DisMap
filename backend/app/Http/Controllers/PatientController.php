@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mpdf\Mpdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
 
@@ -388,9 +388,9 @@ public function exportPdf(Request $request)
     $toDate = $request->input('toDate');
     $hospitalId = $request->input('hospital_id');
     $diseaseId = $request->input('disease_id');
-    $filterType = $request->input('filterType'); // 👈 Add this (passed from frontend when "month" is clicked)
+    $filterType = $request->input('filterType');
 
-    $user = auth()->user();
+    $user = Auth::user();
 
     $query = PatientRecord::with([
         'patient',
@@ -400,7 +400,7 @@ public function exportPdf(Request $request)
         'recoveredByDoctorHospital.doctor'
     ]);
 
-    // ✅ Apply filters
+    // Apply date filters
     if ($fromDate && $toDate) {
         $query->whereBetween('date_reported', [$fromDate, $toDate]);
     } elseif ($fromDate) {
@@ -409,22 +409,25 @@ public function exportPdf(Request $request)
         $query->whereDate('date_reported', '<=', $toDate);
     }
 
+    // Apply hospital filter
     if ($hospitalId) {
         $query->whereHas('reportedByDoctorHospital', fn($q) =>
             $q->where('hospital_id', $hospitalId)
         );
     }
 
+    // Apply disease filter
     if ($diseaseId) {
         $query->where('disease_id', $diseaseId);
     }
- // ✅ Determine filters
+
+    // Determine filters applied
     $isDateFiltered = $fromDate || $toDate;
     $isHospitalFiltered = !empty($hospitalId);
     $isDiseaseFiltered = !empty($diseaseId);
     $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
 
-    // ✅ Show all patients if "month" filter used
+    // No filter and not month → show doctor’s related patient only
     if ($filterType !== 'month' && !$isFilterApplied) {
         $query->where(function ($q) use ($user) {
             $q->whereHas('reportedByDoctorHospital', fn($sub) =>
@@ -435,22 +438,18 @@ public function exportPdf(Request $request)
         });
     }
 
-    // ✅ Decide which columns to ADD based on filter combinations
+    // Decide dynamic PDF columns
     $addDiseaseColumn = false;
     $addHospitalColumn = false;
 
     if ($isDateFiltered && !$isHospitalFiltered && !$isDiseaseFiltered) {
-        // Only Date
         $addDiseaseColumn = true;
         $addHospitalColumn = true;
     } elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
-        // Date + Hospital
         $addDiseaseColumn = true;
     } elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
-        // Date + Disease
         $addHospitalColumn = true;
     } elseif (!$isFilterApplied) {
-        // No Filter (Default)
         $addDiseaseColumn = true;
         $addHospitalColumn = true;
     }
@@ -459,45 +458,36 @@ public function exportPdf(Request $request)
     $diseaseName = $diseaseId ? Disease::find($diseaseId)?->specification : null;
 
     $patientRecords = $query->get();
-
-    // ✅ Generate PDF
-    $html = view('pdf.patient-report', compact(
-        'patientRecords',
-        'fromDate',
-        'toDate',
-        'hospitalId',
-        'diseaseId',
-        'isFilterApplied',
-        'hospitalName',
-        'diseaseName',
-        'addDiseaseColumn',
-        'addHospitalColumn'
-    ))->render();
-
-    $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
-    $fontDirs = $defaultConfig['fontDir'];
-    $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
-    $fontData = $defaultFontConfig['fontdata'];
-
-    $mpdf = new \Mpdf\Mpdf([
-        'tempDir' => storage_path('app/mpdf'),
-        'fontDir' => array_merge($fontDirs, [resource_path('fonts')]),
-        'fontdata' => $fontData + [
-            'inter' => [
-                'R' => 'Inter_18pt-Regular.ttf',
-                'B' => 'Inter_18pt-Bold.ttf',
-                'I' => 'Inter_18pt-Italic.ttf',
-            ],
-        ],
-        'default_font' => 'inter',
-        'margin_left' => 10,
-        'margin_right' => 10,
-        'margin_top' => 10,
-        'margin_bottom' => 10,
+    // return view('pdf.patient-report', [
+    //     'patientRecords' => $patientRecords,
+    //     'fromDate' => $fromDate,
+    //     'toDate' => $toDate,
+    //     'hospitalId' => $hospitalId,
+    //     'diseaseId' => $diseaseId,
+    //     'isFilterApplied' => $isFilterApplied,
+    //     'hospitalName' => $hospitalName,
+    //     'diseaseName' => $diseaseName,
+    //     'addDiseaseColumn' => $addDiseaseColumn,
+    //     'addHospitalColumn' => $addHospitalColumn,
+    // ]);
+    // Generate PDF using DomPDF
+    $pdf = Pdf::loadView('pdf.patient-report', [
+        'patientRecords' => $patientRecords,
+        'fromDate' => $fromDate,
+        'toDate' => $toDate,
+        'hospitalId' => $hospitalId,
+        'diseaseId' => $diseaseId,
+        'isFilterApplied' => $isFilterApplied,
+        'hospitalName' => $hospitalName,
+        'diseaseName' => $diseaseName,
+        'addDiseaseColumn' => $addDiseaseColumn,
+        'addHospitalColumn' => $addHospitalColumn,
     ]);
 
-    $mpdf->WriteHTML($html);
-    return $mpdf->Output('patient-records.pdf', 'I');
+    // Optional: Higher quality, avoid blurry text
+    $pdf->setPaper('A4', 'portrait');
+
+    return $pdf->stream('patient-records.pdf');
 }
 
 
