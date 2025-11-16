@@ -115,7 +115,7 @@
                                     pattern="[0-9]{9,10}"
                                     onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
                                     oninput="updateContactNumber()" />
-                                <input type="hidden" id="contact_number" name="contact_number" :value="old('contact_number')" />
+                                <input type="hidden" id="contact_number" name="contact_number"  value="{{ old('contact_number') }}" />
                             </div>
                             <x-input-error :messages="$errors->get('contact_number')" class="mt-2" />
                         </div>

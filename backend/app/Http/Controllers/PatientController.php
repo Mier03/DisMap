@@ -129,8 +129,10 @@ class PatientController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     //Add patient
+ 
     public function store(Request $request)
     {
+            //   dd($request->all());
         $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
@@ -152,7 +154,7 @@ class PatientController extends Controller
             'hospital_id' => 'required|exists:hospitals,id',
             'email' => 'required|email|unique:users,email',
         ]);
-
+        
         DB::transaction(function () use ($request) {
             $username = strtolower(
                 str_replace(' ', '', $request->input('first_name')) .
@@ -225,7 +227,7 @@ class PatientController extends Controller
                 ]);
             }
         });
-
+        //    dd($request->all());
         return redirect()->route('admin.managepatients')->with('success', 'Patient added successfully!');
     }
 
