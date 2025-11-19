@@ -70,13 +70,36 @@ class _RecordsPageState extends State<RecordsPage> {
       },
     );
 
-  final Map<String, dynamic> recordsResponse = jsonDecode(response.body);
+    final Map<String, dynamic> recordsResponse = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
       final List data = recordsResponse['records'];
-      return List<Map<String, dynamic>>.from(data);
+      
+      // Format dates in records
+      final formatted = List<Map<String, dynamic>>.from(data).map((record) {
+        return {
+          ...record,
+          'date_reported': _formatDate(record['date_reported']),
+          'date_recovered': record['date_recovered'] != null ? _formatDate(record['date_recovered']) : null,
+        };
+      }).toList();
+      
+      return formatted;
     } else {
       throw Exception('Failed to load records');
+    }
+  }
+
+  // Helper function to format dates
+  String _formatDate(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'Not provided';
+    try {
+      final date = DateTime.parse(dateString);
+      final months = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+      return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    } catch (e) {
+      return dateString;
     }
   }
 
