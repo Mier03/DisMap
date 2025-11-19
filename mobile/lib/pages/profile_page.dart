@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../components/header.dart';
 import '../components/footer.dart';
+import '../api_config.dart';
 import 'records_page.dart';
 
 class ProfileTheme {
@@ -63,11 +67,36 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final int _selectedIndex = 1;
   late bool _isDarkMode;
+  late Future<Map<String, dynamic>> _userProfileFuture;
 
   @override
   void initState() {
     super.initState();
     _isDarkMode = widget.initialDarkMode;
+    _userProfileFuture = fetchUserProfile();
+  }
+
+  // ✅ Fetch user profile as JSON map
+  Future<Map<String, dynamic>> fetchUserProfile() async {
+    final url = Uri.parse('${ApiConfig.baseUrl}user/profile');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('api_token') ?? '';
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    final Map<String, dynamic> profileResponse = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      return profileResponse;
+    } else {
+      throw Exception('Failed to load user profile');
+    }
   }
 
   void _onItemTapped(int index) {
@@ -105,76 +134,123 @@ class _ProfilePageState extends State<ProfilePage> {
         onDarkModeChanged: _onDarkModeChanged,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              color: theme.primaryColor,
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Column(
-                children: [
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: ClipOval(
-                      child: SvgPicture.asset(
-                        "assets/images/profile-default.svg",
-                        fit: BoxFit.cover,
+        child: FutureBuilder<Map<String, dynamic>>(
+          future: _userProfileFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: TextStyle(color: theme.valueTextColor),
+                ),
+              );
+            } else if (!snapshot.hasData) {
+              return Center(
+                child: Text(
+                  'No profile data available',
+                  style: TextStyle(color: theme.valueTextColor),
+                ),
+              );
+            }
+
+            final userProfile = snapshot.data!;
+            final userName = userProfile['name'] ?? 'Unknown';
+            final rawBirthdate = userProfile['birthdate'] ?? 'Not provided';
+            final userEmail = userProfile['email'] ?? 'Not provided';
+            final userEthnicity = userProfile['ethnicity'] ?? 'Not provided';
+            final userAddress = userProfile['street_address'] ?? 'Not provided';
+            final userContactNumber = userProfile['contact_number'] ?? 'Not provided';
+
+            // Format birthdate to Month Day, Year
+            String formattedBirthdate = 'Not provided';
+            try {
+              if (rawBirthdate != 'Not provided') {
+                final date = DateTime.parse(rawBirthdate);
+                final months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+                formattedBirthdate = '${months[date.month - 1]} ${date.day}, ${date.year}';
+              }
+            } catch (e) {
+              formattedBirthdate = rawBirthdate;
+            }
+
+            return Column(
+              children: [
+                Container(
+                  color: theme.primaryColor,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        padding: const EdgeInsets.all(8),
+                        child: ClipOval(
+                          child: SvgPicture.asset(
+                            "assets/images/profile-default.svg",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      Text(
+                        userName,
+                        style: TextStyle(
+                          color: theme.titleTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Jennie Ruby Jane Kim",
-                    style: TextStyle(
-                      color: theme.titleTextColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      _InfoCard(
+                        title: "Birthdate", 
+                        value: formattedBirthdate,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      _InfoCard(
+                        title: "Nationality", 
+                        value: userEthnicity,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      _InfoCard(
+                        title: "Email Address", 
+                        value: userEmail,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      _InfoCard(
+                        title: "Contact Number",
+                        value: userContactNumber,
+                        theme: theme,
+                      ),
+                      const SizedBox(height: 12),
+                      _InfoCard(
+                        title: "Address",
+                        value: userAddress,
+                        theme: theme,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Information rows - now in cards
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  _InfoCard(
-                    title: "Birthdate", 
-                    value: "January 16, 1996",
-                    theme: theme,
-                  ),
-                  const SizedBox(height: 12),
-                  _InfoCard(
-                    title: "Nationality", 
-                    value: "Filipino",
-                    theme: theme,
-                  ),
-                  const SizedBox(height: 12),
-                  _InfoCard(
-                    title: "Email Address", 
-                    value: "jenduki@gmail.com",
-                    theme: theme,
-                  ),
-                  const SizedBox(height: 12),
-                  _InfoCard(
-                    title: "Address",
-                    value: "150 Archbishop Reyes Avenue, Banilad, Cebu City,\nCebu 6000, Philippines",
-                    theme: theme,
-                  ),
-                ],
-              ),
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
       bottomNavigationBar: Footer(
