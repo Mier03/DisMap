@@ -285,105 +285,94 @@
         </div>
     </div> -->
 
+    
+
     {{-- =========================
         Request Details Modal - SuperAdmin Side --}}
-
+        
     <x-modals.modal-popup 
         modal-id="reasonRequestModal" 
         title="Request Details" 
         description="Data request information"
         icon="file_open"
     > 
-            <div class="space-y-3">
-                {{-- Name & Email in one row --}}
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label for="modal_full_name" :value="__('Full Name')" class="text-xs" />
-                        <x-text-input id="modal_full_name" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="text" readonly />
-                    </div>
-                    <div>
-                        <x-input-label for="modal_email" :value="__('Email')" class="text-xs" />
-                        <x-text-input id="modal_email" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="email" readonly />
-                    </div>
-                </div>
-
-                {{-- Requested Disease & Date Requested in one row --}}
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label for="modal_requested_disease" :value="__('Disease')" class="text-xs" />
-                        <x-text-input id="modal_requested_disease" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="text" readonly />
-                    </div>
-                    <div>
-                        <x-input-label for="modal_created_at" :value="__('Date Requested')" class="text-xs" />
-                        <x-text-input id="modal_created_at" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="text" readonly />
-                    </div>
-                </div>
-
-                {{-- Date Range --}}
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label for="modal_from_date" :value="__('From Date')" class="text-xs" />
-                        <x-text-input id="modal_from_date" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="text" readonly />
-                    </div>
-                    <div>
-                        <x-input-label for="modal_to_date" :value="__('To Date')" class="text-xs" />
-                        <x-text-input id="modal_to_date" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
-                            type="text" readonly />
-                    </div>
-                </div>
-
-                {{-- Purpose --}}
+        <div class="space-y-3">
+            {{-- Name & Email in one row --}}
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <x-input-label for="modal_purpose" :value="__('Purpose')" class="text-xs" />
-                    <textarea id="modal_purpose" readonly
-                        class="w-full h-[80px] border border-g-dark rounded px-2 py-1 text-xs text-g-dark bg-[#F2F2F2] resize-none focus:outline-none"></textarea>
+                    <x-input-label for="modal_full_name" :value="__('Full Name')" class="text-xs" />
+                    <x-text-input id="modal_full_name" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="text" readonly />
                 </div>
+                <div>
+                    <x-input-label for="modal_email" :value="__('Email')" class="text-xs" />
+                    <x-text-input id="modal_email" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="email" readonly />
+                </div>
+            </div>
 
-                <div class="flex justify-center gap-4 mt-6">
-                    <x-primary-button type="button" onclick="approveRequest()">
+            {{-- Requested Disease & Date Requested in one row --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <x-input-label for="modal_requested_disease" :value="__('Disease')" class="text-xs" />
+                    <x-text-input id="modal_requested_disease" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="text" readonly />
+                </div>
+                <div>
+                    <x-input-label for="modal_created_at" :value="__('Date Requested')" class="text-xs" />
+                    <x-text-input id="modal_created_at" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="text" readonly />
+                </div>
+            </div>
+
+            {{-- Date Range --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <x-input-label for="modal_from_date" :value="__('From Date')" class="text-xs" />
+                    <x-text-input id="modal_from_date" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="text" readonly />
+                </div>
+                <div>
+                    <x-input-label for="modal_to_date" :value="__('To Date')" class="text-xs" />
+                    <x-text-input id="modal_to_date" class="block mt-1 w-full bg-[#F2F2F2] text-sm py-1"
+                        type="text" readonly />
+                </div>
+            </div>
+
+            {{-- Purpose --}}
+            <div>
+                <x-input-label for="modal_purpose" :value="__('Purpose')" class="text-xs" />
+                <textarea id="modal_purpose" readonly
+                    class="w-full h-[80px] border border-g-dark rounded px-2 py-1 text-xs text-g-dark bg-[#F2F2F2] resize-none focus:outline-none"></textarea>
+            </div>
+
+            {{-- Hidden input to store current request ID --}}
+            <input type="hidden" id="current_request_id" name="request_id" value="">
+
+            <div id="actionButtonsContainer" class="flex justify-center gap-4 mt-6">
+                {{-- Approve Form --}}
+                <form id="approveFormModal" method="POST" action="">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="approved">
+                    <x-primary-button type="submit">
                         {{ __('Accept') }}
                     </x-primary-button>
-                    <x-secondary-button type="button" onclick="declineRequest()">
+                </form>
+
+                {{-- Reject Form --}}
+                <form id="rejectFormModal" method="POST" action="">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="status" value="rejected">
+                    <x-secondary-button type="submit">
                         Decline
                     </x-secondary-button>
-                </div>
+                </form>
             </div>
+        </div>
     </x-modals.modal-popup>
 
-    {{-- Decline Reason Modal --}}
-    <!-- <div id="declineReasonModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-lg w-[450px] p-5 text-left relative">
-            <h2 class="text-lg font-bold text-g-dark mb-3">Decline Request</h2>
-
-            <div class="mb-3">
-                <x-input-label for="decline_reason" :value="__('Reason for declining (optional)')" class="text-xs" />
-                <textarea id="decline_reason"
-                    class="w-full h-[80px] border border-gray-300 rounded px-2 py-1 text-sm text-gray-700 resize-none focus:outline-none focus:ring-1 focus:ring-g-dark/50"
-                    placeholder="Enter reason for declining..."></textarea>
-            </div>
-
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeModal('declineReasonModal')"
-                    class="bg-gray-500 text-white px-3 py-1.5 rounded hover:bg-gray-600 transition text-sm">
-                    Cancel
-                </button>
-                <button type="button" onclick="submitDecline()"
-                    class="bg-r-dark text-white px-3 py-1.5 rounded hover:bg-red-600 transition text-sm">
-                    Confirm Decline
-                </button>
-            </div>
-
-            <button type="button" onclick="closeModal('declineReasonModal')"
-                class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
-                ✕
-            </button>
-        </div>
-    </div> -->
 
     {{-- =========================
         Patient Details Modal
@@ -817,9 +806,9 @@
         });
     }
 
-    // Superadmin Request Details
+
+// Superadmin Request Details
 let currentRequestId = null;
-let pendingAction = null; // 'approve' or 'decline'
 
 function viewRequestedData(requestId, tableType) {
     currentRequestId = requestId;
@@ -833,8 +822,16 @@ function viewRequestedData(requestId, tableType) {
     document.getElementById('modal_created_at').value = 'Loading...';
     document.getElementById('modal_purpose').value = 'Loading...';
 
+    // Set form actions
+    const approveForm = document.getElementById('approveFormModal');
+    const rejectForm = document.getElementById('rejectFormModal');
+    const actionUrl = `/superadmin/data-requests/${requestId}`;
+    
+    approveForm.action = actionUrl;
+    rejectForm.action = actionUrl;
+
     // Show/hide buttons based on table type
-    const actionButtons = document.querySelector('#reasonRequestModal .flex.justify-center.gap-4');
+    const actionButtons = document.getElementById('actionButtonsContainer');
     if (tableType === 'pending') {
         actionButtons.classList.remove('hidden');
     } else {
@@ -866,32 +863,6 @@ function viewRequestedData(requestId, tableType) {
             console.error('Error fetching request details:', error);
             alert('Error loading request details. Please try again.');
         });
-}
-
-function approveRequest() {
-    if (!currentRequestId) return;
-
-    pendingAction = 'approve';
-    closeModal('reasonRequestModal');
-    showConfirmation(
-        'Accept Request?',
-        'Are you sure you want to accept this data request?',
-        'Accept',
-        'Cancel'
-    );
-}
-
-function declineRequest() {
-    if (!currentRequestId) return;
-
-    pendingAction = 'decline';
-    closeModal('reasonRequestModal');
-    showConfirmation(
-        'Decline Request?',
-        'Are you sure you want to decline this data request?',
-        'Decline',
-        'Cancel'
-    );
 }
 
     // function submitDecline() {
