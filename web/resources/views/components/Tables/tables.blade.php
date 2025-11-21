@@ -134,36 +134,36 @@
                         @break
 
                         {{-- Pending Data Requests --}}
-                        @case('pendingDataRequests')
-                            <x-tables.td>{{ $item->name }}</x-tables.td>
-                            <x-tables.td>{{ $item->email }}</x-tables.td>
-                            <x-tables.td>
-                                <button onclick="viewRequestedData({{ $item->id }})"
-                                    class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                    View
-                                </button>
-                            </x-tables.td>
-                            <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
-                            <x-tables.td>
-                                <x-tables.action-buttons :id="$item->id" />
-                            </x-tables.td>
-                        @break
+@case('pendingDataRequests')
+    <x-tables.td>{{ $item->name }}</x-tables.td>
+    <x-tables.td>{{ $item->email }}</x-tables.td>
+    <x-tables.td>
+        <button onclick="viewRequestedData({{ $item->id }}, 'pending')"
+            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+            View
+        </button>
+    </x-tables.td>
+    <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
+    <x-tables.td>
+        <x-tables.action-buttons :id="$item->id" />
+    </x-tables.td>
+@break
 
-                        {{-- All Data Requests --}}
-                        @case('allDataRequests')
-                            <x-tables.td>{{ $item->name }}</x-tables.td>
-                            <x-tables.td>{{ $item->email }}</x-tables.td>
-                            <x-tables.td>
-                                <button onclick="viewRequestedData({{ $item->id }})"
-                                    class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
-                                    View
-                                </button>
-                            </x-tables.td>
-                            <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
-                            <x-tables.td>
-                                <x-tables.status-badge :status="$item->status ?? 'Pending'" />
-                            </x-tables.td>
-                        @break
+{{-- All Data Requests --}}
+@case('allDataRequests')
+    <x-tables.td>{{ $item->name }}</x-tables.td>
+    <x-tables.td>{{ $item->email }}</x-tables.td>
+    <x-tables.td>
+        <button onclick="viewRequestedData({{ $item->id }}, 'all')"
+            class="bg-g-dark text-white px-3 py-1 rounded hover:bg-g-dark/80 transition">
+            View
+        </button>
+    </x-tables.td>
+    <x-tables.td>{{ $item->created_at->format('m/d/Y') }}</x-tables.td>
+    <x-tables.td>
+        <x-tables.status-badge :status="$item->status ?? 'Pending'" />
+    </x-tables.td>
+@break
 
                         {{-- Manage Patients --}}
                         @case('allPatients')

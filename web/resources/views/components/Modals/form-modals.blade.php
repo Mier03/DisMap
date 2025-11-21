@@ -818,66 +818,70 @@
     }
 
     // Superadmin Request Details
-    let currentRequestId = null;
-    let pendingAction = null; // 'approve' or 'decline'
+let currentRequestId = null;
+let pendingAction = null; // 'approve' or 'decline'
 
-    function viewRequestedData(requestId) {
-        currentRequestId = requestId;
+function viewRequestedData(requestId, tableType) {
+    currentRequestId = requestId;
 
-        // Show loading state
-        document.getElementById('modal_full_name').value = 'Loading...';
-        document.getElementById('modal_email').value = 'Loading...';
-        document.getElementById('modal_requested_disease').value = 'Loading...';
-        document.getElementById('modal_from_date').value = 'Loading...';
-        document.getElementById('modal_to_date').value = 'Loading...';
-        document.getElementById('modal_created_at').value = 'Loading...';
-        document.getElementById('modal_purpose').value = 'Loading...';
+    // Show loading state
+    document.getElementById('modal_full_name').value = 'Loading...';
+    document.getElementById('modal_email').value = 'Loading...';
+    document.getElementById('modal_requested_disease').value = 'Loading...';
+    document.getElementById('modal_from_date').value = 'Loading...';
+    document.getElementById('modal_to_date').value = 'Loading...';
+    document.getElementById('modal_created_at').value = 'Loading...';
+    document.getElementById('modal_purpose').value = 'Loading...';
 
-        // Fetch request details
-        fetch(`/superadmin/data-requests/${requestId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Populate modal with data
-                document.getElementById('modal_full_name').value = data.name || 'N/A';
-                document.getElementById('modal_email').value = data.email || 'N/A';
-                document.getElementById('modal_requested_disease').value = data.requested_disease || 'N/A';
-                document.getElementById('modal_from_date').value = data.from_date || 'Not specified';
-                document.getElementById('modal_to_date').value = data.to_date || 'Not specified';
-                document.getElementById('modal_created_at').value = new Date(data.created_at).toLocaleDateString() || 'N/A';
-                document.getElementById('modal_purpose').value = data.purpose || 'N/A';
-
-                // Show modal
-                openModal('reasonRequestModal');
-            })
-            .catch(error => {
-                console.error('Error fetching request details:', error);
-                alert('Error loading request details. Please try again.');
-            });
+    // Show/hide buttons based on table type
+    const actionButtons = document.querySelector('#reasonRequestModal .flex.justify-center.gap-4');
+    if (tableType === 'pending') {
+        actionButtons.classList.remove('hidden');
+    } else {
+        actionButtons.classList.add('hidden');
     }
 
-    function approveRequest() {
-        if (!currentRequestId) return;
+    // Fetch request details
+    fetch(`/superadmin/data-requests/${requestId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Populate modal with data
+            document.getElementById('modal_full_name').value = data.name || 'N/A';
+            document.getElementById('modal_email').value = data.email || 'N/A';
+            document.getElementById('modal_requested_disease').value = data.requested_disease || 'N/A';
+            document.getElementById('modal_from_date').value = data.from_date || 'Not specified';
+            document.getElementById('modal_to_date').value = data.to_date || 'Not specified';
+            document.getElementById('modal_created_at').value = new Date(data.created_at).toLocaleDateString() || 'N/A';
+            document.getElementById('modal_purpose').value = data.purpose || 'N/A';
 
-        pendingAction = 'approve';
-        closeModal('reasonRequestModal');
-        showConfirmation(
-            'Accept Request?',
-            'Are you sure you want to accept this data request?',
-            'Accept',
-            'Cancel'
-        );
-    }
+            // Show modal
+            openModal('reasonRequestModal');
+        })
+        .catch(error => {
+            console.error('Error fetching request details:', error);
+            alert('Error loading request details. Please try again.');
+        });
+}
 
-    // function declineRequestModal() {
-    //     closeModal('reasonRequestModal');
-    //     openModal('declineReasonModal');
-    // }
-    function declineRequest() {
+function approveRequest() {
+    if (!currentRequestId) return;
+
+    pendingAction = 'approve';
+    closeModal('reasonRequestModal');
+    showConfirmation(
+        'Accept Request?',
+        'Are you sure you want to accept this data request?',
+        'Accept',
+        'Cancel'
+    );
+}
+
+function declineRequest() {
     if (!currentRequestId) return;
 
     pendingAction = 'decline';
