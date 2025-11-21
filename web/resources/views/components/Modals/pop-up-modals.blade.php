@@ -28,6 +28,9 @@
                         @if (strtoupper($method) !== 'POST')
                             @method($method)
                         @endif
+
+                        {{ $formFields ?? '' }}
+                        
                         <button type="submit"
                                 class="bg-g-dark text-white px-4 py-2 rounded-md font-semibold hover:bg-g-dark/90">
                             {{ $confirmText }}

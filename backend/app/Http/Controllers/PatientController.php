@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\PatientAdded;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Carbon\Carbon;
 
@@ -29,22 +31,22 @@ class PatientController extends Controller
         $searchTerm = $request->input('q');
 
         $patients = User::query()
-        ->with(['barangay', 'patientRecords.disease', 'patientRecords.reportedByDoctorHospital'])
-        ->where('user_type', 'patient')
-        ->when($searchTerm, function ($query, $searchTerm) {
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('email', 'LIKE', "%{$searchTerm}%")
-                    ->orWhereHas('barangay', function ($b) use ($searchTerm) {
-                        $b->where('name', 'LIKE', "%{$searchTerm}%");
-                    })
-                    ->orWhereHas('patientRecords.disease', function ($dr) use ($searchTerm) {
-                        $dr->where('specification', 'LIKE', "%{$searchTerm}%");
-                    });
-            });
-        })
-        ->get();
-            
+            ->with(['barangay', 'patientRecords.disease', 'patientRecords.reportedByDoctorHospital'])
+            ->where('user_type', 'patient')
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'LIKE', "%{$searchTerm}%")
+                        ->orWhere('email', 'LIKE', "%{$searchTerm}%")
+                        ->orWhereHas('barangay', function ($b) use ($searchTerm) {
+                            $b->where('name', 'LIKE', "%{$searchTerm}%");
+                        })
+                        ->orWhereHas('patientRecords.disease', function ($dr) use ($searchTerm) {
+                            $dr->where('specification', 'LIKE', "%{$searchTerm}%");
+                        });
+                });
+            })
+            ->get();
+
         $userId = Auth::id();
         $hospitals = Hospital::whereHas('doctors', function ($query) use ($userId) {
             $query->where('doctor_id', $userId);
@@ -129,10 +131,10 @@ class PatientController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     //Add patient
- 
+
     public function store(Request $request)
     {
-            //   dd($request->all());
+        //   dd($request->all());
         $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
@@ -154,13 +156,13 @@ class PatientController extends Controller
             'hospital_id' => 'required|exists:hospitals,id',
             'email' => 'required|email|unique:users,email',
         ]);
-        
+
         DB::transaction(function () use ($request) {
             $username = strtolower(
                 str_replace(' ', '', $request->input('first_name')) .
-                '.' .
-                str_replace(' ', '', $request->input('last_name')) .
-                rand(1000, 9999)
+                    '.' .
+                    str_replace(' ', '', $request->input('last_name')) .
+                    rand(1000, 9999)
             );
             $fullName = $request->input('first_name') . ' ' . $request->input('middle_name') . ' ' . $request->input('last_name');
 
@@ -226,7 +228,17 @@ class PatientController extends Controller
                     'date_reported' => now(),
                 ]);
             }
+
+            // Send email notification to the patient
+            try {
+                Mail::to($user->email)->send(new PatientAdded($user, '12345678'));
+                return redirect()->route('admin.managepatients')->with('success', 'Patient added successfully! Email notification sent.');
+            } catch (\Exception $e) {
+
+                return redirect()->route('admin.managepatients')->with('success', 'Patient added successfully! But failed to send email notification.');
+            }
         });
+
         //    dd($request->all());
         return redirect()->route('admin.managepatients')->with('success', 'Patient added successfully!');
     }
@@ -239,11 +251,11 @@ class PatientController extends Controller
      */
 
     /**
- * Display a specific patient record.
- *
- * @param  int  $id
- * @return \Illuminate\Http\JsonResponse
- */
+     * Display a specific patient record.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         try {
@@ -288,7 +300,7 @@ class PatientController extends Controller
 
 
 
-    public function viewPatient($id, Request $request) 
+    public function viewPatient($id, Request $request)
     {
         $patient = User::with([
             'barangay',
@@ -305,7 +317,7 @@ class PatientController extends Controller
             $patientRecordsQuery->where(function ($q) use ($searchTerm) {
                 $q->where('reported_remarks', 'LIKE', '%' . $searchTerm . '%')
                     ->orWhere('recovered_remarks', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('status', 'LIKE', '%' . $searchTerm . '%') 
+                    ->orWhere('status', 'LIKE', '%' . $searchTerm . '%')
                     ->orWhereHas('disease', function ($dr) use ($searchTerm) {
                         $dr->where('specification', 'LIKE', '%' . $searchTerm . '%');
                     })
@@ -384,113 +396,117 @@ class PatientController extends Controller
             return response()->json(['message' => 'Failed to update recovery details'], 500);
         }
     }
-public function exportPdf(Request $request)
-{
-    $fromDate = $request->input('fromDate');
-    $toDate = $request->input('toDate');
-    $hospitalId = $request->input('hospital_id');
-    $diseaseId = $request->input('disease_id');
-    $filterType = $request->input('filterType');
+    public function exportPdf(Request $request)
+    {
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $hospitalId = $request->input('hospital_id');
+        $diseaseId = $request->input('disease_id');
+        $filterType = $request->input('filterType');
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    $query = PatientRecord::with([
-        'patient',
-        'disease',
-        'reportedByDoctorHospital.hospital',
-        'reportedByDoctorHospital.doctor',
-        'recoveredByDoctorHospital.doctor'
-    ]);
+        $query = PatientRecord::with([
+            'patient',
+            'disease',
+            'reportedByDoctorHospital.hospital',
+            'reportedByDoctorHospital.doctor',
+            'recoveredByDoctorHospital.doctor'
+        ]);
 
-    // Apply date filters
-    if ($fromDate && $toDate) {
-        $query->whereBetween('date_reported', [$fromDate, $toDate]);
-    } elseif ($fromDate) {
-        $query->whereDate('date_reported', '>=', $fromDate);
-    } elseif ($toDate) {
-        $query->whereDate('date_reported', '<=', $toDate);
-    }
+        // Apply date filters
+        if ($fromDate && $toDate) {
+            $query->whereBetween('date_reported', [$fromDate, $toDate]);
+        } elseif ($fromDate) {
+            $query->whereDate('date_reported', '>=', $fromDate);
+        } elseif ($toDate) {
+            $query->whereDate('date_reported', '<=', $toDate);
+        }
 
-    // Apply hospital filter
-    if ($hospitalId) {
-        $query->whereHas('reportedByDoctorHospital', fn($q) =>
-            $q->where('hospital_id', $hospitalId)
-        );
-    }
-
-    // Apply disease filter
-    if ($diseaseId) {
-        $query->where('disease_id', $diseaseId);
-    }
-
-    // Determine filters applied
-    $isDateFiltered = $fromDate || $toDate;
-    $isHospitalFiltered = !empty($hospitalId);
-    $isDiseaseFiltered = !empty($diseaseId);
-    $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
-
-    // No filter and not month → show doctor’s related patient only
-    if ($filterType !== 'month' && !$isFilterApplied) {
-        $query->where(function ($q) use ($user) {
-            $q->whereHas('reportedByDoctorHospital', fn($sub) =>
-                $sub->where('doctor_id', $user->id)
-            )->orWhereHas('recoveredByDoctorHospital', fn($sub) =>
-                $sub->where('doctor_id', $user->id)
+        // Apply hospital filter
+        if ($hospitalId) {
+            $query->whereHas(
+                'reportedByDoctorHospital',
+                fn($q) =>
+                $q->where('hospital_id', $hospitalId)
             );
-        });
+        }
+
+        // Apply disease filter
+        if ($diseaseId) {
+            $query->where('disease_id', $diseaseId);
+        }
+
+        // Determine filters applied
+        $isDateFiltered = $fromDate || $toDate;
+        $isHospitalFiltered = !empty($hospitalId);
+        $isDiseaseFiltered = !empty($diseaseId);
+        $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
+
+        // No filter and not month → show doctor’s related patient only
+        if ($filterType !== 'month' && !$isFilterApplied) {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas(
+                    'reportedByDoctorHospital',
+                    fn($sub) =>
+                    $sub->where('doctor_id', $user->id)
+                )->orWhereHas(
+                    'recoveredByDoctorHospital',
+                    fn($sub) =>
+                    $sub->where('doctor_id', $user->id)
+                );
+            });
+        }
+
+        // Decide dynamic PDF columns
+        $addDiseaseColumn = false;
+        $addHospitalColumn = false;
+
+        if ($isDateFiltered && !$isHospitalFiltered && !$isDiseaseFiltered) {
+            $addDiseaseColumn = true;
+            $addHospitalColumn = true;
+        } elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
+            $addDiseaseColumn = true;
+        } elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
+            $addHospitalColumn = true;
+        } elseif (!$isFilterApplied) {
+            $addDiseaseColumn = true;
+            $addHospitalColumn = true;
+        }
+
+        $hospitalName = $hospitalId ? Hospital::find($hospitalId)?->name : null;
+        $diseaseName = $diseaseId ? Disease::find($diseaseId)?->specification : null;
+
+        $patientRecords = $query->get();
+        // return view('pdf.patient-report', [
+        //     'patientRecords' => $patientRecords,
+        //     'fromDate' => $fromDate,
+        //     'toDate' => $toDate,
+        //     'hospitalId' => $hospitalId,
+        //     'diseaseId' => $diseaseId,
+        //     'isFilterApplied' => $isFilterApplied,
+        //     'hospitalName' => $hospitalName,
+        //     'diseaseName' => $diseaseName,
+        //     'addDiseaseColumn' => $addDiseaseColumn,
+        //     'addHospitalColumn' => $addHospitalColumn,
+        // ]);
+        // Generate PDF using DomPDF
+        $pdf = Pdf::loadView('pdf.patient-report', [
+            'patientRecords' => $patientRecords,
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
+            'hospitalId' => $hospitalId,
+            'diseaseId' => $diseaseId,
+            'isFilterApplied' => $isFilterApplied,
+            'hospitalName' => $hospitalName,
+            'diseaseName' => $diseaseName,
+            'addDiseaseColumn' => $addDiseaseColumn,
+            'addHospitalColumn' => $addHospitalColumn,
+        ]);
+
+        // Optional: Higher quality, avoid blurry text
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->stream('patient-records.pdf');
     }
-
-    // Decide dynamic PDF columns
-    $addDiseaseColumn = false;
-    $addHospitalColumn = false;
-
-    if ($isDateFiltered && !$isHospitalFiltered && !$isDiseaseFiltered) {
-        $addDiseaseColumn = true;
-        $addHospitalColumn = true;
-    } elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
-        $addDiseaseColumn = true;
-    } elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
-        $addHospitalColumn = true;
-    } elseif (!$isFilterApplied) {
-        $addDiseaseColumn = true;
-        $addHospitalColumn = true;
-    }
-
-    $hospitalName = $hospitalId ? Hospital::find($hospitalId)?->name : null;
-    $diseaseName = $diseaseId ? Disease::find($diseaseId)?->specification : null;
-
-    $patientRecords = $query->get();
-    // return view('pdf.patient-report', [
-    //     'patientRecords' => $patientRecords,
-    //     'fromDate' => $fromDate,
-    //     'toDate' => $toDate,
-    //     'hospitalId' => $hospitalId,
-    //     'diseaseId' => $diseaseId,
-    //     'isFilterApplied' => $isFilterApplied,
-    //     'hospitalName' => $hospitalName,
-    //     'diseaseName' => $diseaseName,
-    //     'addDiseaseColumn' => $addDiseaseColumn,
-    //     'addHospitalColumn' => $addHospitalColumn,
-    // ]);
-    // Generate PDF using DomPDF
-    $pdf = Pdf::loadView('pdf.patient-report', [
-        'patientRecords' => $patientRecords,
-        'fromDate' => $fromDate,
-        'toDate' => $toDate,
-        'hospitalId' => $hospitalId,
-        'diseaseId' => $diseaseId,
-        'isFilterApplied' => $isFilterApplied,
-        'hospitalName' => $hospitalName,
-        'diseaseName' => $diseaseName,
-        'addDiseaseColumn' => $addDiseaseColumn,
-        'addHospitalColumn' => $addHospitalColumn,
-    ]);
-
-    // Optional: Higher quality, avoid blurry text
-    $pdf->setPaper('A4', 'portrait');
-
-    return $pdf->stream('patient-records.pdf');
-}
-
-
 }
