@@ -21,29 +21,29 @@ class DiseaseController extends Controller
         // Start building the query
         $query = Disease::query();
 
-        
+
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('specification', 'like', '%' . $search . '%');
+                    ->orWhere('specification', 'like', '%' . $search . '%');
             });
         }
 
-        
+
         $diseaseRecords = $query->withCount([
             'patientRecords as total_cases',
-            'patientRecords as active' => function($q) {
+            'patientRecords as active' => function ($q) {
                 $q->where('status', 'Active');
             },
-            'patientRecords as recovered' => function($q) {
+            'patientRecords as recovered' => function ($q) {
                 $q->where('status', 'Recovered');
             },
         ])
-        ->with(['patientRecords' => function($q) {
-            $q->orderByDesc('date_reported');
-        }])
-        ->has('patientRecords', '>=', 1)
-        ->get();
+            ->with(['patientRecords' => function ($q) {
+                $q->orderByDesc('date_reported');
+            }])
+            ->has('patientRecords', '>=', 1)
+            ->get();
 
         $statsTotalTypes = PatientRecord::distinct('disease_id')->count('disease_id');
         $statsTotalCases = PatientRecord::count();
@@ -58,5 +58,57 @@ class DiseaseController extends Controller
             'statsRecovered'
         ));
     }
-}
 
+
+    /**
+     * Display detailed view for a specific disease showing patient records for current doctor
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Disease  $disease
+     * @return \Illuminate\Http\Response
+     */
+    public function showDiseaseDetails(Request $request, Disease $disease)
+    {
+        $search = $request->input('search');
+        $currentDoctorId = auth()->id();
+
+        // Get patient records for this specific disease and current doctor
+        $patientRecords = PatientRecord::with([
+            'patient.barangay',
+            'reportedByDoctorHospital.hospital',
+            'recoveredByDoctorHospital.hospital'
+        ])
+            ->where('disease_id', $disease->id)
+            ->whereHas('reportedByDoctorHospital', function ($query) use ($currentDoctorId) {
+                $query->where('doctor_id', $currentDoctorId);
+            })
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('patient', function ($patientQuery) use ($search) {
+                        $patientQuery->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('email', 'like', '%' . $search . '%');
+                    })
+                        ->orWhere('reported_remarks', 'like', '%' . $search . '%')
+                        ->orWhere('recovered_remarks', 'like', '%' . $search . '%')
+                        ->orWhere('status', 'like', '%' . $search . '%');
+                });
+            })
+            ->latest()
+            ->get();
+
+        // Get statistics for this specific disease and doctor
+        $stats = [
+            'total_cases' => $patientRecords->count(),
+            'active_cases' => $patientRecords->where('status', 'Active')->count(),
+            'recovered_cases' => $patientRecords->where('status', 'Recovered')->count(),
+            'pending_cases' => $patientRecords->where('status', 'Pending')->count(),
+        ];
+
+        return view('disease-details', compact(
+            'disease',
+            'patientRecords',
+            'stats',
+            'search'
+        ));
+    }
+}

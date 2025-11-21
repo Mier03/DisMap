@@ -33,6 +33,10 @@ Route::get('/diseaserecords', [DiseaseController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('diseaserecords');
 
+Route::get('/diseaserecords/{disease}', [DiseaseController::class, 'showDiseaseDetails'])
+    ->middleware(['auth', 'verified'])
+    ->name('diseaserecords.details');
+
 Route::middleware('auth')
     ->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
