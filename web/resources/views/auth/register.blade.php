@@ -60,18 +60,40 @@
             <!-- Password -->
             <div class="mb-3">
                 <x-input-label for="password" :value="__('Password')" />
-                <x-text-input id="password" class="block mt-1 w-full"
-                    type="password" name="password"
-                    required autocomplete="new-password" />
+                <div class="relative">
+                    <x-text-input id="password" class="block mt-1 w-full"
+                        type="password" name="password"
+                        required autocomplete="new-password" />
+
+                    <button type="button"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                        onclick="togglePassword('password', 'eye-password')">
+
+                        <span id="eye-password" class="h-5 w-5">
+                            @svg('gmdi-eye-hide', 'h-5 w-5')
+                        </span>
+                    </button>
+                </div>
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
 
             <!-- Confirm Password -->
             <div class="mb-3">
                 <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-                <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                    type="password" name="password_confirmation" 
-                    required autocomplete="new-password" />
+                   <div class="relative">
+                        <x-text-input id="password_confirmation" class="block mt-1 w-full"
+                            type="password" name="password_confirmation"
+                            required autocomplete="new-password" />
+
+                        <button type="button"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                            onclick="togglePassword('password_confirmation', 'eye-confirm')">
+
+                            <span id="eye-confirm" class="h-5 w-5">
+                                @svg('gmdi-eye-hide', 'h-5 w-5')
+                            </span>
+                        </button>
+                    </div>
                 <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
             </div>
 
@@ -108,4 +130,18 @@
             </p>
         </form>
     </div>
+    <script>
+        function togglePassword(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = `@svg('gmdi-eye-show', 'h-5 w-5')`;
+        } else {
+            input.type = 'password';
+            icon.innerHTML = `@svg('gmdi-eye-hide', 'h-5 w-5')`;
+        }
+    }
+</script>
 </x-guest-layout>

@@ -33,13 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
         'Disease Type': { 
             name: 'disease_type', 
             options: @json(collect($diseases)->map(fn($d) => ['value' => $d->id, 'text' => $d->specification])), 
-            type: 'checkbox' 
+            type: 'checkbox' ,
+            limit : 5
         },
         'Barangays': { 
             name: 'barangays', 
             options: @json(collect($barangays)->map(fn($b) => ['value' => $b->id, 'text' => $b->name])), 
             type: 'checkbox', 
-            limit: 10 
+            limit: 5
         },  
     };
 
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (data.options.length > limit && isFinite(limit)) {
-                html += `<button type="button" class="mt-2 text-sm text-left text-gray-600 see-more-toggle" data-target="#${containerId}">See more</button>`;
+                    html += `<button type="button" class="mt-2 text-sm text-left see-more-toggle text-g-dark hover:text-green-800" data-target="#${containerId}">See more</button>`;
             }
 
             html += `</div></div>`;
@@ -216,10 +217,15 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('#filterModal .filter-input').forEach(input => input.checked = false);
             updateActiveFilters();
         } else if (e.target.closest('.remove-filter')) {
-            const value = e.target.closest('.remove-filter').dataset.value;
+            const value = String(e.target.closest('.remove-filter').dataset.value);
             activeFiltersSet.delete(value);
             const modalInput = document.querySelector(`#filterModal .filter-input[value="${value}"]`);
             if (modalInput) modalInput.checked = false;
+            renderFilters();
+            activeFiltersSet.forEach(v => {
+                const input = document.querySelector(`#filterModal .filter-input[value="${v}"]`);
+                if (input) input.checked = true;
+            });
             updateActiveFilters();
         } else if (e.target.closest('.see-more-toggle')) {
             const btn = e.target.closest('.see-more-toggle');
