@@ -7,6 +7,7 @@ export default defineConfig({
             // Input: Paths are relative to the 'web' folder (where npm run build is run)
             input: [
                 'resources/css/app.css', // Should be relative to 'web'
+                'resources/css/animations.css', // Should be relative to 'web'
                 'resources/js/app.js',  // Should be relative to 'web'
                 'resources/js/heatmap.js', // Should be relative to 'web'
             ],

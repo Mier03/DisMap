@@ -1,16 +1,21 @@
 <x-guest-layout>
     <div class>
         <!-- Title -->
-        <h2 class="text-2xl font-bold text-left text-teal-700">Join DisMap</h2>
-        <p class="text-sm text-teal-600/60 text-left mb-4">
-            Register as a Hospital Admin to manage health data
-        </p>
+             <div class="text-center mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
+                <div class="flex justify-center mb-2 animate-fadeInUp" style="animation-delay: 0.2s">
+                    @svg('logo-g', 'h-10 w-10')
+                </div>
+                <h2 class="text-2xl font-bold text-teal-700 animate-fadeInUp" style="animation-delay: 0.2s">Join DisMap</h2>
+                <p class="text-xs text-teal-600 mt-1 opacity-80animate-fadeInUp" style="animation-delay: 0.2s">
+                    Register as Hospital Admin
+                </p>
+            </div>
 
         <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
             @csrf
 
             <!-- Full Name -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="name" :value="__('Full Name')" />
                 <x-text-input id="name" class="block mt-1 w-full" 
                     type="text" name="name" :value="old('name')" 
@@ -19,7 +24,7 @@
             </div>
 
             <!-- Birthdate -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="birthdate" :value="__('Birthdate')" />
                 <x-text-input id="birthdate" class="block mt-1 w-full" 
                     type="date" name="birthdate" :value="old('birthdate')" 
@@ -28,7 +33,7 @@
             </div>
 
             <!-- Hospital Name -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="hospital_id" :value="__('Hospital Name')" />
                     <x-dropdown-select id="hospital_id" name="hospital_id" required>
                         <option value="">-- Select Hospital --</option>
@@ -40,7 +45,7 @@
             </div>
 
             <!-- Email -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="email" :value="__('Email')" />
                 <x-text-input id="email" class="block mt-1 w-full" 
                     type="email" name="email" :value="old('email')" 
@@ -49,7 +54,7 @@
             </div>
 
             <!-- Username -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="username" :value="__('Username')" />
                     <x-text-input id="username" class="block mt-1 w-full" 
                         type="text" name="username" :value="old('username')"  
@@ -58,7 +63,7 @@
             </div>
 
             <!-- Password -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="password" :value="__('Password')" />
                 <div class="relative">
                     <x-text-input id="password" class="block mt-1 w-full"
@@ -78,7 +83,7 @@
             </div>
 
             <!-- Confirm Password -->
-            <div class="mb-3">
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
                    <div class="relative">
                         <x-text-input id="password_confirmation" class="block mt-1 w-full"
@@ -98,23 +103,24 @@
             </div>
 
             <!-- Upload Certification -->
-            <div class="mb-3">
-                <x-input-label for="certification" :value="__('Upload Certification')" />
+            <div class="mb-3 animate-fadeInUp" style="animation-delay: 0.2s">
+                <x-input-label for="certification" :value="__('Upload Certification')"
+                class="mb-2 font-medium text-g-dark-700" />
                 <input id="certification" 
-                       class="block mt-1 w-full border border-gray-300 rounded-md p-2" 
+                       class="block mt-1 w-full border border-g-dark-500 rounded-md p-2" 
                        type="file" name="certification" accept=".jpg,.jpeg,.png," reqiured>
                 <x-input-error :messages="$errors->get('certification')" class="mt-2" />
             </div>
 
             <!-- Submit -->
-            <div class="mt-4">
+            <div class="mt-4 animate-fadeInUp" style="animation-delay: 0.2s">
                 <x-primary-button class=" justify-center w-full bg-teal-800   hover:bg-teal-800/70">
                     {{ __('Sign Up') }}
                 </x-primary-button>
             </div>
 
             <!-- Sign In Link -->
-            <div class="mt-4 text-center">
+            <div class="mt-4 text-center animate-fadeInUp" style="animation-delay: 0.2s">
                 <p class="text-sm text-gray-600">
                     Already have an account? 
                     <a href="{{ route('login') }}" class="font-medium text-teal-700 hover:text-teal-800 hover:underline">
@@ -124,10 +130,12 @@
             </div>
 
             <!-- Note -->
-            <p class="text-xs text-red-600 mt-4 text-center">
-                Note: Your registration will be reviewed by a system administrator. 
-                You will receive approval notification via email.
-            </p>
+            <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p class="text-xs text-amber-700 text-center">
+                    Note: Your registration will be reviewed by a system administrator. 
+                    You will receive approval notification via email.
+                </p>
+            </div>
         </form>
     </div>
     <script>
