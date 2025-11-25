@@ -42,4 +42,45 @@ class ApiAuthController extends Controller
             'user' => $user
         ]);
     }
+
+    public function forgotPasswordRequest(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.exists' => 'The provided email address was not found.',
+        ]);
+        
+        return response()->json([
+            'message' => 'If the email exists, a password reset link has been sent.',
+        ], 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email', // Check if user exists
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'email.exists' => 'The provided email address was not found.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found.'
+            ], 404);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'is_default_password' => false, 
+        ])->save();
+
+        return response()->json([
+            'message' => 'Your password has been successfully reset.'
+        ], 200);
+    }
+
 }

@@ -5,7 +5,8 @@ import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
 import 'pages/records_page.dart';
 import 'forgetpassword.dart'; 
-import 'updatepassword.dart';
+import 'updatepassword.dart'; 
+import 'components/email_request_modal.dart'; 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,7 +43,11 @@ Future<void> _handleLogin() async {
   final Map<String, dynamic> loginResponse = jsonDecode(response.body);
 
   if (response.statusCode == 200) {
+    // Print the raw API response to the console
+    print('API Login Response (Status 200): $loginResponse');
+
     final String? token = loginResponse['token'];
+    
     final Map<String, dynamic>? userData = loginResponse['user']; 
 
     if (userData == null) {
@@ -82,20 +87,22 @@ Future<void> _handleLogin() async {
     }
     
     if (isPasswordUpdateRequired) {
+      // Navigate to UpdatePasswordPage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const UpdatePasswordPage()),
       );
     } else {
+      // Navigate to RecordsPage if no update is required
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RecordsPage()),
       );
     }
   } else {
-    // --- DEBUG: Print the error response to the console ---
+    // Print the error response to the console 
     print('API Login Error Response (Status ${response.statusCode}): $loginResponse');
-    // --------------------------------------------------------
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content:Text(loginResponse['message']),
@@ -104,6 +111,27 @@ Future<void> _handleLogin() async {
     );
   }
 }
+
+  // Show the email request modal
+  void _showEmailRequestModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EmailRequestModal(
+          onSuccessfulRequest: (String email) {
+            Navigator.of(context).pop(); 
+            
+            // Navigate to the ForgotPasswordPage
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ForgotPasswordPage(email: email)),
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -149,12 +177,7 @@ Future<void> _handleLogin() async {
                 const SizedBox(height: 20),
 
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ForgotPasswordPage()),
-                    );
-                  },
+                  onTap: _showEmailRequestModal,
                   child: const Text(
                     "Forgot Password?",
                     style: TextStyle(

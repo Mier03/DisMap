@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
 import 'components/button.dart';
-import 'components/textfield.dart';
 import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../api_config.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
+  final String email;
+  
+  const ForgotPasswordPage({super.key, required this.email});
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  final TextEditingController usernameController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  void _handleResetPassword() {
-    final username = usernameController.text.trim();
+  Future<void> _handleResetPassword() async {
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
-
-    if (username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please enter your username"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
 
     if (newPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,17 +43,48 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     }
 
-   
-    // For now, show success message and navigate back
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Password reset successfully!"),
-        backgroundColor: Colors.green,
-      ),
-    );
+    final url = Uri.parse('${ApiConfig.baseUrl}reset-password'); 
 
-    // Navigate back to login page after successful reset
-    Navigator.pop(context);
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Accept': 'application/json',
+        },
+        body: {
+          'email': widget.email, 
+          'password': newPassword, 
+          'password_confirmation': confirmPassword,
+        },
+      );
+
+      final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Password reset successfully! You can now log in."),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pop(context); 
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseBody['message'] ?? "Failed to reset password. Status: ${response.statusCode}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("An error occurred: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -77,7 +100,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 const LogoWidget(),
                 const SizedBox(height: 20),
                 const Text(
-                  "Welcome to Dismap!",
+                  "Reset Your Password",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -85,15 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                 ),
                 const SizedBox(height: 40),
-
-                // Username field
-                CustomTextField(
-                  label: "Username",
-                  hintText: "Enter your username...",
-                  controller: usernameController,
-                ),
-                const SizedBox(height: 20),
-
+                
                 // New Password field
                 PasswordTextField(
                   label: "New Password",
@@ -105,22 +120,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 // Confirm Password field
                 PasswordTextField(
                   label: "Confirm Password",
-                  hintText: "Enter your password...",
+                  hintText: "Confirm your new password...",
                   controller: confirmPasswordController,
                 ),
                 const SizedBox(height: 30),
 
                 // Reset Password button
                 Button(
-                  text: "Sign In", // You can change this to "Reset Password" if preferred
+                  text: "Reset Password", 
                   onPressed: _handleResetPassword,
                 ),
                 const SizedBox(height: 20),
-
-                // Back to login
+                
+                // Back to login 
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context); 
                   },
                   child: const Text(
                     "Back to Login",
