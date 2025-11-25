@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ApiUserController extends Controller
 {
@@ -26,5 +27,37 @@ class ApiUserController extends Controller
             'street_address' =>$user->street_address,
             'contact_number' =>$user->contact_number,
         ]);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        // 1. Validation
+        $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        // 2. Get the authenticated user via the 'auth:sanctum' middleware
+        $user = $request->user();
+
+        // Check if the user object was retrieved
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized or user not found.'
+            ], 401);
+        }
+
+        // 3. Update the password and clear the default flag
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            // ASSUMPTION: You have a column to flag default passwords.
+            // This is CRITICAL to prevent users from being routed back to the update page.
+            'is_default_password' => false, 
+
+        ])->save();
+
+        // 4. Return success response
+        return response()->json([
+            'message' => 'Password updated successfully.',
+        ], 200);
     }
 }

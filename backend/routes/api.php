@@ -13,4 +13,6 @@ Route::post('/login', [ApiAuthController::class, 'login']);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/records', [ApiPatientRecordController::class, 'records']);
     Route::get('/user/profile', [ApiUserController::class, 'profile']);
+    Route::post('/user/update-password', [ApiUserController::class, 'updatePassword']);
+    Route::post('/reset-password', [ApiAuthController::class, 'resetPassword']);
 });
