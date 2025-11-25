@@ -5,6 +5,7 @@ import 'components/password_textfield.dart';
 import 'components/logo_widget.dart';
 import 'pages/records_page.dart';
 import 'forgetpassword.dart'; 
+import 'updatepassword.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,20 +39,63 @@ Future<void> _handleLogin() async {
     },
   );
 
-    final Map<String, dynamic> loginResponse = jsonDecode(response.body);
+  final Map<String, dynamic> loginResponse = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      // Save token in SharedPreferences
+  if (response.statusCode == 200) {
+    final String? token = loginResponse['token'];
+    final Map<String, dynamic>? userData = loginResponse['user']; 
+
+    if (userData == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login failed: User data not found in response."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    final String? userType = userData['user_type']; 
+    final dynamic rawUpdateFlag = userData['is_default_password'];
+
+    if (userType != 'Patient') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Access denied. Only patients can log in here."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return; 
+    }
+    
+    bool isPasswordUpdateRequired = false;
+
+    if (rawUpdateFlag is bool) {
+      isPasswordUpdateRequired = rawUpdateFlag;
+    } else if (rawUpdateFlag is int) {
+      isPasswordUpdateRequired = rawUpdateFlag == 1;
+    }
+    
+    if (token != null) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('api_token', loginResponse['token']);
- 
-
-
+      await prefs.setString('api_token', token);
+    }
+    
+    if (isPasswordUpdateRequired) {
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const RecordsPage()),
-    );
+        context,
+        MaterialPageRoute(builder: (_) => const UpdatePasswordPage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const RecordsPage()),
+      );
+    }
   } else {
+    // --- DEBUG: Print the error response to the console ---
+    print('API Login Error Response (Status ${response.statusCode}): $loginResponse');
+    // --------------------------------------------------------
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content:Text(loginResponse['message']),
