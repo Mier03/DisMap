@@ -159,87 +159,9 @@
         </div>
     </section>
 
-    <!-- Compact Team Footer Section -->
-    <footer class="bg-g-dark text-white py-8 px-6 opacity-0 transform translate-y-12 transition-all duration-800 ease-out" id="team-section">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-8">
-                <h2 class="text-2xl font-bold mb-2 opacity-0 transform translate-y-8 transition-all duration-600 ease-out">Our Team</h2>
-                <p class="text-g-light text-sm opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-100">
-                    The people behind DisMap
-                </p>
-            </div>
-            <div class="relative mb-6 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-200">
-                <div class="flex justify-center items-center space-x-6">
-                    <div class="text-center team-member transition-all duration-500 transform" data-member="0">
-                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
-                            EA
-                        </div>
-                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Elaisha Mae Arias</h3>
-                        <p class="text-g-light text-xs transition-all duration-500 team-role">UI/UX Front End</p>
-                    </div>
-                    <div class="text-center team-member transition-all duration-500 transform" data-member="1">
-                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
-                            AC
-                        </div>
-                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Adrianne John Camus</h3>
-                        <p class="text-g-light text-xs transition-all duration-500 team-role">UI/UX Front End</p>
-                    </div>
-                    <div class="text-center team-member transition-all duration-500 transform" data-member="2">
-                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
-                            AM
-                        </div>
-                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Angelina Mier</h3>
-                        <p class="text-g-light text-xs transition-all duration-500 team-role">Project Lead</p>
-                    </div>
-                    <div class="text-center team-member transition-all duration-500 transform" data-member="3">
-                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
-                            RS
-                        </div>
-                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Rainelyn Sungahid</h3>
-                        <p class="text-g-light text-xs transition-all duration-500 team-role">Back End Developer</p>
-                    </div>
-                    <div class="text-center team-member transition-all duration-500 transform" data-member="4">
-                        <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-g-light flex items-center justify-center text-g-dark text-sm font-bold border-2 border-white/50 shadow transition-all duration-500 team-avatar">
-                            MS
-                        </div>
-                        <h3 class="font-semibold text-xs mb-1 transition-all duration-500 team-name">Mitch Lauren Santillan</h3>
-                        <p class="text-g-light text-xs transition-all duration-500 team-role">Back End Developer</p>
-                    </div>
-                </div>
+    <!-- Include Footer Component -->
+    <x-footer />
 
-                <button class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300" onclick="changeHighlight(-1)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                
-                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/30 text-white w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300" onclick="changeHighlight(1)">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="flex justify-center gap-2 mb-4 opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-300">
-                <button class="w-2 h-2 rounded-full bg-white transition-all duration-300" onclick="goToHighlight(0)" id="highlight-indicator-0"></button>
-                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(1)" id="highlight-indicator-1"></button>
-                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(2)" id="highlight-indicator-2"></button>
-                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(3)" id="highlight-indicator-3"></button>
-                <button class="w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" onclick="goToHighlight(4)" id="highlight-indicator-4"></button>
-            </div>
-
-            <!-- Footer Bottom -->
-            <div class="border-t border-g-light/20 pt-4 text-center opacity-0 transform translate-y-8 transition-all duration-600 ease-out delay-400">
-                <div class="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-                    <div class="text-left">
-                    </div>
-                    <div class="text-g-light text-xs">
-                        <p>&copy; 2025 DisMap. All rights reserved.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <x-modals.form-modals id="requestDataModal" /> 
      <x-modals.filterModal :barangays="$activeBarangays" :diseases="$activeDiseases" :action="route('welcome')"/>
