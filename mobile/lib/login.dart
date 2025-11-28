@@ -73,20 +73,12 @@ Future<void> _handleLogin() async {
       return; 
     }
     
-    bool isPasswordUpdateRequired = false;
-
-    if (rawUpdateFlag is bool) {
-      isPasswordUpdateRequired = rawUpdateFlag;
-    } else if (rawUpdateFlag is int) {
-      isPasswordUpdateRequired = rawUpdateFlag == 1;
-    }
-    
     if (token != null) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('api_token', token);
     }
-    
-    if (isPasswordUpdateRequired) {
+
+    if (rawUpdateFlag == "1") {
       // Navigate to UpdatePasswordPage
       Navigator.pushReplacement(
         context,
