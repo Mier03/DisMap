@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
-class InfoCard extends StatelessWidget {
+class InfoCard extends StatefulWidget {
   final String date;
   final String diagnosis;
   final String doctor;
   final String hospital;
   final String status;
   final bool isDarkMode;
+  final String reportedRemarks;
+  final String recoveredRemarks;
 
   const InfoCard({
     super.key,
@@ -15,8 +17,17 @@ class InfoCard extends StatelessWidget {
     required this.doctor,
     required this.hospital,
     required this.status,
+    required this.reportedRemarks,
+    required this.recoveredRemarks,
     this.isDarkMode = false,
   });
+
+  @override
+  State<InfoCard> createState() => _InfoCardState();
+}
+
+class _InfoCardState extends State<InfoCard> {
+  bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +43,15 @@ class InfoCard extends StatelessWidget {
     final Color lightTextColor = Colors.black87;
     final Color lightSecondaryTextColor = Colors.grey.shade600;
 
-    final Color cardColor = isDarkMode ? darkCardColor : lightCardColor;
-    final Color borderColor = isDarkMode ? darkBorderColor : lightBorderColor;
-    final Color textColor = isDarkMode ? darkTextColor : lightTextColor;
-    final Color secondaryTextColor = isDarkMode ? darkSecondaryTextColor : lightSecondaryTextColor;
+    final Color cardColor = widget.isDarkMode ? darkCardColor : lightCardColor;
+    final Color borderColor = widget.isDarkMode ? darkBorderColor : lightBorderColor;
+    final Color textColor = widget.isDarkMode ? darkTextColor : lightTextColor;
+    final Color secondaryTextColor = widget.isDarkMode ? darkSecondaryTextColor : lightSecondaryTextColor;
+
+    // Get correct remarks based on status
+    final String remarks = widget.status == "Active"
+        ? widget.reportedRemarks
+        : widget.recoveredRemarks;
 
     return Card(
       color: cardColor,
@@ -49,11 +65,12 @@ class InfoCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  date,
+                  widget.date,
                   style: TextStyle(
                     color: secondaryTextColor,
                     fontSize: 14,
@@ -62,13 +79,13 @@ class InfoCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: status == "Active" 
-                        ? const Color(0xFFDC2626) 
+                    color: widget.status == "Active"
+                        ? const Color(0xFFDC2626)
                         : const Color(0xFF16A34A),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    status,
+                    widget.status,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -78,27 +95,53 @@ class InfoCard extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 8),
+
             Text(
-              diagnosis,
+              widget.diagnosis,
               style: TextStyle(
                 color: textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             const SizedBox(height: 8),
-            _InfoRow(
-              label: "Doctor",
-              value: doctor,
-              textColor: textColor,
-              secondaryTextColor: secondaryTextColor,
-            ),
-            _InfoRow(
-              label: "Hospital",
-              value: hospital,
-              textColor: textColor,
-              secondaryTextColor: secondaryTextColor,
+
+            _InfoRow(label: "Doctor", value: widget.doctor, textColor: textColor, secondaryTextColor: secondaryTextColor),
+            _InfoRow(label: "Hospital", value: widget.hospital, textColor: textColor, secondaryTextColor: secondaryTextColor),
+
+            // Expandable remarks
+            if (isExpanded) ...[
+              const SizedBox(height: 12),
+              Text(
+                "Remarks:",
+                style: TextStyle(
+                  color: secondaryTextColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                remarks.isNotEmpty ? remarks : "No remarks available.",
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+
+            // "See more" button
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  setState(() => isExpanded = !isExpanded);
+                },
+                child: Text(isExpanded ? "See Less" : "See More"),
+              ),
             ),
           ],
         ),
