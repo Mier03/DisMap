@@ -59,14 +59,16 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
         // Profile icon (now functions as logout)
-        if (showProfile) ...[
           IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {
-              _handleLogout(context);
-            },
+          icon: SvgPicture.asset(
+            'assets/images/logout_icon.svg',
+            height: 24,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           ),
-        ],
+          onPressed: () {
+            _handleLogout(context);
+          },
+        )
       ],
     );
   }

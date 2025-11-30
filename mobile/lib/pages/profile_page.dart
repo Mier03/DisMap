@@ -7,6 +7,7 @@ import '../components/header.dart';
 import '../components/footer.dart';
 import '../api_config.dart';
 import 'records_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileTheme {
   final Color backgroundColor;
@@ -121,6 +122,32 @@ class _ProfilePageState extends State<ProfilePage> {
     widget.onDarkModeChanged?.call(newValue);
   }
 
+Future<void> _uploadProfileImage(XFile image) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('api_token') ?? '';
+  final url = Uri.parse('${ApiConfig.baseUrl}user/profile/upload'); // backend endpoint
+
+  var request = http.MultipartRequest('POST', url);
+  request.headers['Authorization'] = 'Bearer $token';
+  request.files.add(await http.MultipartFile.fromPath('profile_image', image.path));
+
+  final response = await request.send();
+
+  if (response.statusCode == 200) {
+    setState(() {
+      _userProfileFuture = fetchUserProfile(); // refresh profile image
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile image updated successfully')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to upload profile image')),
+    );
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     final ProfileTheme theme = _isDarkMode ? ProfileTheme.dark : ProfileTheme.light;
@@ -192,10 +219,33 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: Colors.white,
                         ),
                         padding: const EdgeInsets.all(8),
-                        child: ClipOval(
-                          child: SvgPicture.asset(
-                            "assets/images/profile-default.svg",
-                            fit: BoxFit.cover,
+                        child: GestureDetector(
+                          onTap: () async {
+                            final picker = ImagePicker();
+                            final XFile? pickedImage =
+                                await picker.pickImage(source: ImageSource.gallery);
+
+                            if (pickedImage != null) {
+                              await _uploadProfileImage(pickedImage);
+                            }
+                          },
+                          child: ClipOval(
+                            child: userProfile['profile_image'] != null &&
+                                    userProfile['profile_image'] != ''
+                                ? Image.network(
+                                    userProfile['profile_image'],
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return SvgPicture.asset(
+                                        "assets/images/profile-default.svg",
+                                        fit: BoxFit.cover,
+                                      );
+                                    },
+                                  )
+                                : SvgPicture.asset(
+                                    "assets/images/profile-default.svg",
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                         ),
                       ),

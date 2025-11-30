@@ -164,6 +164,8 @@ class _RecordsPageState extends State<RecordsPage> {
                         hospital: r['hospital_name'],
                         status: r['status'],
                         isDarkMode: _isDarkMode,
+                        reportedRemarks: r['reported_remarks'] ?? '',
+                        recoveredRemarks: r['recovered_remarks'] ?? '',
                       );
                     },
                   );
