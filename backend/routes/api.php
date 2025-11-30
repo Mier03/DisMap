@@ -14,6 +14,7 @@ Route::post('/reset-password', [ApiAuthController::class, 'resetPassword']);
 // get patient records and profile
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/records', [ApiPatientRecordController::class, 'records']);
+    Route::get('/records/export-pdf', [ApiPatientRecordController::class, 'exportPdf']);
     Route::get('/user/profile', [ApiUserController::class, 'profile']);
     Route::post('/user/update-password', [ApiUserController::class, 'updatePassword']);
 });
