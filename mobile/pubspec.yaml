@@ -38,6 +38,9 @@ dependencies:
   flutter_svg: ^2.2.1
   http: ^1.6.0
   shared_preferences: ^2.5.3
+  open_filex: ^4.3.2
+  permission_handler: ^11.3.1
+  path_provider: ^2.1.2
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

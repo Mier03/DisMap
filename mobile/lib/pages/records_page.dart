@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../components/header.dart';
 import '../components/footer.dart';
@@ -7,6 +9,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api_config.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 
 class RecordsPage extends StatefulWidget {
   final bool initialDarkMode;
@@ -103,6 +109,60 @@ class _RecordsPageState extends State<RecordsPage> {
     }
   }
 
+ Future<void> _downloadRecordsPdf() async {
+  try {
+    // Request permission
+    final status = await Permission.storage.request();
+
+    if (!status.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Storage permission required")),
+      );
+      return;
+    }
+
+    // Get API token
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('api_token') ?? '';
+
+    final url = '${ApiConfig.baseUrl}records/export-pdf';
+
+    // Call backend
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      // Save to Downloads folder (Android)
+      final downloadsDir = Directory('/storage/emulated/0/Download');
+      final filePath =
+          '${downloadsDir.path}/patient-record-${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+      final file = File(filePath);
+      await file.writeAsBytes(response.bodyBytes);
+
+      // Open file after saving
+      await OpenFilex.open(filePath);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF saved to Downloads folder')),
+        );
+      }
+    } else {
+      throw Exception('Failed to download PDF: ${response.statusCode}');
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     final Color backgroundColor = _isDarkMode ? const Color(0xFF111827) : Colors.white;
@@ -121,13 +181,28 @@ class _RecordsPageState extends State<RecordsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Records",
-              style: TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Records",
+                  style: TextStyle(
+                    color: textColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: _downloadRecordsPdf,
+                  icon: const Icon(Icons.download),
+                  label: const Text('Export'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF296E5B),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Expanded(
