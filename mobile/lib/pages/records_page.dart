@@ -109,58 +109,74 @@ class _RecordsPageState extends State<RecordsPage> {
     }
   }
 
- Future<void> _downloadRecordsPdf() async {
-  try {
-    // Request permission
-    final status = await Permission.storage.request();
+  Future<void> _downloadRecordsPdf() async {
+    try {
+      bool hasPermission = false;
 
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Storage permission required")),
+      if (Platform.isAndroid) {
+        if (await Permission.manageExternalStorage.isGranted) {
+          hasPermission = true;
+        } else {
+          // Android 11+ request Manage External Storage permission
+          final status = await Permission.manageExternalStorage.request();
+          hasPermission = status.isGranted;
+
+          if (!hasPermission && status.isPermanentlyDenied) {
+            // Show a dialog or snackbar telling user to enable manually
+            await openAppSettings();
+            return;
+          }
+        }
+      } else {
+        // For iOS or other platforms, handle differently if needed
+        hasPermission = true;
+      }
+
+      if (!hasPermission) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Storage permission required")),
+        );
+        return;
+      }
+
+      // Now proceed to download PDF
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('api_token') ?? '';
+
+      final url = '${ApiConfig.baseUrl}records/export-pdf';
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Authorization': 'Bearer $token'},
       );
-      return;
-    }
 
-    // Get API token
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('api_token') ?? '';
+      if (response.statusCode == 200) {
+        final downloadsDir = Directory('/storage/emulated/0/Download');
+        final filePath =
+            '${downloadsDir.path}/patient-record-${DateTime.now().millisecondsSinceEpoch}.pdf';
 
-    final url = '${ApiConfig.baseUrl}records/export-pdf';
+        final file = File(filePath);
+        await file.writeAsBytes(response.bodyBytes);
 
-    // Call backend
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+        await OpenFilex.open(filePath);
 
-    if (response.statusCode == 200) {
-      // Save to Downloads folder (Android)
-      final downloadsDir = Directory('/storage/emulated/0/Download');
-      final filePath =
-          '${downloadsDir.path}/patient-record-${DateTime.now().millisecondsSinceEpoch}.pdf';
-
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
-
-      // Open file after saving
-      await OpenFilex.open(filePath);
-
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('PDF saved to Downloads folder')),
+          );
+        }
+      } else {
+        throw Exception('Failed to download PDF: ${response.statusCode}');
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('PDF saved to Downloads folder')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
-    } else {
-      throw Exception('Failed to download PDF: ${response.statusCode}');
-    }
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
     }
   }
-}
+
 
 
   @override
