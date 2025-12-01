@@ -66,23 +66,23 @@ class DiseaseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Disease  $disease
      * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
-    public function showDiseaseDetails(Request $request, Disease $disease)
+    public function showDiseaseDetails(Request $request, Disease $disease): \Illuminate\Contracts\View\View
     {
         $search = $request->input('search');
-        $currentDoctorId = auth()->id();
 
-        // Get patient records for this specific disease and current doctor
-        $patientRecords = PatientRecord::with([
+        // Get ALL patient records for this specific disease (removed the doctor filter)
+        $patientRecordsQuery = PatientRecord::with([
             'patient.barangay',
             'reportedByDoctorHospital.hospital',
             'recoveredByDoctorHospital.hospital'
         ])
-            ->where('disease_id', $disease->id)
-            ->whereHas('reportedByDoctorHospital', function ($query) use ($currentDoctorId) {
-                $query->where('doctor_id', $currentDoctorId);
-            })
-            ->when($search, function ($query, $search) {
+            ->where('disease_id', $disease->id);
+
+        // Apply search filters
+        if ($search) {
+            $patientRecordsQuery->where(function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('patient', function ($patientQuery) use ($search) {
                         $patientQuery->where('name', 'like', '%' . $search . '%')
@@ -92,11 +92,14 @@ class DiseaseController extends Controller
                         ->orWhere('recovered_remarks', 'like', '%' . $search . '%')
                         ->orWhere('status', 'like', '%' . $search . '%');
                 });
-            })
+            });
+        }
+            
+        $patientRecords = $patientRecordsQuery
             ->latest()
             ->get();
 
-        // Get statistics for this specific disease and doctor
+        // Get statistics for this specific disease
         $stats = [
             'total_cases' => $patientRecords->count(),
             'active_cases' => $patientRecords->where('status', 'Active')->count(),
