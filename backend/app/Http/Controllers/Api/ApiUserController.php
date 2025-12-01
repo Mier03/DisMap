@@ -62,7 +62,7 @@ class ApiUserController extends Controller
         ], 200);
     }
 
-        public function uploadProfileImage(Request $request)
+    public function uploadProfileImage(Request $request)
     {
         $request->validate([
             'profile_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',

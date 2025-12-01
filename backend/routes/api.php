@@ -16,5 +16,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/records', [ApiPatientRecordController::class, 'records']);
     Route::get('/records/export-pdf', [ApiPatientRecordController::class, 'exportPdf']);
     Route::get('/user/profile', [ApiUserController::class, 'profile']);
+       Route::post('/user/profile/upload', [ApiUserController::class, 'uploadProfileImage']);
     Route::post('/user/update-password', [ApiUserController::class, 'updatePassword']);
 });

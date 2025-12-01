@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // ✅ Fetch user profile as JSON map
   Future<Map<String, dynamic>> fetchUserProfile() async {
-    final url = Uri.parse('${ApiConfig.baseUrl}user/profile');
+    final url = Uri.parse('${ApiConfig.baseUrl}user/profile/upload');
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('api_token') ?? '';
 
