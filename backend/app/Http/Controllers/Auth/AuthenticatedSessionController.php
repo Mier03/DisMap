@@ -40,6 +40,11 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->route('dashboard');
             } elseif ($user->user_type === 'Admin') {
                 return redirect()->route('dashboard');
+            }elseif ($user->user_type === 'Patient'){
+                 Auth::logout();
+                 return redirect()->route('login')->withErrors([
+                    'login' => 'Your account type is not recognized.',
+                ]);
             }
 
         return redirect()->intended(route('welcome', absolute: false));
