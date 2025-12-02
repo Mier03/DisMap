@@ -7,7 +7,7 @@
     'confirmAction' => null,
 ])
 
-<div id="{{ $id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div id="{{ $id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
     <div class="bg-white rounded-lg shadow-lg w-[400px] p-6 text-center">
         <h2 class="text-g-dark font-bold text-2xl mb-4">{{ $title }}</h2>
         <p class="text-g-dark font-semibold text-xl mb-6">{{ $message }}</p>

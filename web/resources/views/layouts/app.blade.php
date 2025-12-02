@@ -27,5 +27,20 @@
             </main>
 
             @stack('scripts')
+
+            <!-- Global Logout Confirmation Modal -->
+        <x-modals.confirm-modal 
+            id="logoutConfirm"
+            title="Confirm Logout"
+            message="Are you sure you want to log out?"
+            confirmText="Confirm"
+            cancelText="Cancel"
+            confirmAction="document.getElementById('logout-form').submit()"
+        />
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
+
     </body>
 </html>
