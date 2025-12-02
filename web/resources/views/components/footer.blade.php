@@ -112,7 +112,9 @@
                     <div class="text-left">
                         <div class="flex items-center space-x-2">
                             <i class="fas fa-envelope text-g-light text-xs"></i>
-                            <p class="text-g-light text-xs">dismap@gmail.com</p>
+                            <a href="mailto:dismap@gmail.com">dismap@gmail.com</a>
+                             <i class="fab fa-facebook-square text-g-light text-xs"></i>
+                            <a href="https://web.facebook.com/people/DisMap/61575644438300/?rdid=JkeC2KC8ZslXZRPo&share_url=https%3A%2F%2Fweb.facebook.com%2Fshare%2F1DMuBZRASi%2F%3F_rdc%3D1%26_rdr">DisMap</a>
                         </div>
                     </div>
                     <div class="text-g-light text-xs">
