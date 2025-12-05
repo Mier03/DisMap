@@ -8,7 +8,8 @@ import '../api_config.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   final String email;
-  
+
+
   const ForgotPasswordPage({super.key, required this.email});
 
   @override
@@ -16,12 +17,24 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final TextEditingController tokenController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
   Future<void> _handleResetPassword() async {
+    final token = tokenController.text.trim();
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
+
+       if (token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter the reset token"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     if (newPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -43,7 +56,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     }
 
-    final url = Uri.parse('${ApiConfig.baseUrl}reset-password'); 
+ final url = Uri.parse('${ApiConfig.baseUrl}reset-password');
 
     try {
       final response = await http.post(
@@ -52,8 +65,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           'Accept': 'application/json',
         },
         body: {
-          'email': widget.email, 
-          'password': newPassword, 
+          'email': widget.email,
+          'token': token,
+          'password': newPassword,
           'password_confirmation': confirmPassword,
         },
       );
@@ -109,6 +123,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 40),
                 
+                // TOKEN FIELD
+                TextField(
+                  controller: tokenController,
+                  decoration: const InputDecoration(
+                    labelText: "Reset Token",
+                    hintText: "Paste the token you received",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
                 // New Password field
                 PasswordTextField(
                   label: "New Password",
