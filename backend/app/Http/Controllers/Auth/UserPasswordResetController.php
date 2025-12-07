@@ -24,7 +24,7 @@ class UserPasswordResetController extends Controller
     {
         // Validate all fields
         $request->validate([
-            'current_password' => ['required', 'string'],
+            'current_password' => ['required', 'string', 'min:8'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
     /** @var \App\Models\User $user */

@@ -479,6 +479,9 @@
                     </span>
                 </button>
                 <p id="confirmPasswordError" class="text-red-500 text-xs mt-2 hidden">Passwords do not match.</p>
+                <p id="newPasswordLengthError" class="text-red-500 text-xs mt-2 hidden">
+                    New/Confirm password must be at least 8 characters.
+                </p>
             </div>
 
             {{-- Buttons --}}
@@ -494,48 +497,56 @@
 
 {{-- ========== SCRIPTS ========== --}}
 <script>
-    //Change Password Modal
+// Change Password Modal
     document.getElementById('passwordForm').addEventListener('submit', async function (e) {
-        e.preventDefault(); // stop form from submitting immediately
+    e.preventDefault(); 
 
-        const current = document.getElementById('current_password').value.trim();
-        const newPass = document.getElementById('password').value.trim();
-        const confirmPass = document.getElementById('password_confirmation').value.trim();
+    const current = document.getElementById('current_password').value.trim();
+    const newPass = document.getElementById('password').value.trim();
+    const confirmPass = document.getElementById('password_confirmation').value.trim();
 
-        let valid = true;
+    let valid = true;
 
-        // Reset messages
-        document.getElementById('confirmPasswordError').classList.add('hidden');
-        document.getElementById('currentPasswordError').classList.add('hidden');
+    // Reset messages
+    document.getElementById('confirmPasswordError').classList.add('hidden');
+    document.getElementById('currentPasswordError').classList.add('hidden');
+    document.getElementById('newPasswordLengthError').classList.add('hidden');
 
-        // 1️⃣ Check if new password matches confirm
-        if (newPass !== confirmPass) {
-            document.getElementById('confirmPasswordError').classList.remove('hidden');
+    // 1️⃣ Check MINIMUM LENGTH (new + confirm)
+    if (newPass.length < 8 || confirmPass.length < 8) {
+        document.getElementById('newPasswordLengthError').classList.remove('hidden');
+        valid = false;
+    }
+
+    // 2️⃣ Check if new password matches confirm
+    if (newPass !== confirmPass) {
+        document.getElementById('confirmPasswordError').classList.remove('hidden');
+        valid = false;
+    }
+
+    // 3️⃣ Check current password validity via AJAX
+    if (valid) {
+        const response = await fetch("{{ route('password.check.current') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ current_password: current }),
+        });
+
+        const data = await response.json();
+        if (!data.valid) {
+            document.getElementById('currentPasswordError').classList.remove('hidden');
             valid = false;
         }
+    }
 
-        // 2️⃣ Check current password validity via AJAX
-        if (valid) {
-            const response = await fetch("{{ route('password.check.current') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ current_password: current }),
-            });
+    // 4️⃣ Submit form if everything passes
+    if (valid) this.submit();
+});
 
-            const data = await response.json();
-            if (!data.valid) {
-                document.getElementById('currentPasswordError').classList.remove('hidden');
-                valid = false;
-            }
-        }
-
-        // 3️⃣ Submit form if everything passes
-        if (valid) this.submit();
-    });
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     window.togglePassword = function (id, button) {
         const input = document.getElementById(id);
         const eyeShow = button.querySelector('.eye-show');
@@ -554,6 +565,7 @@
         }
     };
 });
+
 
     // Pass hospitals data from the controller
     const hospitals = @json($hospitals);
