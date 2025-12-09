@@ -13,7 +13,7 @@
                 <div class="overflow-hidden">
                     <div class="p-6 bg-inherit text-gray-900">
 
-                        {{-- Flash Messages --}}
+                        <!-- {{-- Flash Messages --}}
                         {{-- @if(session('success'))
                         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                             {{ session('success') }}
@@ -24,7 +24,7 @@
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                             {{ session('error') }}
                         </div>
-                        @endif --}}
+                        @endif --}} -->
 
                         <x-page-header title="Data Requests" subtitle="User data requests" 
                        />
@@ -148,5 +148,32 @@
             </div>
         </div>
     </div>
+
+    @if(session('success'))
+        <x-toast type="success" :message="session('success')" />
+    @endif
+
+    @if(session('error'))
+        <x-toast type="error" :message="session('error')" />
+    @endif
+
+    {{-- 2. Handle JS Reloads (The new part) --}}
+    @if(request('status') === 'success')
+        <x-toast type="success" :message="request('message')" />
+    @endif
+
+    @if(request('status') === 'error')
+        <x-toast type="error" :message="request('message')" />
+    @endif
+
+    {{-- Clean URL script (Removes ?status=success after loading) --}}
+    <script>
+        if (window.location.search.includes('status=')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('status');
+            url.searchParams.delete('message');
+            window.history.replaceState({}, '', url);
+        }
+    </script>
     <x-modals.form-modals id="reasonRequestModal" /> 
 </x-app-layout>
