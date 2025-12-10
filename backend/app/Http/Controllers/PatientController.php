@@ -485,7 +485,8 @@ class PatientController extends Controller
 
         // 5️⃣ Hospital only → show NOTHING extra (no hospital column)
         elseif (!$isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
-            // nothing extra
+               $addDiseaseColumn = true;   // show disease
+                 $addHospitalColumn = false; // hide hospital
         }
 
         // 6️⃣ No filters → show both
