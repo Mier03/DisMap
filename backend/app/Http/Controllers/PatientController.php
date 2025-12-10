@@ -443,22 +443,39 @@ class PatientController extends Controller
         $isDiseaseFiltered = !empty($diseaseId);
         $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
 
-        // No filter and not month → show doctor’s related patient only
-        if ($filterType !== 'month' && !$isFilterApplied) {
-            $query->where(function ($q) use ($user) {
-                $q->whereHas(
-                    'reportedByDoctorHospital',
-                    fn($sub) =>
-                    $sub->where('doctor_id', $user->id)
-                )->orWhereHas(
-                    'recoveredByDoctorHospital',
-                    fn($sub) =>
-                    $sub->where('doctor_id', $user->id)
-                );
+            // ALWAYS restrict to doctor’s patients (reported OR recovered)
+        $query->where(function ($q) use ($user) {
+            $q->whereHas('reportedByDoctorHospital', function ($sub) use ($user) {
+                $sub->where('doctor_id', $user->id);
+            })->orWhereHas('recoveredByDoctorHospital', function ($sub) use ($user) {
+                $sub->where('doctor_id', $user->id);
+            });
+        });
+
+        // 🔹 Apply Date Range Filter
+        if ($fromDate && $toDate) {
+            $query->where(function ($q) use ($fromDate, $toDate) {
+                $q->whereBetween('date_reported', [$fromDate, $toDate])
+                ->orWhereBetween('date_recovered', [$fromDate, $toDate]);
             });
         }
 
-        // Decide dynamic PDF columns
+        // 🔹 Apply Hospital Filter
+        if ($isHospitalFiltered) {
+            $query->where(function ($q) use ($hospitalId) {
+                $q->whereHas('reportedByDoctorHospital', function ($sub) use ($hospitalId) {
+                    $sub->where('hospital_id', $hospitalId);
+                })->orWhereHas('recoveredByDoctorHospital', function ($sub) use ($hospitalId) {
+                    $sub->where('hospital_id', $hospitalId);
+                });
+            });
+        }
+
+        // 🔹 Apply Disease Filter (correct!)
+        if ($isDiseaseFiltered) {
+            $query->where('disease_id', $diseaseId);
+        }
+                // Decide dynamic PDF columns
         $addDiseaseColumn = false;
         $addHospitalColumn = false;
 
