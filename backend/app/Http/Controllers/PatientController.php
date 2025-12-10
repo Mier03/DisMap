@@ -443,16 +443,17 @@ class PatientController extends Controller
         $isDiseaseFiltered = !empty($diseaseId);
         $isFilterApplied = $isDateFiltered || $isHospitalFiltered || $isDiseaseFiltered;
 
-            // ALWAYS restrict to doctor’s patients (reported OR recovered)
-        $query->where(function ($q) use ($user) {
-            $q->whereHas('reportedByDoctorHospital', function ($sub) use ($user) {
-                $sub->where('doctor_id', $user->id);
-            })->orWhereHas('recoveredByDoctorHospital', function ($sub) use ($user) {
-                $sub->where('doctor_id', $user->id);
+       // Only DOCTOR accounts should be restricted
+        if ($user->user_type === 'Doctor') {
+            $query->where(function ($q) use ($user) {
+                $q->whereHas('reportedByDoctorHospital', function ($sub) use ($user) {
+                    $sub->where('doctor_id', $user->id);
+                })->orWhereHas('recoveredByDoctorHospital', function ($sub) use ($user) {
+                    $sub->where('doctor_id', $user->id);
+                });
             });
-        });
-
-        // 🔹 Apply Date Range Filter
+        }
+                // 🔹 Apply Date Range Filter
         if ($fromDate && $toDate) {
             $query->where(function ($q) use ($fromDate, $toDate) {
                 $q->whereBetween('date_reported', [$fromDate, $toDate])
