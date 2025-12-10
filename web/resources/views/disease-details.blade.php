@@ -36,7 +36,7 @@
                             ],
                             [
                                 'label' => 'Last Updated:',
-                                'value' => $disease->updated_at->format('M j, Y g:i A')
+                                'value' => $lastDiagnosedDate
                             ],
                         ]"
                     />

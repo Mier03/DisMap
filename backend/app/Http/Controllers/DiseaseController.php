@@ -99,6 +99,13 @@ class DiseaseController extends Controller
             ->latest()
             ->get();
 
+        $latestReportDate = PatientRecord::where('disease_id', $disease->id)
+            ->max('date_reported');
+    
+        $lastDiagnosedDate = $latestReportDate 
+            ? \Carbon\Carbon::parse($latestReportDate)->format('M j, Y g:i A') 
+            : 'N/A';
+
         // Get statistics for this specific disease
         $stats = [
             'total_cases' => $patientRecords->count(),
@@ -111,7 +118,8 @@ class DiseaseController extends Controller
             'disease',
             'patientRecords',
             'stats',
-            'search'
+            'search',
+            'lastDiagnosedDate' 
         ));
     }
 }

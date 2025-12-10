@@ -11,7 +11,7 @@
         'allPatients' => ['Name', 'Birthdate', 'Barangay', 'Latest Date Reported', 'Status'],
         'patientRecords' => ['Disease', 'Date Reported', 'Date Recovered', 'Status', 'Details'],
         'diseaseRecords' => ['Name', 'Total Cases', 'Active', 'Recovered', 'Date Reported', 'Patients'],
-        'diseasePatientRecords' => ['Patient Name', 'Age', 'Barangay', 'Diagnosed', 'Hospital', 'Reported Date', 'Status'],
+        'diseasePatientRecords' => ['Patient Name', 'Age', 'Barangay', 'Hospital', 'Reported Date', 'Status'],
         default => ['Column 1', 'Column 2', 'Column 3', 'Actions'],
     };
 @endphp
@@ -170,16 +170,10 @@
                         {{-- Manage Patients --}}
                         @case('allPatients')
                             @php
-                                // Keep the original logic for latest record & status
                                 $latestRecord = $item->patientRecords?->first();
                                 $dateReported = $latestRecord ? \Carbon\Carbon::parse($latestRecord->date_reported)->format('F j, Y') : 'N/A';
 
                                 $statusType = $latestRecord ? ($latestRecord->patient->status ?? 'No Records') : 'No Records';
-                                $statusClass = $statusType === 'Active'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : ($statusType === 'Recovered'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-gray-100 text-gray-800');
                             @endphp
 
                             <x-tables.td>
@@ -195,9 +189,7 @@
                             <x-tables.td>{{ $dateReported }}</x-tables.td>
 
                             <x-tables.td>
-                                <span class="px-2 py-1 rounded text-sm {{ $statusClass }}">
-                                    {{ $statusType }}
-                                </span>
+                                <x-tables.status-badge :status="$statusType" />
                             </x-tables.td>
                         @break
 
@@ -254,59 +246,26 @@
                         {{-- Disease Patient Records --}}
                         @case('diseasePatientRecords')
                             <x-tables.td>
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-g-dark rounded-full flex items-center justify-center text-white font-semibold">
-                                        {{ $item['patient']['initial'] }}
-                                    </div>
-                                    <div class="ml-4">
-                                        <a href="{{ route('admin.view_patients', $item['patient']['id']) }}" 
-                                        class="text-sm font-medium text-g-dark hover:text-green-800 hover:underline transition-colors">
-                                            {{ $item['patient']['name'] }}
-                                        </a>
-                                        <div class="text-sm text-gray-500">
-                                            {{ $item['patient']['gender'] }} {{-- Added gender if available --}}
-                                        </div>
-                                    </div>
-                                </div>
+                                <a href="{{ route('admin.view_patients', $item['patient']['id']) }}" 
+                                class="text-blue-600 hover:underline"> 
+                                    {{ $item['patient']['name'] }}
+                                </a>
                             </x-tables.td>
                             
-                            <x-tables.td>
-                                <div class="text-sm text-gray-900">{{ $item['patient']['age'] }}</div>
-                            </x-tables.td>
+                            <x-tables.td>{{ $item['patient']['age'] }}</x-tables.td> 
+                            
+                            <x-tables.td>{{ $item['patient']['barangay'] }}</x-tables.td>
+                            
+                            <x-tables.td>{{ $item['hospital'] }}</x-tables.td> 
+                            
+                            <x-tables.td>{{ \Carbon\Carbon::parse($item['date_reported'])->format('M j, Y') }}</x-tables.td> 
                             
                             <x-tables.td>
-                                <div class="text-sm text-gray-900">{{ $item['patient']['barangay'] }}</div>
-                            </x-tables.td>
-                            
-                            <x-tables.td>
-                                <div class="text-sm font-medium text-gray-900">{{ $item['disease_specification'] }}</div>
-                            </x-tables.td>
-                            
-                            <x-tables.td>
-                                <div class="text-sm text-gray-900">{{ $item['hospital'] }}</div>
-                            </x-tables.td>
-                            
-                            <x-tables.td>
-                                <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($item['date_reported'])->format('M j, Y') }}</div>
-                            </x-tables.td>
-                            
-                            <x-tables.td>
-                                @php
-                                    $statusColors = [
-                                        'Active' => 'bg-yellow-100 text-yellow-800',
-                                        'Recovered' => 'bg-green-100 text-green-800', 
-                                        'Pending' => 'bg-blue-100 text-blue-800',
-                                    ];
-                                    $color = $statusColors[$item['status']] ?? 'bg-gray-100 text-gray-800';
-                                @endphp
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $color }}">
-                                    {{ $item['status'] }}
-                                </span>
+                                <x-tables.status-badge :status="$item['status']" />
                             </x-tables.td>
                         @break
 
 
-                        {{-- Default fallback --}}
                         @default
                             <x-tables.td>{{ $item->id }}</x-tables.td>
                             <x-tables.td>{{ $item->name ?? 'N/A' }}</x-tables.td>
