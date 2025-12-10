@@ -27,15 +27,19 @@
             <div class="details-box">
                 <p><strong>Account Details:</strong></p>
                 <p><strong>Full Name:</strong> {{ $patient->name }}</p>
-                <p><strong>Email:</strong> {{ $patient->email }}</p>
+                <p><strong>Username:</strong> {{ $username }}</p>
                 <p><strong>Date of Birth:</strong> {{ \Carbon\Carbon::parse($patient->birthdate)->format('F j, Y') }}</p>
                 <p><strong>Sex:</strong> {{ $patient->sex }}</p>
                 <p><strong>Ethnicity:</strong> {{ $patient->ethnicity }}</p>
             </div>
+            <p>Your medical history has been successfully added to our system. You can now view and manage your medical records conveniently using our mobile application.</p>
 
+            <p><strong>Download the APK:</strong></p>
+            <p><a href="https://drive.google.com/file/d/1LkwUvJHYPmGxxZZcfQB6qxdTfjBf8mMI/view?usp=drive_link" target="_blank">Click here to download the APK</a></p>
+            
             <div class="credentials">
                 <p><strong>Login Credentials:</strong></p>
-                <p><strong>Username:</strong> {{ $username }}</p>
+                <p><strong>Email:</strong> {{ $patient->email }}</p>
                 <p><strong>Password:</strong> {{ $password }}</p>
                 
             </div>
@@ -43,7 +47,11 @@
             <p><strong>Important:</strong> For security reasons, please change your password after your first login.</p>
             
             <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+
             
+
+            <p>Thank you for trusting us with your healthcare needs.</p>
+
             <p>Best regards,<br>Disease Surveillance System Team</p>
         </div>
         <div class="footer">
