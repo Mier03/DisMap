@@ -462,14 +462,34 @@ class PatientController extends Controller
         $addDiseaseColumn = false;
         $addHospitalColumn = false;
 
+            // 1️⃣ Date only filter → show both
         if ($isDateFiltered && !$isHospitalFiltered && !$isDiseaseFiltered) {
             $addDiseaseColumn = true;
             $addHospitalColumn = true;
-        } elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
+        }
+
+        // 2️⃣ Date + Hospital → show disease
+        elseif ($isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
             $addDiseaseColumn = true;
-        } elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
+        }
+
+        // 3️⃣ Date + Disease → show hospital
+        elseif ($isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
             $addHospitalColumn = true;
-        } elseif (!$isFilterApplied) {
+        }
+
+        // 4️⃣ Disease only → show HOSPITAL column
+        elseif (!$isDateFiltered && !$isHospitalFiltered && $isDiseaseFiltered) {
+            $addHospitalColumn = true;
+        }
+
+        // 5️⃣ Hospital only → show NOTHING extra (no hospital column)
+        elseif (!$isDateFiltered && $isHospitalFiltered && !$isDiseaseFiltered) {
+            // nothing extra
+        }
+
+        // 6️⃣ No filters → show both
+        elseif (!$isFilterApplied) {
             $addDiseaseColumn = true;
             $addHospitalColumn = true;
         }
