@@ -163,7 +163,7 @@
                             <div class="disease-entry mb-4">
                                 <div class="mb-2">
                                     <x-input-label for="disease_id_0" :value="__('Disease')" />
-                                    <x-dropdown-select id="disease_id_0" name="disease_id[]" required onchange="toggleCustomDiseaseInput(this, 0)">
+                                    <x-dropdown-select id="disease_id_0" name="disease_id[]" required onchange="updateDiseaseDropdowns()">
                                         <option value="" disabled selected>Select disease...</option>
                                         @foreach($diseases as $disease)
                                             <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
@@ -267,7 +267,7 @@
                         <div class="disease-entry mb-4">
                             <div class="mb-2">
                                 <x-input-label for="disease_id_0_record" :value="__('Disease')" />
-                                <x-dropdown-select id="disease_id_0_record" name="disease_id[]" required onchange="toggleCustomDiseaseInput(this, 0, 'record')">
+                                <x-dropdown-select id="disease_id_0_record" name="disease_id[]" required onchange="updateDiseaseDropdowns()">
                                     <option value="" disabled selected>Select disease...</option>
                                     @foreach($diseases as $disease)
                                         <option value="{{ $disease->id }}">{{ $disease->specification }}</option>
@@ -379,6 +379,7 @@
         entry.innerHTML = diseaseHtml;
         container.appendChild(entry);
         diseaseCounter++;
+          updateDiseaseDropdowns();
     }
 
     function toggleCustomDiseaseInput(selectElement, index, suffix = '') {
@@ -405,8 +406,33 @@
                 inputSpec.value = '';
             }
         }
+        updateDiseaseDropdowns();
     }
+    function updateDiseaseDropdowns() {
+        // Get all visible disease dropdowns
+        const dropdowns = Array.from(document.querySelectorAll('[name="disease_id[]"]'));
 
+        const selectedValues = new Set();
+
+        // Collect all selected values except 'other_specify'
+        dropdowns.forEach(dropdown => {
+            if (dropdown.value && dropdown.value !== 'other_specify') {
+                selectedValues.add(dropdown.value);
+            }
+        });
+
+        // Update options in all dropdowns
+        dropdowns.forEach(dropdown => {
+            const options = dropdown.querySelectorAll('option');
+            options.forEach(option => {
+                if (selectedValues.has(option.value) && option.value !== dropdown.value && option.value !== 'other_specify') {
+                    option.disabled = true; // Disable already-selected options
+                } else {
+                    option.disabled = false; // Enable unselected options
+                }
+            });
+        });
+    }
     function removeDiseaseEntry(link) {
         const entry = link.closest('.disease-entry');
         if (entry) {
