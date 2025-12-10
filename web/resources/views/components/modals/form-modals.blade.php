@@ -349,7 +349,23 @@
             {{-- Hidden input to store current request ID --}}
             <input type="hidden" id="current_request_id" name="request_id" value="">
 
+            {{-- ACTION BUTTONS SECTION --}}
             <div id="actionButtonsContainer" class="flex justify-center gap-4 mt-6">
+                {{-- Approve Button --}}
+                <x-primary-button 
+                    type="button" 
+                    onclick="initiateAction('approve')">
+                    {{ __('Accept') }}
+                </x-primary-button>
+
+                {{-- Reject Button --}}
+                <x-secondary-button 
+                    type="button" 
+                    onclick="initiateAction('reject')">
+                    Decline
+                </x-secondary-button>
+            </div>
+            <!-- <div id="actionButtonsContainer" class="flex justify-center gap-4 mt-6">
                 {{-- Approve Form --}}
                 <form id="approveFormModal" method="POST" action="">
                     @csrf
@@ -369,7 +385,7 @@
                         Decline
                     </x-secondary-button>
                 </form>
-            </div>
+            </div> -->
         </div>
     </x-modals.modal-popup>
 
@@ -821,211 +837,131 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Superadmin Request Details
 let currentRequestId = null;
+    let pendingAction = null; 
 
-function viewRequestedData(requestId, tableType) {
-    currentRequestId = requestId;
+    function viewRequestedData(requestId, tableType) {
+        currentRequestId = requestId;
 
-    // Show loading state
-    document.getElementById('modal_full_name').value = 'Loading...';
-    document.getElementById('modal_email').value = 'Loading...';
-    document.getElementById('modal_requested_disease').value = 'Loading...';
-    document.getElementById('modal_from_date').value = 'Loading...';
-    document.getElementById('modal_to_date').value = 'Loading...';
-    document.getElementById('modal_created_at').value = 'Loading...';
-    document.getElementById('modal_purpose').value = 'Loading...';
+        // 1. Show loading state
+        document.getElementById('modal_full_name').value = 'Loading...';
+        document.getElementById('modal_email').value = 'Loading...';
+        document.getElementById('modal_requested_disease').value = 'Loading...';
+        document.getElementById('modal_from_date').value = 'Loading...';
+        document.getElementById('modal_to_date').value = 'Loading...';
+        document.getElementById('modal_created_at').value = 'Loading...';
+        document.getElementById('modal_purpose').value = 'Loading...';
 
-    // Set form actions
-    const approveForm = document.getElementById('approveFormModal');
-    const rejectForm = document.getElementById('rejectFormModal');
-    const actionUrl = `/superadmin/data-requests/${requestId}`;
-    
-    approveForm.action = actionUrl;
-    rejectForm.action = actionUrl;
+        // 2. Toggle buttons visibility based on table type
+        const actionButtons = document.getElementById('actionButtonsContainer');
+        if (tableType === 'pending') {
+            actionButtons.classList.remove('hidden');
+        } else {
+            actionButtons.classList.add('hidden');
+        }
 
-    // Show/hide buttons based on table type
-    const actionButtons = document.getElementById('actionButtonsContainer');
-    if (tableType === 'pending') {
-        actionButtons.classList.remove('hidden');
-    } else {
-        actionButtons.classList.add('hidden');
+        // 3. Fetch request details
+        fetch(`/superadmin/data-requests/${requestId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                // Populate modal
+                document.getElementById('modal_full_name').value = data.name || 'N/A';
+                document.getElementById('modal_email').value = data.email || 'N/A';
+                document.getElementById('modal_requested_disease').value = data.requested_disease || 'N/A';
+                document.getElementById('modal_from_date').value = data.from_date || 'Not specified';
+                document.getElementById('modal_to_date').value = data.to_date || 'Not specified';
+                document.getElementById('modal_created_at').value = new Date(data.created_at).toLocaleDateString() || 'N/A';
+                document.getElementById('modal_purpose').value = data.purpose || 'N/A';
+
+                // Show modal
+                openModal('reasonRequestModal');
+            })
+            .catch(error => {
+                console.error('Error fetching request details:', error);
+                alert('Error loading request details. Please try again.');
+            });
     }
 
-    // Fetch request details
-    fetch(`/superadmin/data-requests/${requestId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Populate modal with data
-            document.getElementById('modal_full_name').value = data.name || 'N/A';
-            document.getElementById('modal_email').value = data.email || 'N/A';
-            document.getElementById('modal_requested_disease').value = data.requested_disease || 'N/A';
-            document.getElementById('modal_from_date').value = data.from_date || 'Not specified';
-            document.getElementById('modal_to_date').value = data.to_date || 'Not specified';
-            document.getElementById('modal_created_at').value = new Date(data.created_at).toLocaleDateString() || 'N/A';
-            document.getElementById('modal_purpose').value = data.purpose || 'N/A';
+    // Triggered when clicking "Accept" or "Decline" in the details modal
+    function initiateAction(action) {
+        pendingAction = action; // 'approve' or 'reject'
+        
+        // Close details, Open confirmation
+        closeModal('reasonRequestModal');
 
-            // Show modal
-            openModal('reasonRequestModal');
-        })
-        .catch(error => {
-            console.error('Error fetching request details:', error);
-            alert('Error loading request details. Please try again.');
-        });
-}
-
-    // function submitDecline() {
-    //     if (!currentRequestId) return;
-
-    //     const declineReason = document.getElementById('decline_reason').value;
-
-    //     pendingAction = 'decline';
-    //     const message = 'Are you sure you want to decline this data request?' +
-    //         (declineReason ? '\n\nReason: ' + declineReason : '');
-    //     closeModal('declineReasonModal');
-    //     showConfirmation(
-    //         'Decline Request?',
-    //         message,
-    //         'Decline',
-    //         'Cancel'
-    //     );
-    // }
-
-    function showConfirmation(title, message, confirmText, cancelText) {
-        // Use the pop-up-modals component
-        const modal = document.getElementById('confirmationModal');
-        const titleElement = modal.querySelector('h2');
-        const messageElement = modal.querySelector('p');
-        const confirmButton = modal.querySelector('button.bg-g-dark');
-        const cancelButton = modal.querySelector('button.border-g-dark');
-
-        // Set the content
-        titleElement.textContent = title;
-        messageElement.textContent = message;
-        confirmButton.textContent = confirmText;
-        cancelButton.textContent = cancelText;
-
-        // Style the confirm button based on action
-        if (pendingAction === 'decline') {
-            confirmButton.classList.remove('bg-g-dark', 'hover:bg-g-dark/90');
-            confirmButton.classList.add('bg-r-dark', 'hover:bg-red-600');
+        if (action === 'approve') {
+            showConfirmation(
+                'Approve Request', 
+                'Are you sure you want to accept this data request? An email notification will be sent.', 
+                'Yes, Accept', 
+                'Cancel'
+            );
         } else {
-            confirmButton.classList.remove('bg-r-dark', 'hover:bg-red-600');
-            confirmButton.classList.add('bg-g-dark', 'hover:bg-g-dark/90');
+            showConfirmation(
+                'Reject Request', 
+                'Are you sure you want to decline this data request?', 
+                'Yes, Decline', 
+                'Cancel'
+            );
         }
+    }
 
-        // Replace the form action with custom function
-        const form = modal.querySelector('form');
-        if (form) {
-            form.remove();
-        }
+    // Configures the generic pop-up-modal to act as our confirmation
+    function showConfirmation(title, message, confirmText, cancelText) {
+        const modal = document.getElementById('confirmationModal');
+        
+        // Update Text
+        const titleElement = modal.querySelector('h2');
+        const messageElement = modal.querySelector('p') || modal.querySelector('#modalMessageContent');
+        
+        if(titleElement) titleElement.textContent = title;
+        if(messageElement) messageElement.textContent = message;
 
-        // Create a new button container
+        // Find button container
         const buttonContainer = modal.querySelector('.flex.justify-center.space-x-3');
-        buttonContainer.innerHTML = `
-        <button type="button" onclick="processAction()"
-                class="bg-g-dark text-white px-4 py-2 rounded-md font-semibold hover:bg-g-dark/90" 
-                id="confirmActionButton">
-            ${confirmText}
-        </button>
-        <button type="button" onclick="closeModal('confirmationModal')"
-                class="border border-g-dark text-g-dark px-4 py-2 rounded-md font-semibold hover:bg-gray-100">
-            ${cancelText}
-        </button>
-    `;
 
-        // Update the confirm button styling
-        const actionButton = document.getElementById('confirmActionButton');
-        if (pendingAction === 'decline') {
-            actionButton.classList.remove('bg-g-dark', 'hover:bg-g-dark/90');
-            actionButton.classList.add('bg-r-dark', 'hover:bg-red-600');
+        if (buttonContainer) {
+            // Determine button color
+            const confirmBtnClass = pendingAction === 'reject' 
+                ? 'bg-red-600 hover:bg-red-700' 
+                : 'bg-g-dark hover:bg-g-dark/90';
+
+            // Inject custom buttons
+            buttonContainer.innerHTML = `
+                <button type="button" onclick="processAction()"
+                        class="${confirmBtnClass} text-white px-4 py-2 rounded-md font-semibold" 
+                        id="confirmActionButton">
+                    ${confirmText}
+                </button>
+                <button type="button" onclick="closeModal('confirmationModal'); openModal('reasonRequestModal');"
+                        class="border border-g-dark text-g-dark px-4 py-2 rounded-md font-semibold hover:bg-gray-100">
+                    ${cancelText}
+                </button>
+            `;
         }
 
         openModal('confirmationModal');
     }
 
-    // function processAction() {
-    //     if (!currentRequestId) return;
-
-    //     closeModal('confirmationModal');
-
-    //     if (pendingAction === 'decline') {
-    //         closeModal('declineReasonModal');
-    //     } else {
-    //         closeModal('reasonRequestModal');
-    //     }
-
-    //     const status = pendingAction === 'approve' ? 'approved' : 'rejected';
-    //     const declineReason = document.getElementById('decline_reason').value;
-
-    //     // Create form data
-    //     const formData = new FormData();
-    //     formData.append('status', status);
-    //     formData.append('_token', '{{ csrf_token() }}');
-    //     formData.append('_method', 'PATCH');
-
-    //     if (declineReason) {
-    //         formData.append('decline_reason', declineReason);
-    //     }
-
-    //     // Send the request
-    //     fetch(`/superadmin/data-requests/${currentRequestId}`, {
-    //             method: 'POST',
-    //             body: formData,
-    //             headers: {
-    //                 'X-Requested-With': 'XMLHttpRequest'
-    //             }
-    //         })
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 return response.json().then(errorData => {
-    //                     throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    //                 });
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             if (data.success) {
-    //                 // Success - reload the page to update the table
-    //                 location.reload();
-    //             } else {
-    //                 throw new Error(data.error || 'Unknown error occurred');
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Error updating request:', error);
-    //             alert('Error: ' + error.message);
-    //         });
-    // }
+    // Sends the AJAX request when "Yes" is clicked
     function processAction() {
-    if (!currentRequestId) return;
+        if (!currentRequestId) return;
 
-    closeModal('confirmationModal');
+        closeModal('confirmationModal');
 
-    const status = pendingAction === 'approve' ? 'approved' : 'rejected';
-    // const declineReason = document.getElementById('decline_reason').value;
+        const status = pendingAction === 'approve' ? 'approved' : 'rejected';
+        const formData = new FormData();
+        formData.append('status', status);
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('_method', 'PATCH');
 
-    // Create form data
-    const formData = new FormData();
-    formData.append('status', status);
-    formData.append('_token', '{{ csrf_token() }}');
-    formData.append('_method', 'PATCH');
+        // Show loading state (optional visual feedback)
+        // const confirmButton = document.getElementById('confirmActionButton');
+        // if(confirmButton) confirmButton.textContent = 'Processing...';
 
-    // if (declineReason) {
-    //     formData.append('decline_reason', declineReason);
-    // }
-
-    // Show loading state
-    const confirmButton = document.getElementById('confirmActionButton');
-    const originalText = confirmButton.textContent;
-    confirmButton.textContent = 'Processing...';
-    confirmButton.disabled = true;
-
-    // Send the request
-    fetch(`/superadmin/data-requests/${currentRequestId}`, {
+        fetch(`/superadmin/data-requests/${currentRequestId}`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -1036,22 +972,22 @@ function viewRequestedData(requestId, tableType) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success message
-                alert(data.message || 'Request updated successfully! Email notification sent.');
-                location.reload();
+                const url = new URL(window.location.href);
+                url.searchParams.set('status', 'success');
+                url.searchParams.set('message', data.message || 'Request updated successfully!');
+                window.location.href = url.toString();
             } else {
                 throw new Error(data.error || 'Unknown error occurred');
             }
         })
         .catch(error => {
             console.error('Error updating request:', error);
-            alert('Error: ' + error.message);
-            
-            // Reset button
-            confirmButton.textContent = originalText;
-            confirmButton.disabled = false;
+            const url = new URL(window.location.href);
+            url.searchParams.set('status', 'error');
+            url.searchParams.set('message', error.message || 'An error occurred');
+            window.location.href = url.toString();
         });
-}
+    }
 
     function openModal(modalId) {
         document.getElementById(modalId).classList.remove('hidden');
@@ -1061,12 +997,6 @@ function viewRequestedData(requestId, tableType) {
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
         document.getElementById(modalId).classList.remove('flex');
-
-        // Reset decline reason if closing decline modal
-        // if (modalId === 'declineReasonModal') {
-        //     document.getElementById('decline_reason').value = '';
-        // }
-        
     }
 
 

@@ -1,4 +1,7 @@
 <x-app-layout>
+    <x-certificate-modal />
+    <x-modals.pop-up-modals />
+
     <div class="bg-g-bg flex min-h-screen w-full">
         @include('layouts.sidebar')
 
@@ -109,7 +112,7 @@
                     <div class="flex space-x-4">
                         @if(!$admin->is_approved)
                         <!-- For Pending Admins: Approve and Reject -->
-                        <form method="POST" action="{{ route('superadmin.approve_admin', $admin->id) }}" class="flex-1">
+                        <!-- <form method="POST" action="{{ route('superadmin.approve_admin', $admin->id) }}" class="flex-1">
                             @csrf
                             <x-primary-button class="w-full justify-center bg-g-dark hover:bg-g-dark/90">
                                 <span class="material-icons mr-2">check</span>
@@ -126,7 +129,25 @@
                                 <span class="material-icons mr-2">close</span>
                                 Reject Admin
                             </x-danger-button>
-                        </form>
+                        </form> -->
+                        
+                        <!-- Approve Button - Triggers Modal -->
+                        <x-primary-button 
+                            type="button"
+                            onclick="openModal('approveAdminModal')"
+                            class="flex-1 w-full justify-center bg-g-dark hover:bg-g-dark/90">
+                            <span class="material-icons mr-2">check</span>
+                            Approve Admin
+                        </x-primary-button>
+
+                        <!-- Reject Button - Triggers Modal -->
+                        <x-danger-button 
+                            type="button"
+                            onclick="openModal('rejectAdminModal')"
+                            class="flex-1 w-full justify-center">
+                            <span class="material-icons mr-2">close</span>
+                            Reject Admin
+                        </x-danger-button>
                         @else
                         <!-- For Approved Admins: Edit and Delete -->
                         @if(!$isEditMode)
@@ -138,7 +159,7 @@
                             </x-primary-button>
                         </a>
 
-                        <form method="POST"
+                        <!-- <form method="POST"
                             action="{{ route('superadmin.delete_admin', $admin->id) }}"
                             class="flex-1"
                             onsubmit="return confirm('Are you sure you want to delete this admin?')">
@@ -148,7 +169,16 @@
                                 <span class="material-icons mr-2">delete</span>
                                 Delete Admin
                             </x-danger-button>
-                        </form>
+                        </form> -->
+
+                        <!-- Delete Button - Triggers Modal -->
+                        <x-danger-button 
+                            type="button"
+                            onclick="openModal('deleteAdminModal')"
+                            class="flex-1 w-full justify-center">
+                            <span class="material-icons mr-2">delete</span>
+                            Delete Admin
+                        </x-danger-button>
                         @else
                         <!-- Cancel Edit Button -->
                         <a href="{{ route('superadmin.view_admin', ['id' => $admin->id]) }}"
@@ -250,7 +280,39 @@
         </div>
     </div>
     
-    
+    <!-- Approve Admin Modal -->
+    <x-modals.pop-up-modals
+        id="approveAdminModal"
+        title="Approve Admin"
+        message="Are you sure you want to approve this admin?"
+        confirmText="Yes, Approve"
+        cancelText="Cancel"
+        :action="route('superadmin.approve_admin', $admin->id)"
+        method="POST"
+        :isConfirmation="true" 
+    />
 
-    <x-certificate-modal />
+    <!-- Reject Admin Modal -->
+    <x-modals.pop-up-modals
+        id="rejectAdminModal"
+        title="Reject Admin"
+        message="Are you sure you want to reject this admin? This action cannot be undone."
+        confirmText="Yes, Reject"
+        cancelText="Cancel"
+        :action="route('superadmin.reject_admin', $admin->id)"
+        method="POST"
+        :isConfirmation="true" 
+    />
+
+    <!-- Delete Admin Modal -->
+    <x-modals.pop-up-modals
+        id="deleteAdminModal"
+        title="Delete Admin"
+        message="Are you sure you want to delete this admin? This action cannot be undone."
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        :action="route('superadmin.delete_admin', $admin->id)"
+        method="DELETE"
+        :isConfirmation="true" 
+    />
 </x-app-layout>
