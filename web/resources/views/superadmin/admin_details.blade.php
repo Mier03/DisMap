@@ -172,13 +172,13 @@
                         </form> -->
 
                         <!-- Delete Button - Triggers Modal -->
-                        <x-danger-button 
+                        {{-- <x-danger-button 
                             type="button"
                             onclick="openModal('deleteAdminModal')"
                             class="flex-1 w-full justify-center">
                             <span class="material-icons mr-2">delete</span>
                             Delete Admin
-                        </x-danger-button>
+                        </x-danger-button> --}}
                         @else
                         <!-- Cancel Edit Button -->
                         <a href="{{ route('superadmin.view_admin', ['id' => $admin->id]) }}"
@@ -304,7 +304,7 @@
         :isConfirmation="true" 
     />
 
-    <!-- Delete Admin Modal -->
+    {{-- <!-- Delete Admin Modal -->
     <x-modals.pop-up-modals
         id="deleteAdminModal"
         title="Delete Admin"
@@ -314,5 +314,5 @@
         :action="route('superadmin.delete_admin', $admin->id)"
         method="DELETE"
         :isConfirmation="true" 
-    />
+    /> --}}
 </x-app-layout>
