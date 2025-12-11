@@ -6,6 +6,10 @@
     'patient' => null,
 ])
 
+@php
+    $today = now()->toDateString(); 
+@endphp
+
 <div>
 {{-- =========================
     Add Patient Modal
@@ -48,13 +52,14 @@
                                 <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
                             </div>
                         </div>
-
+                        
                         {{-- Date of Birth, Sex, Ethnicity --}}
                         <div class="grid grid-cols-3 gap-4 mb-4">
                             <div>
                                 <x-input-label for="birthdate" :value="__('Date of Birth')" />
                                 <x-text-input id="birthdate" class="block mt-1 w-full"
                                     type="date" name="birthdate" :value="old('birthdate')"
+                                    max="{{ $today }}"
                                     required />
                             </div>
                             <div>
@@ -379,6 +384,7 @@
         entry.innerHTML = diseaseHtml;
         container.appendChild(entry);
         diseaseCounter++;
+        updateDiseaseDropdowns(suffix);
     }
 
     function toggleCustomDiseaseInput(selectElement, index, suffix = '') {
@@ -405,12 +411,16 @@
                 inputSpec.value = '';
             }
         }
+
+        updateDiseaseDropdowns(suffix);
     }
 
     function removeDiseaseEntry(link) {
         const entry = link.closest('.disease-entry');
         if (entry) {
             entry.remove();
+            const isRecord = entry.closest('#diseases-container-record') !== null;
+            updateDiseaseDropdowns(isRecord ? 'record' : '');
         }
     }
 
@@ -675,4 +685,33 @@
     document.addEventListener('DOMContentLoaded', function() {
         updateContactNumber();
     });
+
+
+
+function updateDiseaseDropdowns(suffix = '') {
+    const containerId = suffix === 'record' ? 'diseases-container-record' : 'diseases-container';
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const allSelects = container.querySelectorAll(`select[name="disease_id[]"]`);
+    const selectedDiseaseIds = [];
+
+    allSelects.forEach(select => {
+        if (select.value && select.value !== 'other_specify') {
+            selectedDiseaseIds.push(select.value);
+        }
+    });
+
+    allSelects.forEach(select => {
+        const options = select.querySelectorAll('option');
+
+        options.forEach(option => {
+            option.disabled = false;
+            
+            if (selectedDiseaseIds.includes(option.value) && option.value !== select.value) {
+                option.disabled = true;
+            }
+        });
+    });
+}
 </script>
