@@ -45,10 +45,10 @@
             <div class="download-app">
                 <p><strong>Download Our Mobile App:</strong></p>
                 <p>To access your health records and communicate with healthcare providers, please download our mobile application.</p>
-                <a href="https://drive.google.com/drive/folders/1RV5at6oSVpSvB3CsEt7ghPLbL1-Iu6Fq?usp=drive_link" class="app-link" target="_blank">
+                <a href="https://drive.google.com/file/d/1LkwUvJHYPmGxxZZcfQB6qxdTfjBf8mMI/view?usp=drive_link" class="app-link" target="_blank">
                     📱 Download Mobile App
                 </a>
-                <p><small><strong>Download Link:</strong> https://drive.google.com/drive/folders/1RV5at6oSVpSvB3CsEt7ghPLbL1-Iu6Fq?usp=drive_link</small></p>
+                <p><small><strong>Download Link:</strong> https://drive.google.com/file/d/1LkwUvJHYPmGxxZZcfQB6qxdTfjBf8mMI/view?usp=drive_link</small></p>
             </div>
             
             <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
