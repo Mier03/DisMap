@@ -29,13 +29,22 @@ class AuthenticatedSessionController extends Controller
 
             $user = Auth::user();
 
-              // Check if user is approved
+            // Check if user is approved
             if (!$user->is_approved) {
                 Auth::logout(); // log out the user immediately
                 return redirect()->route('login')->withErrors([
                     'login' => 'Your account is not approved yet. Please wait for admin approval.',
                 ]);
             }
+
+            // Check if user is ACTIVE
+            if ($user->status === 'Inactive') {
+                Auth::logout(); // log out the user immediately
+                return redirect()->route('login')->withErrors([
+                    'login' => 'Your account is deactivated. Please contact admin for reactivation.',
+                ]);
+            }
+
             if ($user->user_type === 'Doctor') {
                 return redirect()->route('dashboard');
             } elseif ($user->user_type === 'Admin') {
