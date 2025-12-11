@@ -27,12 +27,12 @@
                         <x-page-header title="Manage Admins" subtitle="Administrator data and pending approvals" />
 
                         {{-- Search Form --}}
-                        <form id="admin-search-form" method="GET" action="{{ route('superadmin.verify_admins') }}">
-                            <x-search-bar
-                                id="admin-search-input"
-                                name="q"
-                                placeholder="Search by name, email, or hospital..."
-                                value="{{ request('q') }}" />
+                        <form method="GET" action="{{ route('superadmin.verify_admins') }}">
+                            <x-search-bar 
+                                name="q" 
+                                placeholder="Search by name, email, or hospital..." 
+                                value="{{ request('q') }}" 
+                            />
                         </form>
 
                         {{-- Container for Pending Admins table for AJAX updates --}}
@@ -85,52 +85,59 @@
     </div>
 
     @push('scripts')
-    {{-- You can include jQuery via a CDN like this if it's not in your project's asset bundle --}}
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Debounce function to limit the rate at which a function gets called.
-            // This prevents sending a request for every single keystroke.
-            function debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(this, args), delay);
-                };
-            }
+        // $(document).ready(function() {
+        //     // Debounce function to limit the rate at which a function gets called.
+        //     // This prevents sending a request for every single keystroke.
+        //     function debounce(func, delay) {
+        //         let timeout;
+        //         return function(...args) {
+        //             clearTimeout(timeout);
+        //             timeout = setTimeout(() => func.apply(this, args), delay);
+        //         };
+        //     }
 
-            // The function that performs the AJAX search
-            const performSearch = () => {
-                const query = $('#admin-search-input').val();
-                const url = $('#admin-search-form').attr('action');
+        //     // The function that performs the AJAX search
+        //     const performSearch = () => {
+        //         const query = $('#admin-search-input').val();
+        //         const url = $('#admin-search-form').attr('action');
 
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    data: { q: query },
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Important for Laravel's $request->ajax()
-                    },
-                    success: function(response) {
-                        // Replace the HTML content of the table containers with the new rendered HTML
-                        $('#pending-admins-container').html(response.pendingHtml);
-                        $('#all-admins-container').html(response.allHtml);
-                    },
-                    error: function(xhr) {
-                        console.error("An error occurred during search: " + xhr.status + " " + xhr.statusText);
-                    }
-                });
-            };
+        //         $.ajax({
+        //             url: url,
+        //             type: 'GET',
+        //             data: { q: query },
+        //             headers: {
+        //                 'X-Requested-With': 'XMLHttpRequest' // Important for Laravel's $request->ajax()
+        //             },
+        //             success: function(response) {
+        //                 // Replace the HTML content of the table containers with the new rendered HTML
+        //                 $('#pending-admins-container').html(response.pendingHtml);
+        //                 $('#all-admins-container').html(response.allHtml);
+        //             },
+        //             error: function(xhr) {
+        //                 console.error("An error occurred during search: " + xhr.status + " " + xhr.statusText);
+        //             }
+        //         });
+        //     };
 
-            // Attach the debounced search function to the 'keyup' event of the search input
-            $('#admin-search-input').on('keyup', debounce(performSearch, 300)); // 300ms delay
+        //     // Attach the debounced search function to the 'keyup' event of the search input
+        //     $('#admin-search-input').on('keyup', debounce(performSearch, 300)); // 300ms delay
 
-            // Prevent the form from doing a full page reload if the user hits Enter
-            $('#admin-search-form').on('submit', function(e) {
-                e.preventDefault();
-                performSearch(); // Trigger the search manually on submit
-            });
-        });
+        //     // Prevent the form from doing a full page reload if the user hits Enter
+        //     $('#admin-search-form').on('submit', function(e) {
+        //         e.preventDefault();
+        //         performSearch(); // Trigger the search manually on submit
+        //     });
+        // });
+
+        if (window.location.search.includes('status=')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('status');
+            url.searchParams.delete('message');
+            window.history.replaceState({}, '', url);
+        }
     </script>
     @endpush
     <x-certificate-modal />

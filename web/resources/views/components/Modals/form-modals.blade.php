@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         const result = await response.json();
                         if (response.ok) {
-                            alert('Recovery details saved successfully!');
+                            //alert('Recovery details saved successfully!');
                             window.location.reload();
                         } else {
                             const errorMessages = result.errors ? Object.values(result.errors).flat().join('\n') : result.message || 'Failed to save recovery details.';
