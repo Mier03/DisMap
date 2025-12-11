@@ -265,9 +265,11 @@ class PatientController extends Controller
                 'reportedByDoctorHospital.hospital',
                 'recoveredByDoctorHospital.doctor',
                 'recoveredByDoctorHospital.hospital'
+
             ])->findOrFail($id);
 
             return response()->json([
+                'date_reported' => Carbon::parse($record->date_reported)->format('Y-m-d'),
                 'reported_remarks' => $record->reported_remarks ?? 'N/A',
                 'reported_doctor' => $record->reportedByDoctorHospital->doctor->name ?? 'N/A',
                 'reported_hospital' => $record->reportedByDoctorHospital->hospital->name ?? 'N/A',

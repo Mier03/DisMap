@@ -684,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // This is the block where the "Add Recovery Details" button is shown when recovery details are null
                 const updateRoute = modal.dataset.updateRoute.replace('__RECORD_ID__', recordId);
+                const today = new Date().toISOString().split('T')[0];
                 htmlContent += `
                     <hr class="my-4 border-t border-gray-200">
                     <button id="addRecoveryDetailsBtn" class="text-blue-600 hover:underline font-medium mb-4">Add Recovery Details</button>
@@ -692,7 +693,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="mb-4">
                             <x-input-label for="date_recovered" :value="__('Date Recovered')" />
                             <x-text-input id="date_recovered" class="block mt-1 w-full" 
-                                type="date" name="date_recovered" required />
+                                type="date" name="date_recovered" required 
+                                min="${record.date_reported}"
+                                max="${today}" />
                             <x-input-error :messages="$errors->get('date_recovered')" class="mt-2" />
                         </div>
                         <div class="mb-4">
